@@ -7,7 +7,7 @@ setup(
     author = 'Joe Kington',
     author_email = 'joferkington@gmail.com',
     license = 'MIT',
-    url = 'http://code.google.com/p/python-geoprobe/',
+    url = 'https://github.com/joferkington/mplstereonet/',
     packages = ['mplstereonet'],
     package_data = {'mplstereonet' : ['__init__.py', 'stereonet_axes.py',
                                       'stereonet_math.py']}
