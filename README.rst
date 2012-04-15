@@ -3,7 +3,7 @@ mplstereonet
 `mplstereonet` provides lower-hemisphere equal-area stereonets for matplotlib.
 
 Basic Usage
-===========
+-----------
 In most cases, you'll want to ``import mplstereonet`` and then make an axes
 with ``projection="stereonet"``.
 
