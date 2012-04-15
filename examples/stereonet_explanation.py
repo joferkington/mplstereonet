@@ -7,7 +7,6 @@ def main():
     fig, (ax1, ax2) = setup_figure()
     stereonet_projection_explanation(ax1)
     native_projection_explanation(ax2)
-    plt.tight_layout()
     plt.show()
 
 def setup_figure():
