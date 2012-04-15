@@ -6,9 +6,10 @@ setup(
     description = "Stereonets for matplotlib",
     author = 'Joe Kington',
     author_email = 'joferkington@gmail.com',
-    license = 'MIT',
+    license = 'LICENSE',
     url = 'https://github.com/joferkington/mplstereonet/',
     packages = ['mplstereonet'],
-    package_data = {'mplstereonet' : ['__init__.py', 'stereonet_axes.py',
-                                      'stereonet_math.py']}
+    install_requires = [
+        'matplotlib >= 0.98',
+        'numpy >= 1.1']
 )
