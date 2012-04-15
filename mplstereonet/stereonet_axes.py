@@ -64,7 +64,7 @@ class StereonetAxes(LambertAxes):
         self.set_latitude_grid(10)
         self.set_longitude_grid_ends(80)
 
-        # Hide all ticks, but set
+        # Hide all ticks and tick labels for the "native" lon and lat axes
         self.xaxis.set_minor_locator(NullLocator())
         self.yaxis.set_minor_locator(NullLocator())
         self.xaxis.set_ticks_position('none')
@@ -72,25 +72,33 @@ class StereonetAxes(LambertAxes):
         self.xaxis.set_tick_params(label1On=False)
         self.yaxis.set_tick_params(label1On=False)
 
+        # Set the grid on or off based on the rc params.
         self.grid(mpl.rcParams['axes.grid'])
 
+        # Set the default limits (so that the "native" ticklabels will be
+        # correct if they're turned back on)...
         Axes.set_xlim(self, -self.horizon, self.horizon)
         Axes.set_ylim(self, -np.pi / 2.0, np.pi / 2.0)
 
-        self._initialize_polar()
-
-    def _initialize_polar(self):
-        try:
-            self._polar
-        except AttributeError:
-            fig = self.get_figure()
-            self._polar = fig.add_axes(self.get_position(True), frameon=False,
-                                       projection='polar')
+        # Set up the azimuth ticks.
         self._polar.set_theta_zero_location('N')
         self._polar.set_theta_direction(-1)
         self._polar.grid(False)
         self._polar.set_rticks([])
-        self._polar.yaxis.set_tick_params(direction='out')
+
+    @property
+    def _polar(self):
+        """The "hidden" polar axis used for azimuth labels."""
+        # This will be called inside LambertAxes.__init__ as well as every
+        # time the axis is cleared, so we need the try/except to avoid having
+        # multiple hidden axes when `cla` is _manually_ called.
+        try:
+            return self._hidden_polar_axes
+        except AttributeError:
+            fig = self.get_figure()
+            self._hidden_polar_axes = fig.add_axes(self.get_position(True), 
+                                        frameon=False, projection='polar')
+            return self._hidden_polar_axes
 
     def set_azimuth_ticks(self, angles, labels=None, frac=None, **kwargs):
         """
