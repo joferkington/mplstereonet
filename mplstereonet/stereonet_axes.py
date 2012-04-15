@@ -52,6 +52,10 @@ class StereonetAxes(LambertAxes):
             yaxis_text_base + \
             Affine2D().translate(8.0, 0.0)
 
+    def set_position(self, pos, which='both'):
+        self._polar.set_position(pos, which)
+        LambertAxes.set_position(self, pos, which)
+
     def cla(self):
         Axes.cla(self)
 
