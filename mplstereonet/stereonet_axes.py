@@ -12,6 +12,7 @@ class StereonetAxes(LambertAxes):
     """An axis representing a lower-hemisphere "schmitt" (a.k.a. equal area) 
     projection."""
     name = 'stereonet'
+    RESOLUTION = 30
     def __init__(self, *args, **kwargs):
         self.horizon = np.radians(90)
         LambertAxes.__init__(self, *args, **kwargs)
@@ -104,6 +105,9 @@ class StereonetAxes(LambertAxes):
         """
         return self._polar.set_thetagrids(angles, labels, frac, **kwargs)
 
+    def get_azimuth_ticks(self, minor=False):
+        return self._polar.get_xticks(minor)
+
     def set_azimuth_ticklabels(self, labels, fontdict=None, **kwargs):
         """
         Sets the labels for the azimuthal ticks.
@@ -114,6 +118,10 @@ class StereonetAxes(LambertAxes):
             Additional parameters are text properties for the labels.
         """
         return self._polar.set_xticklabels(labels, fontdict, **kwargs)
+
+    def get_azimuth_ticklabels(self, minor=False):
+        """Get the azimuth tick labels as a list of Text artists."""
+        return self._polar.get_xticklabels(minor)
 
     def plane(self, strike, dip, *args, **kwargs):
         """
