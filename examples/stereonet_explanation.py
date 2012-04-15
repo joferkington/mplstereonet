@@ -1,12 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import matplotlib.patheffects as pe
 import mplstereonet
 
 def main():
     fig, (ax1, ax2) = setup_figure()
     stereonet_projection_explanation(ax1)
     native_projection_explanation(ax2)
+    plt.tight_layout()
     plt.show()
 
 def setup_figure():
@@ -62,8 +62,9 @@ def native_projection_explanation(ax):
 
 def xlabel_halo(ax):
     """Add a white "halo" around the xlabels."""
+    import matplotlib.patheffects as effects
     for tick in ax.get_xticklabels():
-        tick.set_path_effects([pe.withStroke(linewidth=4, foreground='w')])
+        tick.set_path_effects([effects.withStroke(linewidth=4, foreground='w')])
 
 if __name__ == '__main__':
     main()
