@@ -2,11 +2,25 @@ import numpy as np
 
 import matplotlib as mpl
 from matplotlib.transforms import Affine2D
-from matplotlib.projections import LambertAxes, register_projection
+from matplotlib.projections import register_projection, LambertAxes
+from matplotlib.path import Path
 from matplotlib.axes import Axes
 from matplotlib.ticker import NullLocator
 
 import stereonet_math
+import contouring
+
+class StereonetLambertTransform(LambertAxes.LambertTransform):
+    def transform_path(self, path):
+        # Only interpolate paths with only two points.
+        # This will interpolate grid lines but leave more complex paths (e.g.
+        # contours) alone. If we don't do this, we'll have problems with
+        # contourf and other plotting functions. There should be a better way...
+        if len(path.vertices) == 2:
+            ipath = path.interpolated(self._resolution)
+        else:
+            ipath = path
+        return Path(self.transform(ipath.vertices), ipath.codes)
 
 class StereonetAxes(LambertAxes):
     """An axis representing a lower-hemisphere "schmitt" (a.k.a. equal area) 
@@ -16,6 +30,12 @@ class StereonetAxes(LambertAxes):
     def __init__(self, *args, **kwargs):
         self.horizon = np.radians(90)
         LambertAxes.__init__(self, *args, **kwargs)
+
+    def _get_core_transform(self, resolution):
+        return StereonetLambertTransform(
+            self._center_longitude,
+            self._center_latitude,
+            resolution)
 
     def _get_affine_transform(self):
         transform = self._get_core_transform(1)
@@ -201,6 +221,11 @@ class StereonetAxes(LambertAxes):
                 degrees or a negative angle correspond to the opposite 
                 direction.
             Additional parameters are passed on to `plot`.
+
+        Returns
+        -------
+            A sequence of Line2D artists representing the point(s) specified by
+            `strike` and `dip`.
         """
         lon, lat = stereonet_math.rake(strike, dip, rake_angle)
         args, kwargs = self._point_plot_defaults(args, kwargs)
@@ -219,6 +244,11 @@ class StereonetAxes(LambertAxes):
                 The plunge is measured in degrees downward from the end of the
                 feature specified by the bearing. 
             Additional parameters are passed on to `plot`.
+
+        Returns
+        -------
+            A sequence of Line2D artists representing the point(s) specified by
+            `strike` and `dip`.
         """
         lon, lat = stereonet_math.line(plunge, bearing)
         args, kwargs = self._point_plot_defaults(args, kwargs)
@@ -226,7 +256,18 @@ class StereonetAxes(LambertAxes):
 
     def _point_plot_defaults(self, args, kwargs):
         """To avoid confusion for new users, this ensures that "scattered" 
-        points are plotted by by `plot` instead of points joined by a line."""
+        points are plotted by by `plot` instead of points joined by a line.
+        
+        Parameters
+        ----------
+            args : A tuple of arguments representing additional parameters to be 
+                passed to `self.plot`.
+            kwargs : A dict of keyword arguments representing additional 
+                parameters to be passed to `self.plot`
+        Returns
+        -------
+            Modified versions of `args` and `kwargs`.
+        """
         if args:
             return args, kwargs
 
@@ -235,6 +276,23 @@ class StereonetAxes(LambertAxes):
         if 'marker' not in kwargs:
             kwargs['marker'] = 'o'
         return args, kwargs
+
+    def _contour_helper(self, args, kwargs):
+        contour_kwargs = {}
+        contour_kwargs['measurement'] = kwargs.pop('measurement', 'poles')
+        contour_kwargs['method'] = kwargs.pop('method', 'exponential_kamb')
+        contour_kwargs['sigma'] = kwargs.pop('sigma', 3)
+        lon, lat, totals = contouring.contour_grid(*args, **contour_kwargs)
+        return lon, lat, totals, kwargs
+
+    def density_contour(self, *args, **kwargs):
+        lon, lat, totals, kwargs = self._contour_helper(args, kwargs)
+        return self.contour(lon, lat, totals, **kwargs)
+
+    def density_contourf(self, *args, **kwargs):
+        lon, lat, totals, kwargs = self._contour_helper(args, kwargs)
+        return self.contourf(lon, lat, totals, **kwargs)
+
 
 register_projection(StereonetAxes)
 
