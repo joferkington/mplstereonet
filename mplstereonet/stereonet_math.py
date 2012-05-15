@@ -272,6 +272,20 @@ def geographic2pole(lon, lat):
     return strike, dip
 
 def geographic2plunge_bearing(lon, lat):
+    """
+    Converts longitude and latitude in stereonet coordinates into a 
+    plunge/bearing.
+
+    Parameters:
+    -----------
+        lon, lat : Sequences of (or single) longitudes and latitudes in radians
+            as measured from a lower-hemisphere stereonet
+
+    Returns:
+    --------
+        plunge : The plunge of the vector in degrees downward from horizontal.
+        bearing : The bearing of the vector in degrees clockwise from north.
+    """
     lon, lat = np.atleast_1d(lon, lat)
     x, y, z = sph2cart(lon, lat)
 
@@ -362,6 +376,7 @@ def vector2plunge_bearing(x, y, z):
         z : The z-component(s) of the normal vector
 
     Returns:
+    --------
         plunge : The plunge of the vector in degrees downward from horizontal.
         bearing : The bearing of the vector in degrees clockwise from north.
     """
