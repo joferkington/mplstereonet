@@ -229,6 +229,27 @@ def plunge_bearing2pole(plunge, bearing):
     strike[strike >= 360] -= 360
     return strike, dip
 
+def mean_vector(lons, lats):
+    """
+    Returns the resultant vector from a series of longitudes and latitudes
+
+    Parameters:
+    -----------
+        lons : A sequence of longitudes (in radians)
+        lats : A sequence of latitudes (in radians)
+
+    Returns:
+        mean_vec : A tuple of (lon, lat) in radians
+        r_value : The magnitude of the resultant vector (between 0 and 1)
+            This represents the degree of clustering in the data.
+    """
+    xyz = sph2cart(lons, lats)
+    xyz = np.vstack(xyz).T
+    mean_vec = xyz.mean(axis=0)
+    r_value = np.linalg.norm(mean_vec) / xyz.shape[0]
+    mean_vec = cart2sph(*mean_vec)
+    return mean_vec, r_value
+
 def geographic2pole(lon, lat):
     """
     Converts a longitude and latitude (from a stereonet) into the strike and dip
@@ -275,5 +296,30 @@ def geographic2plunge_bearing(lon, lat):
 
     return plunge, bearing
 
+def xyz2stereonet(x, y, z):
+    x, y, z = np.atleast_1d(x, y, z)
+    return cart2sph(-z, x, y)
+
+def stereonet2xyz(lon, lat):
+    lon, lat = np.atleast_1d(lon, lat)
+    x, y, z = sph2cart(lon, lat)
+    return y, z, -x
+
+def normal2pole(x,y,z):
+    """Converts a normal vector to a plane (given as x,y,z)
+    to a strike and dip of the plane using the Right-Hand-Rule.
+    Input:
+        x: The x-component of the normal vector
+        y: The y-component of the normal vector
+        z: The z-component of the normal vector
+    Output:
+        strike: The strike of the plane, in degrees clockwise from north
+        dip: The dip of the plane, in degrees downward from horizontal
+    """
+    plunge, bearing = geographic2plunge_bearing(*xyz2stereonet(x,y,z))
+    return plunge_bearing2pole(plunge, bearing)
+
+def normal2plunge_bearing(x, y, z):
+    return geographic2plunge_bearing(*xyz2stereonet(x,y,z))
 
 
