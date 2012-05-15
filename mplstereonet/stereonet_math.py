@@ -226,13 +226,27 @@ def plunge_bearing2pole(plunge, bearing):
     plunge, bearing = np.atleast_1d(plunge, bearing)
     strike = bearing + 90
     dip = 90 - plunge
-    strike[strike > 360] -= 360
+    strike[strike >= 360] -= 360
     return strike, dip
 
 def geographic2pole(lon, lat):
+    """
+    Converts a longitude and latitude (from a stereonet) into the strike and dip
+    of the plane whose pole lies at the given longitude(s) and latitude(s).
+
+    Parameters:
+    -----------
+        lon : A sequence of longitudes (or a single longitude) in radians
+        lat : A sequence of latitudes (or a single latitude) in radians
+
+    Returns:
+    --------
+        strike : A sequence of strikes in degrees
+        dip : A sequence of dips in degrees
+    """
     plunge, bearing = geographic2plunge_bearing(lon, lat)
     strike = bearing + 90 
-    strike[strike > 360] -= 360
+    strike[strike >= 360] -= 360
     dip = 90 - plunge
     return strike, dip
 
@@ -244,12 +258,20 @@ def geographic2plunge_bearing(lon, lat):
     bearing = np.arctan2(z, y)
 
     # Plunge is the angle between the line and the y-z plane
-    plunge = np.atan(x / np.hypot(z, y))
+    r = np.sqrt(x*x + y*y + z*z)
+    r[r == 0] = 1e-15
+    plunge = np.arcsin(x / r)
 
     # Convert back to azimuths in degrees..
     plunge, bearing = np.degrees(plunge), np.degrees(bearing)
     bearing = 90 - bearing
     bearing[bearing < 0] += 360
+
+    # If the plunge angle is upwards, get the opposite end of the line
+    upwards = plunge < 0
+    plunge[upwards] *= -1
+    bearing[upwards] -= 180
+    bearing[upwards & (bearing < 0)] += 360
 
     return plunge, bearing
 
