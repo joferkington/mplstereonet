@@ -297,29 +297,74 @@ def geographic2plunge_bearing(lon, lat):
     return plunge, bearing
 
 def xyz2stereonet(x, y, z):
+    """
+    Converts x, y, z in _world_ cartesian coordinates into lower-hemisphere
+    stereonet coordinates.
+
+    Parameters
+    ----------
+        x, y, z : Sequences of world coordinates
+
+    Returns:
+    --------
+        lon, lat : Sequences of longitudes and latitudes (in radians)
+    """
     x, y, z = np.atleast_1d(x, y, z)
     return cart2sph(-z, x, y)
 
 def stereonet2xyz(lon, lat):
+    """
+    Converts a sequence of longitudes and latitudes from a lower-hemisphere
+    stereonet into _world_ x,y,z coordinates.
+
+    Parameters
+    ----------
+        lon, lat : Sequences of longitudes and latitudes (in radians) from a
+            lower-hemisphere stereonet
+
+    Returns:
+    --------
+        x, y, z : The world x,y,z components of the vectors represented by the 
+            lon, lat coordinates on the stereonet.
+    """
     lon, lat = np.atleast_1d(lon, lat)
     x, y, z = sph2cart(lon, lat)
     return y, z, -x
 
 def normal2pole(x,y,z):
-    """Converts a normal vector to a plane (given as x,y,z)
-    to a strike and dip of the plane using the Right-Hand-Rule.
-    Input:
-        x: The x-component of the normal vector
-        y: The y-component of the normal vector
-        z: The z-component of the normal vector
-    Output:
-        strike: The strike of the plane, in degrees clockwise from north
-        dip: The dip of the plane, in degrees downward from horizontal
     """
-    plunge, bearing = geographic2plunge_bearing(*xyz2stereonet(x,y,z))
+    Converts a normal vector to a plane (given as x,y,z in world coordinates)
+    to a strike and dip of the plane using the Right-Hand-Rule.
+
+    Parameters:
+    -----------
+        x : The x-component(s) of the normal vector
+        y : The y-component(s) of the normal vector
+        z : The z-component(s) of the normal vector
+
+    Returns:
+    --------
+        strike : The strike of the plane, in degrees clockwise from north
+        dip : The dip of the plane, in degrees downward from horizontal
+    """
+    plunge, bearing = vector2plunge_bearing(x, y, z)
     return plunge_bearing2pole(plunge, bearing)
 
-def normal2plunge_bearing(x, y, z):
+def vector2plunge_bearing(x, y, z):
+    """
+    Converts a vector or series of vectors given as x, y, z in world
+    coordinates into plunge/bearings.
+
+    Parameters:
+    -----------
+        x : The x-component(s) of the normal vector
+        y : The y-component(s) of the normal vector
+        z : The z-component(s) of the normal vector
+
+    Returns:
+        plunge : The plunge of the vector in degrees downward from horizontal.
+        bearing : The bearing of the vector in degrees clockwise from north.
+    """
     return geographic2plunge_bearing(*xyz2stereonet(x,y,z))
 
 
