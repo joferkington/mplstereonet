@@ -382,4 +382,26 @@ def vector2plunge_bearing(x, y, z):
     """
     return geographic2plunge_bearing(*xyz2stereonet(x,y,z))
 
+def vector2pole(x, y, z):
+    """
+    Converts a vector or series of vectors given as x, y, z in world
+    coordinates into the strike/dip of the planes whose normal vectors are 
+    parallel to the specified vectors.  (In other words, each xi,yi,zi is 
+    treated as a normal vector and this returns the strike/dip of the 
+    corresponding plane.)
+
+    Parameters:
+    -----------
+        x : The x-component(s) of the normal vector
+        y : The y-component(s) of the normal vector
+        z : The z-component(s) of the normal vector
+
+    Returns:
+    --------
+        strike : The strike of the plane, in degrees clockwise from north.
+            Dip direction is indicated by the "right hand rule".
+        dip : The dip of the plane, in degrees downward from horizontal
+    """
+    return  geographic2pole(*xyz2stereonet(x, y, z))
+
 
