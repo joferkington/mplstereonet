@@ -25,16 +25,16 @@ class TestGeographic2various:
             assert np.allclose(smath.geographic2plunge_bearing(lon, lat),
                                [[plunge], [bearing]])
 
-class TestNormal2Pole:
+class TestVector2Pole:
     def setup(self):
         self.data = (
                 [(1, 0, 0), (180, 90)],
                 [(0, 1, 0), (90, 90)],
                 [(0, 0, 1), (0, 0)],
                 )
-    def test_normal2pole(self):
+    def test_vector2pole(self):
         for (x,y,z), (strike, dip) in self.data:
-            assert np.allclose(smath.normal2pole(x,y,z), [[strike], [dip]])
+            assert np.allclose(smath.vector2pole(x,y,z), [[strike], [dip]])
 
 class TestWorld2StereonetConversions:
     def setup(self):

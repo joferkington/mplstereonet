@@ -345,25 +345,6 @@ def stereonet2xyz(lon, lat):
     x, y, z = sph2cart(lon, lat)
     return y, z, -x
 
-def normal2pole(x,y,z):
-    """
-    Converts a normal vector to a plane (given as x,y,z in world coordinates)
-    to a strike and dip of the plane using the Right-Hand-Rule.
-
-    Parameters:
-    -----------
-        x : The x-component(s) of the normal vector
-        y : The y-component(s) of the normal vector
-        z : The z-component(s) of the normal vector
-
-    Returns:
-    --------
-        strike : The strike of the plane, in degrees clockwise from north
-        dip : The dip of the plane, in degrees downward from horizontal
-    """
-    plunge, bearing = vector2plunge_bearing(x, y, z)
-    return plunge_bearing2pole(plunge, bearing)
-
 def vector2plunge_bearing(x, y, z):
     """
     Converts a vector or series of vectors given as x, y, z in world
