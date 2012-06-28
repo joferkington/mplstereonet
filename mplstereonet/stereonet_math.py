@@ -194,7 +194,6 @@ def line(plunge, bearing):
     Returns:
         lon, lat : Arrays of longitude and latitude in radians.
     """
-
     plunge, bearing = np.atleast_1d(plunge, bearing)
     # Plot the approriate point for a bearing of 0 and rotate it
     lat = 90 - plunge
@@ -309,6 +308,29 @@ def geographic2plunge_bearing(lon, lat):
     bearing[upwards & (bearing < 0)] += 360
 
     return plunge, bearing
+
+def plane_intersection(strike1, dip1, strike2, dip2):
+    """
+    Finds the intersection of two planes. Returns a plunge/bearing of the linear
+    intersection of the two planes.
+
+    Parameters:
+    -----------
+        strike1, dip1 : The strike and dip (in degrees, following the 
+            right-hand-rule) of the first plane.
+        strike2, dip2 : The strike and dip (in degrees, following the 
+            right-hand-rule) of the second plane.
+
+    Returns:
+    --------
+        plunge, bearing : The plunge and bearing (in degrees) of the line 
+            representing the intersection of the two planes.
+    """
+    norm1 = sph2cart(*pole(strike1, dip1))
+    norm2 = sph2cart(*pole(strike2, dip2))
+    norm1, norm2 = np.hstack(norm1), np.hstack(norm2)
+    lon, lat = cart2sph(*np.cross(norm1, norm2))
+    return geographic2plunge_bearing(lon, lat)
 
 def xyz2stereonet(x, y, z):
     """
