@@ -19,7 +19,7 @@ def points_on_hemisphere(num):
     hemisphere = x > 0
     return x[hemisphere], y[hemisphere], z[hemisphere]
 
-def count_points(lons, lats, func, k, num=10000):
+def count_points(lons, lats, func, sigma, num=10000):
     xyz_counters = np.vstack(points_on_hemisphere(num)).T
     xyz_points = stereonet_math.sph2cart(lons, lats)
     xyz_points = np.vstack(xyz_points).T
@@ -27,13 +27,13 @@ def count_points(lons, lats, func, k, num=10000):
     totals = np.zeros(xyz_counters.shape[0], dtype=np.float)
     for i, xyz in enumerate(xyz_counters):
         cos_dist = np.abs(np.dot(xyz, xyz_points.T))
-        totals[i] = k * func(cos_dist, k) / float(cos_dist.size)
+        totals[i] = func(cos_dist, sigma)
 
     totals[totals < 0] = 0
     counter_lon, counter_lat = stereonet_math.cart2sph(*xyz_counters.T)
     return counter_lon, counter_lat, totals
 
-def grid_data(lons, lats, z, gridsize=(200,200)):
+def grid_data(lons, lats, z, gridsize=(100,100)):
     bound = np.pi / 2.0 + 0.1
     nrows, ncols = gridsize
     xmin, xmax, ymin, ymax = -bound, bound, -bound, bound
@@ -47,11 +47,21 @@ def grid_data(lons, lats, z, gridsize=(200,200)):
     xi, yi = np.ogrid[slices]
     return xi.ravel(), yi.ravel(), zi
 
-def contour_grid(*args, **kwargs):
+def density_grid(*args, **kwargs):
     def do_nothing(x, y):
         return x, y
     measurement = kwargs.get('measurement', 'poles')
-    num_counters = kwargs.get('num_counters', 10000)
+    gridsize = kwargs.get('gridsize', 100)
+    try:
+        gridsize = int(gridsize)
+        gridsize = (gridsize, gridsize)
+    except TypeError:
+        pass
+
+    num_counters = kwargs.get('num_counters', None)
+    if num_counters is None:
+        num_counters = np.product(gridsize) / 2
+
     func = {'poles':stereonet_math.pole,
             'lines':stereonet_math.line,
             'rakes':stereonet_math.rake,
@@ -60,41 +70,43 @@ def contour_grid(*args, **kwargs):
 
     method = kwargs.get('method', 'kamb')
     sigma = kwargs.get('sigma', 3)
-    func = {'linear_inverse_kamb':linear_inverse_kamb,
-            'square_inverse_kamb':square_inverse_kamb,
+    func = {'linear_kamb':linear_inverse_kamb,
+            'square_kamb':square_inverse_kamb,
             'schmidt':schmidt_count,
             'kamb':kamb_count,
             'exponential_kamb':exponential_kamb,
             }[method]
     counter_lon, counter_lat, totals = count_points(lon, lat, func, sigma,
                                                     num_counters)
-    xi, yi, zi = grid_data(counter_lon, counter_lat, totals)
+    xi, yi, zi = grid_data(counter_lon, counter_lat, totals, gridsize)
     return xi, yi, zi
 
 def exponential_kamb(cos_dist, sigma=3):
     n = float(cos_dist.size)
     f = 2 * (1.0 + n / sigma**2)
     count = np.exp(f * (cos_dist - 1)).sum()
-    units = np.sqrt(n * (f/2 - 1) / f**2)
-    return (count - 0.5) / units
+    units = np.sqrt(n * (f/2.0 - 1) / f**2) 
+    return (count - 0.5) / units 
 
 def linear_inverse_kamb(cos_dist, sigma=3):
     n = float(cos_dist.size)
     radius = kamb_radius(n, sigma)
+    f = 2 / (1 - radius)
     cos_dist = cos_dist[cos_dist >= radius]
-    count = ((2.0 / radius) * (cos_dist - radius)).sum()
-    return (count - 0.5) / kamb_units(n, radius)
+    count = (f * (cos_dist - radius)).sum()
+    return (count - 0.5) / kamb_units(n, radius) 
 
 def square_inverse_kamb(cos_dist, sigma=3):
     n = float(cos_dist.size)
     radius = kamb_radius(n, sigma)
+    f = 3 / (1 - radius)**2
     cos_dist = cos_dist[cos_dist >= radius]
-    count = ((3.0 / radius**2) * (cos_dist - radius)**2).sum()
+    count = (f * (cos_dist - radius)**2).sum()
     return (count - 0.5) / kamb_units(n, radius)
 
 def kamb_radius(n, sigma):
-    a = sigma**2 / (1.0 * n + sigma**2)
-    return 1 - a
+    a = sigma**2 / (float(n) + sigma**2)
+    return (1 - a) 
 
 def kamb_units(n, radius):
     return np.sqrt(n * radius * (1 - radius))

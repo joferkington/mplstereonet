@@ -282,7 +282,9 @@ class StereonetAxes(LambertAxes):
         contour_kwargs['measurement'] = kwargs.pop('measurement', 'poles')
         contour_kwargs['method'] = kwargs.pop('method', 'exponential_kamb')
         contour_kwargs['sigma'] = kwargs.pop('sigma', 3)
-        lon, lat, totals = contouring.contour_grid(*args, **contour_kwargs)
+        contour_kwargs['gridsize'] = kwargs.pop('gridsize', 100)
+        contour_kwargs['num_counters'] = kwargs.pop('num_counters', None)
+        lon, lat, totals = contouring.density_grid(*args, **contour_kwargs)
         return lon, lat, totals, kwargs
 
     def density_contour(self, *args, **kwargs):

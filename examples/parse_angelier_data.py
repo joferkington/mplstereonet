@@ -20,40 +20,47 @@ import os
 import matplotlib.pyplot as plt
 import mplstereonet
 
-# Get the data file relative to this file's location...
-datadir = os.path.dirname(__file__)
-filename = os.path.join(datadir, 'angelier_data.txt')
+def main():
+    strike, dip, rake = load()
 
-data = []
-with open(filename, 'r') as infile:
-    for line in infile:
-        # Skip comments
-        if line.startswith('#'):
-            continue
+    # Plot the data.
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='stereonet')
+    ax.rake(strike, dip, rake, 'ro')
+    plt.show()
 
-        # First column: strike, second: dip, third: rake.
-        strike, dip, rake = line.strip().split()
-        if rake[-1].isalpha():
-            # If there's a directional letter on the rake column, parse it
-            # normally.
-            strike, dip, rake = mplstereonet.parse_rake(strike, dip, rake)
-        else:
-            # Otherwise, it's actually an azimuthal measurement of the 
-            # slickenslide directions, so we need to convert it to a rake.
-            strike, dip = mplstereonet.parse_strike_dip(strike, dip)
-            azimuth = float(rake)
-            rake = mplstereonet.azimuth2rake(strike, dip, azimuth)
+def load():
+    """Read data from a text file on disk."""
+    # Get the data file relative to this file's location...
+    datadir = os.path.dirname(__file__)
+    filename = os.path.join(datadir, 'angelier_data.txt')
 
-        data.append([strike, dip, rake])
+    data = []
+    with open(filename, 'r') as infile:
+        for line in infile:
+            # Skip comments
+            if line.startswith('#'):
+                continue
 
-# Seperate the columns back out
-strike, dip, rake = zip(*data)
+            # First column: strike, second: dip, third: rake.
+            strike, dip, rake = line.strip().split()
 
-# Plot the data.
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='stereonet')
-ax.rake(strike, dip, rake, 'ro')
-plt.show()
+            if rake[-1].isalpha():
+                # If there's a directional letter on the rake column, parse it
+                # normally.
+                strike, dip, rake = mplstereonet.parse_rake(strike, dip, rake)
+            else:
+                # Otherwise, it's actually an azimuthal measurement of the 
+                # slickenslide directions, so we need to convert it to a rake.
+                strike, dip = mplstereonet.parse_strike_dip(strike, dip)
+                azimuth = float(rake)
+                rake = mplstereonet.azimuth2rake(strike, dip, azimuth)
 
-            
+            data.append([strike, dip, rake])
 
+    # Separate the columns back out
+    strike, dip, rake = zip(*data)
+    return strike, dip, rake
+
+if __name__ == '__main__':
+    main()
