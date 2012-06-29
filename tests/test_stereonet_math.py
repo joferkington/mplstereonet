@@ -82,4 +82,64 @@ class TestCartesianSphericalConversions:
             lon1, lat1 = smath.cart2sph(x,y,z)
             assert np.allclose([lon, lat], [lon1, lat1])
 
+class TestProjectOntoPlane:
+    def setup(self):
+        self.data = [
+                     (315, 40, 10),
+                     (315, 40, -10),
+                     (135, 30, 20),
+                     (135, 30, -20),
+                     (45, 80, 80),
+                     (45, 80, -80),
+                     (90, 90, 90),
+                     (0, 0, 0),
+                    ]
+
+    def test_rake_back_to_rakes(self):
+        for strike, dip, rake in self.data:
+            lon, lat = smath.rake(strike, dip, rake)
+            plunge, bearing = smath.geographic2plunge_bearing(lon, lat)
+            newrake = smath.project_onto_plane(strike, dip, plunge, bearing)
+            assert np.allclose(rake, newrake)
+
+    def test_offset_back_to_rake(self):
+        for strike, dip, rake in self.data:
+            # Displace the line perpendicular to the plane...
+            line = smath.sph2cart(*smath.rake(strike, dip, rake))
+            norm = smath.sph2cart(*smath.pole(strike, dip))
+            line = np.array(line) + 0.5 * np.array(norm)
+
+            # Project the "displaced" line back onto the plane...
+            lon, lat = smath.cart2sph(*line)
+            plunge, bearing = smath.geographic2plunge_bearing(lon, lat)
+            newrake = smath.project_onto_plane(strike, dip, plunge, bearing)
+            assert np.allclose(rake, newrake)
+
+    def test_multiple_rakes(self):
+        strike, dip, rake = np.array(self.data).T
+
+        lon, lat = smath.rake(strike, dip, rake)
+        plunge, bearing = smath.geographic2plunge_bearing(lon, lat)
+        newrake = smath.project_onto_plane(strike, dip, plunge, bearing)
+        assert np.allclose(rake, newrake)
+
+class TestPlaneIntersection:
+    def setup(self):
+        self.data = [
+                     [[0, 90, 90, 80], [80, 180]],
+                     [[0, 90, 270, 80], [80, 0]],
+                    ]
+
+    def test_basic(self):
+        for planes, correct in self.data:
+            result = smath.plane_intersection(*planes)
+            assert np.allclose(np.hstack(result), correct)
+
+    def test_multiple(self):
+        planes = np.array([item[0] for item in self.data]).T
+        results = smath.plane_intersection(*planes)
+        correct = np.array([item[1] for item in self.data]).T
+        assert np.allclose(results, correct)
+        
+
 

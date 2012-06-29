@@ -171,6 +171,7 @@ def rake(strike, dip, rake_angle):
     dip = 90 - dip
     lon = dip
 
+    rake_angle = rake_angle.copy()
     rake_angle[rake_angle < 0] += 180
     lat = 90 - rake_angle
 
@@ -314,23 +315,69 @@ def plane_intersection(strike1, dip1, strike2, dip2):
     Finds the intersection of two planes. Returns a plunge/bearing of the linear
     intersection of the two planes.
 
+    Also accepts sequences of strike1s, dip1s, strike2s, dip2s.
+
     Parameters:
     -----------
         strike1, dip1 : The strike and dip (in degrees, following the 
-            right-hand-rule) of the first plane.
+            right-hand-rule) of the first plane(s).
         strike2, dip2 : The strike and dip (in degrees, following the 
-            right-hand-rule) of the second plane.
+            right-hand-rule) of the second plane(s).
 
     Returns:
     --------
-        plunge, bearing : The plunge and bearing (in degrees) of the line 
+        plunge, bearing : The plunge and bearing(s) (in degrees) of the line 
             representing the intersection of the two planes.
     """
     norm1 = sph2cart(*pole(strike1, dip1))
     norm2 = sph2cart(*pole(strike2, dip2))
-    norm1, norm2 = np.hstack(norm1), np.hstack(norm2)
-    lon, lat = cart2sph(*np.cross(norm1, norm2))
+    norm1, norm2 = np.array(norm1), np.array(norm2)
+    lon, lat = cart2sph(*np.cross(norm1, norm2, axis=0))
     return geographic2plunge_bearing(lon, lat)
+
+def project_onto_plane(strike, dip, plunge, bearing):
+    """
+    Projects a linear feature(s) onto the surface of a plane. Returns a rake 
+    angle(s) along the plane.
+
+    This is also useful for finding the rake angle of a feature that already
+    intersects the plane in question.
+
+    Parameters:
+    -----------
+        strike, dip : The strike and dip (in degrees, following the 
+            right-hand-rule) or a sequence of strikes and dips of the plane(s).
+        plunge, bearing : The plunge and bearing (in degrees) or a sequence of
+            plunges and bearings of the linear feature(s) to be projected onto
+            the plane.
+
+    Returns:
+    --------
+        rake : A sequence of rake angles measured downwards from horizontal in 
+            degrees.  Zero degrees corresponds to the "right- hand" direction
+            indicated by the strike, while a negative angle corresponds to the
+            opposite direction. Rakes returned by this function will always be
+            between -90 and 90 (inclusive).
+    """
+    # Project the line onto the plane
+    norm = sph2cart(*pole(strike, dip))
+    feature = sph2cart(*line(plunge, bearing))
+    norm, feature = np.array(norm), np.array(feature)
+    perp = np.cross(norm, feature, axis=0)
+    on_plane = np.cross(perp, norm, axis=0)
+    on_plane /= np.sqrt(np.sum(on_plane**2, axis=0))
+
+    # Calculate the angle between the projected feature and horizontal
+    # This is just a dot product, but we need to work with multiple measurements
+    # at once, so einsum is quicker than apply_along_axis.
+    strike_vec = sph2cart(*line(0, strike))
+    dot = np.einsum('ij,ij->j', on_plane, strike_vec)
+    rake = np.degrees(np.arccos(dot))
+
+    # Convert rakes over 90 to negative rakes...
+    rake[rake > 90] -= 180
+    rake[rake < -90] += 180
+    return rake
 
 def xyz2stereonet(x, y, z):
     """
