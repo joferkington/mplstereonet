@@ -1,7 +1,8 @@
 import numpy as np
 import re
+import stereonet_math as smath
 
-def clean_strike_dip(strike, dip):
+def parse_strike_dip(strike, dip):
     """
     Parses strings of strike and dip and returns strike and dip measurements 
     following the right-hand-rule.
@@ -33,25 +34,77 @@ def clean_strike_dip(strike, dip):
     else:
         strike = float(strike)
 
-    dipletter = None
-    if dip[-1].isalpha():
-        # Match things like 45NW, 45E, 45WNW, etc
-        letters = re.search(r'\D', dip)
-        dipletter = dip[letters.start():]
-        dip = dip[:letters.start()]
-    dip = float(dip)
+    dip, direction = split_trailing_letters(dip)
 
-    if dipletter is not None:
-        direc = quadrantletter_to_azimuth(dipletter)
+    if direction is not None:
         expected_direc = strike + 90
-        dot = np.dot(_azimuth2vec(direc), _azimuth2vec(expected_direc))
-        if dot < 0:
+        if opposite_end(expected_direc, direction):
             strike += 180
 
     if strike > 360:
         strike -= 360
 
     return strike, dip
+
+def parse_rake(strike, dip, rake):
+    """
+    Parses strings of strike, dip, and rake and returns a strike, dip, and rake
+    measurement following the right-hand-rule, with the "end" of the strike
+    that the rake is measured from indicated by the sign of the rake (positive
+    rakes correspond to the strike direction, negative rakes correspond to the
+    opposite end).
+
+    Accepts either quadrant-formatted or azimuth-formatted strikes.
+
+    For example, this would convert a strike of "N30E", dip of "45NW", with a 
+    rake of "10NE" to a strike of 210, dip of 45, and rake of -10.
+
+    Rake angles returned by this function will always be between -90 and 90.
+
+    If no directions are specified, the measurement is assumed to follow the 
+    usual right-hand-rule convention.
+
+    Parameters:
+    -----------
+        strike : A string representing a strike measurement. May be in azimuth 
+            or quadrant format. 
+        dip : A string representing the dip angle and direction of a plane.
+        rake : A string representing the rake angle and direction that the rake
+            is measured from.
+
+    Returns:
+    --------
+        strike, dip, rake : Floating point measurements of strike, dip, and rake
+            following the conventions outlined above.
+    """
+    strike, dip = parse_strike_dip(strike, dip)
+    rake, direction = split_trailing_letters(rake)
+
+    if direction is not None:
+        if opposite_end(strike, direction):
+            rake = -rake
+
+    if rake > 90:
+        rake -= 180
+    if rake < -90:
+        rake += 180
+
+    return strike, dip, rake
+
+def opposite_end(azimuth, quadrant):
+    direc = quadrantletter_to_azimuth(quadrant)
+    dot = np.dot(_azimuth2vec(direc), _azimuth2vec(azimuth))
+    return dot < 0
+
+def split_trailing_letters(item):
+    # Match things like 45NW, 45E, 45WNW, etc
+    letters = re.search(r'[NESWnesw]', item)
+    if letters is None:
+        return float(item), None
+    else:
+        measurement = item[:letters.start()]
+        direction = item[letters.start():]
+        return float(measurement), direction
 
 def circmean(azimuths):
     azimuths = np.radians(azimuths)
@@ -115,3 +168,4 @@ def parse_quadrant_measurement(quad_azimuth):
         azi -= 360
 
     return azi
+

@@ -379,6 +379,26 @@ def project_onto_plane(strike, dip, plunge, bearing):
     rake[rake < -90] += 180
     return rake
 
+def azimuth2rake(strike, dip, azimuth):
+    """
+    Projects an azimuth of a linear feature onto a plane as a rake angle.
+
+    Parameters:
+    -----------
+        strike, dip : The strike and dip of the plane in degrees following the
+            right-hand-rule.
+        azimuth : The azimuth of the linear feature in degrees clockwise from
+            north (i.e. a 0-360 azimuth).
+
+    Returns:
+    --------
+        rake : A rake angle in degrees measured downwards from horizontal. 
+            Negative values correspond to the opposite end of the strike.
+    """
+    plunge, bearing = plane_intersection(strike, dip, azimuth, 90)
+    rake = project_onto_plane(strike, dip, plunge, bearing)
+    return rake
+
 def xyz2stereonet(x, y, z):
     """
     Converts x, y, z in _world_ cartesian coordinates into lower-hemisphere
