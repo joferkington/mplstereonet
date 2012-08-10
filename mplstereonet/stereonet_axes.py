@@ -288,10 +288,262 @@ class StereonetAxes(LambertAxes):
         return lon, lat, totals, kwargs
 
     def density_contour(self, *args, **kwargs):
+        """
+        Estimates point density of the given linear orientation measurements 
+        (Interpreted as poles, lines, rakes, or "raw" longitudes and latitudes
+        based on the `measurement` keyword argument.) and plots contour lines of
+        the resulting density distribution.
+
+        Parameters
+        ----------
+            *args : A variable number of sequences of measurements. 
+                By default, this will be expected to be `strike` & `dip`, both
+                array-like sequences representing poles to planes.  (Rake
+                measurements require three parameters, thus the variable number
+                of arguments.) The `measurement` kwarg controls how these 
+                arguments are interpreted.
+            measurement : string, optional 
+                Controls how the input arguments are interpreted. Defaults to
+                "poles".  May be one of the following:
+                    "poles" : Arguments are assumed to be sequences of strikes
+                        and dips of planes. Poles to these planes are used for
+                        density contouring.
+                    "lines" : Arguments are assumed to be sequences of plunges
+                        and bearings of linear features.  
+                    "rakes" : Arguments are assumed to be sequences of strikes,
+                        dips, and rakes along the plane.
+                    "radians" : Arguments are assumed to be "raw" longitudes
+                        and latitudes in the underlying projection's coordinate
+                        system.
+            method : string, optional 
+                The method of density estimation to use. Defaults to
+                "exponential_kamb". May be one of the following:
+                "exponential_kamb" : A modified Kamb method using exponential 
+                    smoothing _[1]. Units are in numbers of standard deviations
+                    by which the density estimate differs from uniform.
+                "linear_kamb" : A modified Kamb method using linear smoothing 
+                    _[1]. Units are in numbers of standard deviations by which
+                    the density estimate differs from uniform.
+                "kamb" : Kamb's method _[2] with no smoothing. Units are in
+                    numbers of standard deviations by which the density
+                    estimate differs from uniform.
+                "schmidt" : The traditional "Schmidt" (a.k.a. 1%) method. Counts
+                    points within a counting circle comprising 1% of the total
+                    area of the hemisphere. Does not take into account sample
+                    size. Units are in points per 1% area.
+            sigma : int or float, optional
+                The number of standard deviations defining the expected number
+                of standard deviations by which a random sample from a uniform
+                distribution of points would be expected to vary from being 
+                evenly distributed across the hemisphere.  This controls the 
+                size of the counting circle, and therefore the degree of 
+                smoothing.  Higher sigmas will lead to more smoothing of the
+                resulting density distribution. This parameter only applies to 
+                Kamb-based methods.  Defaults to 3.
+            gridsize : int or 2-item tuple of ints, optional
+                The size of the grid that the density is estimated on. If a 
+                single int is given, it is interpreted as an NxN grid. If a
+                tuple of ints is given it is interpreted as (nrows, ncols). 
+                Defaults to 100.
+            num_counters : int, optional
+                The number of "counting points" (arranged following a golden 
+                section spiral) that density is estimated at on the surface of
+                hemisphere.  This is then interpolated onto a regular grid in
+                lat-long space (see "gridsize" above). Defaults to 1/2 of the
+                total number of cells in the regular grid.
+
+            Additional keyword arguments are passed on to matplotlib's `contour`
+            function.
+
+        Returns:
+        --------
+            A matplotlib ContourSet.
+
+        See Also:
+        ---------
+            mplstereonet.density_grid
+            mplstereonet.StereonetAxes.density_contourf
+            matplotlib.pyplot.contour
+            matplotlib.pyplot.clabel
+
+
+        Examples:
+        ---------
+            Plot density contours of poles to the specified planes using a
+            modified Kamb method with exponential smoothing [1]_.
+
+            >>> strikes, dips = [120, 315, 86], [22, 85, 31]
+            >>> ax.density_contour(strikes, dips)
+
+            Plot density contours of a set of linear orientation measurements.
+
+            >>> plunges, bearings = [-10, 20, -30], [120, 315, 86]
+            >>> ax.density_contour(plunges, bearings, measurement='lines')
+
+            Plot density contours of a set of rake measurements.
+
+            >>> strikes, dips, rakes = [120, 315, 86], [22, 85, 31], [-5, 20, 9]
+            >>> ax.density_contour(strikes, dips, rakes, measurement='rakes')
+
+            Plot density contours of a set of "raw" longitudes and latitudes.
+
+            >>> lon, lat = np.radians([-40, 30, -85]), np.radians([21, -59, 45])
+            >>> ax.density_contour(lon, lat, measurement='radians')
+
+
+            Plot density contours of poles to planes using a Kamb method [2]_
+            with the density estimated on a 10x10 grid (in long-lat space) 
+
+            >>> strikes, dips = [120, 315, 86], [22, 85, 31]
+            >>> ax.density_contour(strikes, dips, method='kamb', gridsize=10)
+
+            Plot density contours of poles to planes with contours at [1,2,3]
+            standard deviations.
+
+            >>> strikes, dips = [120, 315, 86], [22, 85, 31]
+            >>> ax.density_contour(strikes, dips, levels=[1,2,3])
+
+        References
+        ----------
+        .. [1] Vollmer, 1995. C Program for Automatic Contouring of Spherical
+           Orientation Data Using a Modified Kamb Method. Computers &
+           Geosciences, Vol. 21, No. 1, pp. 31--49.
+
+        .. [2] Kamb, 1959. Ice Petrofabric Observations from Blue Glacier,
+           Washington, in Relation to Theory and Experiment. Journal of
+           Geophysical Research, Vol. 64, No. 11, pp. 1891--1909.
+        """
         lon, lat, totals, kwargs = self._contour_helper(args, kwargs)
         return self.contour(lon, lat, totals, **kwargs)
 
     def density_contourf(self, *args, **kwargs):
+        """
+        Estimates point density of the given linear orientation measurements 
+        (Interpreted as poles, lines, rakes, or "raw" longitudes and latitudes
+        based on the `measurement` keyword argument.) and plots filled contours
+        of the resulting density distribution.
+
+        Parameters
+        ----------
+            *args : A variable number of sequences of measurements. 
+                By default, this will be expected to be `strike` & `dip`, both
+                array-like sequences representing poles to planes.  (Rake
+                measurements require three parameters, thus the variable number
+                of arguments.) The `measurement` kwarg controls how these 
+                arguments are interpreted.
+            measurement : string, optional 
+                Controls how the input arguments are interpreted. Defaults to
+                "poles".  May be one of the following:
+                    "poles" : Arguments are assumed to be sequences of strikes
+                        and dips of planes. Poles to these planes are used for
+                        density contouring.
+                    "lines" : Arguments are assumed to be sequences of plunges
+                        and bearings of linear features.  
+                    "rakes" : Arguments are assumed to be sequences of strikes,
+                        dips, and rakes along the plane.
+                    "radians" : Arguments are assumed to be "raw" longitudes
+                        and latitudes in the underlying projection's coordinate
+                        system.
+            method : string, optional 
+                The method of density estimation to use. Defaults to
+                "exponential_kamb". May be one of the following:
+                "exponential_kamb" : A modified Kamb method using exponential 
+                    smoothing _[1]. Units are in numbers of standard deviations
+                    by which the density estimate differs from uniform.
+                "linear_kamb" : A modified Kamb method using linear smoothing 
+                    _[1]. Units are in numbers of standard deviations by which
+                    the density estimate differs from uniform.
+                "kamb" : Kamb's method _[2] with no smoothing. Units are in
+                    numbers of standard deviations by which the density
+                    estimate differs from uniform.
+                "schmidt" : The traditional "Schmidt" (a.k.a. 1%) method. Counts
+                    points within a counting circle comprising 1% of the total
+                    area of the hemisphere. Does not take into account sample
+                    size. Units are in points per 1% area.
+            sigma : int or float, optional
+                The number of standard deviations defining the expected number
+                of standard deviations by which a random sample from a uniform
+                distribution of points would be expected to vary from being 
+                evenly distributed across the hemisphere.  This controls the 
+                size of the counting circle, and therefore the degree of 
+                smoothing.  Higher sigmas will lead to more smoothing of the
+                resulting density distribution. This parameter only applies to 
+                Kamb-based methods.  Defaults to 3.
+            gridsize : int or 2-item tuple of ints, optional
+                The size of the grid that the density is estimated on. If a 
+                single int is given, it is interpreted as an NxN grid. If a
+                tuple of ints is given it is interpreted as (nrows, ncols).
+                Defaults to 100.
+            num_counters : int, optional
+                The number of "counting points" (arranged following a golden 
+                section spiral) that density is estimated at on the surface of
+                hemisphere.  This is then interpolated onto a regular grid in
+                lat-long space (see "gridsize" above). Defaults to 1/2 of the
+                total number of cells in the regular grid.
+
+            Additional keyword arguments are passed on to matplotlib's
+            `contourf` function.
+
+        Returns:
+        --------
+            A matplotlib `QuadContourSet`.
+
+        See Also:
+        ---------
+            `mplstereonet.density_grid`
+            `mplstereonet.StereonetAxes.density_contour`
+            `matplotlib.pyplot.contourf`
+            `matplotlib.pyplot.clabel`
+
+
+        Examples:
+        ---------
+            Plot filled density contours of poles to the specified planes using
+            a modified Kamb method with exponential smoothing [1]_.
+
+            >>> strikes, dips = [120, 315, 86], [22, 85, 31]
+            >>> ax.density_contourf(strikes, dips)
+
+            Plot filled density contours of a set of linear orientation
+            measurements.
+
+            >>> plunges, bearings = [-10, 20, -30], [120, 315, 86]
+            >>> ax.density_contourf(plunges, bearings, measurement='lines')
+
+            Plot filled density contours of a set of rake measurements.
+
+            >>> strikes, dips, rakes = [120, 315, 86], [22, 85, 31], [-5, 20, 9]
+            >>> ax.density_contourf(strikes, dips, rakes, measurement='rakes')
+
+            Plot filled density contours of a set of "raw" longitudes and
+            latitudes.
+
+            >>> lon, lat = np.radians([-40, 30, -85]), np.radians([21, -59, 45])
+            >>> ax.density_contourf(lon, lat, measurement='radians')
+
+
+            Plot filled density contours of poles to planes using a Kamb method
+            [2]_ with the density estimated on a 10x10 grid (in long-lat space) 
+
+            >>> strikes, dips = [120, 315, 86], [22, 85, 31]
+            >>> ax.density_contourf(strikes, dips, method='kamb', gridsize=10)
+
+            Plot filled density contours of poles to planes with contours at
+            [1,2,3] standard deviations.
+
+            >>> strikes, dips = [120, 315, 86], [22, 85, 31]
+            >>> ax.density_contourf(strikes, dips, levels=[1,2,3])
+
+        References
+        ----------
+        .. [1] Vollmer, 1995. C Program for Automatic Contouring of Spherical
+           Orientation Data Using a Modified Kamb Method. Computers &
+           Geosciences, Vol. 21, No. 1, pp. 31--49.
+
+        .. [2] Kamb, 1959. Ice Petrofabric Observations from Blue Glacier,
+           Washington, in Relation to Theory and Experiment. Journal of
+           Geophysical Research, Vol. 64, No. 11, pp. 1891--1909.
+        """
         lon, lat, totals, kwargs = self._contour_helper(args, kwargs)
         return self.contourf(lon, lat, totals, **kwargs)
 

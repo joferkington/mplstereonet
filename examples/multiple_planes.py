@@ -1,3 +1,6 @@
+"""
+`plane`, `rake`, `line`, etc all allow plotting of multiple measurements.
+"""
 import matplotlib.pyplot as plt
 import mplstereonet
 

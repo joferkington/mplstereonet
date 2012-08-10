@@ -31,6 +31,9 @@ contours = [range(2, 18, 2), range(1,21,2), range(1,22,2)]
 
 # "Standard" Kamb contouring with different confidence levels.
 for sigma, ax, contour in zip([3, 2, 1], axes[:,0], contours):
+    # We're reducing the gridsize to more closely match a traditional
+    # hand-contouring grid, similar to Kamb's original work and Vollmer's 
+    # Figure 5. `gridsize=10` produces a 10x10 grid of density estimates.
     plot(ax, strike, dip, rake, method='kamb', sigma=sigma, 
         levels=contour, gridsize=10)
 

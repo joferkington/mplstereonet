@@ -48,6 +48,90 @@ def grid_data(lons, lats, z, gridsize=(100,100)):
     return xi.ravel(), yi.ravel(), zi
 
 def density_grid(*args, **kwargs):
+    """
+    Estimates point density of the given linear orientation measurements
+    (Interpreted as poles, lines, rakes, or "raw" longitudes and latitudes
+    based on the `measurement` keyword argument.). Returns a regular (in
+    lat-long space) grid of density estimates over a hemispherical surface.
+
+    Parameters
+    ----------
+
+        *args : A variable number of sequences of measurements. By default, this
+            will be expected to be `strike` & `dip`, both array-like sequences
+            representing poles to planes.  (Rake measurements require three
+            parameters, thus the variable number of arguments.) The
+            `measurement` kwarg controls how these arguments are interpreted.
+        measurement : string, optional 
+            Controls how the input arguments are interpreted. Defaults to
+            "poles".  
+            May be one of the following:
+                "poles" : Arguments are assumed to be sequences of strikes and 
+                    dips of planes. Poles to these planes are used for density
+                    contouring.
+                "lines" : Arguments are assumed to be sequences of plunges and
+                    bearings of linear features.  
+                "rakes" : Arguments are assumed to be sequences of strikes,
+                    dips, and rakes along the plane.
+                "radians" : Arguments are assumed to be "raw" longitudes and
+                    latitudes in the underlying projection's coordinate system.
+        method : string, optional 
+            The method of density estimation to use. Defaults to
+            "exponential_kamb". 
+            May be one of the following:
+                "exponential_kamb" : A modified Kamb method using exponential 
+                    smoothing _[1]. Units are in numbers of standard deviations
+                    by which the density estimate differs from uniform.
+                "linear_kamb" : A modified Kamb method using linear smoothing 
+                    _[1]. Units are in numbers of standard deviations by which
+                    the density estimate differs from uniform.
+                "kamb" : Kamb's method _[2] with no smoothing. Units are in
+                    numbers of standard deviations by which the density
+                    estimate differs from uniform.
+                "schmidt" : The traditional "Schmidt" (a.k.a. 1%) method. Counts
+                    points within a counting circle comprising 1% of the total
+                    area of the hemisphere. Does not take into account sample
+                    size. Units are in points per 1% area.
+        sigma : int or float, optional
+            The number of standard deviations defining the expected number of
+            standard deviations by which a random sample from a uniform
+            distribution of points would be expected to vary from being evenly
+            distributed across the hemisphere.  This controls the size of the
+            counting circle, and therefore the degree of smoothing.  Higher
+            sigmas will lead to more smoothing of the resulting density
+            distribution. This parameter only applies to Kamb-based methods.
+            Defaults to 3.
+        gridsize : int or 2-item tuple of ints, optional
+            The size of the grid that the density is estimated on. If a single
+            int is given, it is interpreted as an NxN grid. If a tuple of ints
+            is given it is interpreted as (nrows, ncols).  Defaults to 100.
+        num_counters : int, optional
+            The number of "counting points" (arranged following a golden
+            section spiral) that density is estimated at on the surface of
+            hemisphere.  This is then interpolated onto a regular grid in
+            lat-long space (see "gridsize" above). Defaults to 1/2 of the total
+            number of cells in the regular grid.
+
+    Returns:
+    --------
+        xi, yi, zi : The longitude, latitude and density values of the regularly
+            gridded density estimates. Longitude and latitude are in radians.
+        
+    See Also:
+    ---------
+        `mplstereonet.StereonetAxes.density_contourf`
+        `mplstereonet.StereonetAxes.density_contour`
+
+    References
+    ----------
+    .. [1] Vollmer, 1995. C Program for Automatic Contouring of Spherical
+       Orientation Data Using a Modified Kamb Method. Computers &
+       Geosciences, Vol. 21, No. 1, pp. 31--49.
+
+    .. [2] Kamb, 1959. Ice Petrofabric Observations from Blue Glacier,
+       Washington, in Relation to Theory and Experiment. Journal of
+       Geophysical Research, Vol. 64, No. 11, pp. 1891--1909.
+    """
     def do_nothing(x, y):
         return x, y
     measurement = kwargs.get('measurement', 'poles')
@@ -68,7 +152,7 @@ def density_grid(*args, **kwargs):
             'radians':do_nothing}[measurement]
     lon, lat = func(*args)
 
-    method = kwargs.get('method', 'kamb')
+    method = kwargs.get('method', 'exponential_kamb')
     sigma = kwargs.get('sigma', 3)
     func = {'linear_kamb':linear_inverse_kamb,
             'square_kamb':square_inverse_kamb,
