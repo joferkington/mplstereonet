@@ -80,6 +80,8 @@ be controlled by the `method` and `sigma` keyword arguments, respectively.
     :align: center
 
 
+References
+----------
 
 .. [Kamb1956] Kamb, 1959. Ice Petrofabric Observations from Blue Glacier,
        Washington, in Relation to Theory and Experiment. Journal of
