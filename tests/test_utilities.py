@@ -10,6 +10,7 @@ class TestParseStrikes:
                 [('E10N', '20NW'), (260, 20)],
                 [('350', '40W'),   (170, 40)],
                 [('280', '30SW'),  (100, 30)],
+                [('280', '30 SW'),  (100, 30)],
                ]
         for test, correct in data:
             result = mplstereonet.parse_strike_dip(*test)
@@ -25,7 +26,9 @@ class TestParseQuadrant:
                 ('W10S', 260),
                 ('W30N', 300),
                 ('N10E', 10),
-                ('N10W', 350)]
+                ('N10W', 350),
+                ('N 10 W', 350),
+                ]
         for strike, azi in data:
             assert azi == mplstereonet.parse_quadrant_measurement(strike)
 
