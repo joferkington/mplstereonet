@@ -64,7 +64,7 @@ As a basic example::
     
     plt.show()
 
-.. image:: http://joferkington.github.com/mplstereonet/images/contouring.py
+.. image:: http://joferkington.github.com/mplstereonet/images/contouring.png
     :alt: Orientation density contours.
     :align: center
 
@@ -75,11 +75,13 @@ the "traditional" Kamb [Kamb1956] and "Schmidt" (a.k.a. 1%) methods) are
 available as well. The method and expected count (in standard deviations) can
 be controlled by the `method` and `sigma` keyword arguments, respectively.
 
-.. image:: http://joferkington.github.com/mplstereonet/images/contour_angelier_data.py
+.. image:: http://joferkington.github.com/mplstereonet/images/contour_angelier_data.png
     :alt: Orientation density contours.
     :align: center
 
 
+References
+----------
 
 .. [Kamb1956] Kamb, 1959. Ice Petrofabric Observations from Blue Glacier,
        Washington, in Relation to Theory and Experiment. Journal of
