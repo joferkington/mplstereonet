@@ -83,11 +83,11 @@ be controlled by the `method` and `sigma` keyword arguments, respectively.
 References
 ----------
 
-.. [Kamb1956] Kamb, 1959. Ice Petrofabric Observations from Blue Glacier,
+.. [Kamb1956]_ Kamb, 1959. Ice Petrofabric Observations from Blue Glacier,
        Washington, in Relation to Theory and Experiment. Journal of
        Geophysical Research, Vol. 64, No. 11, pp. 1891--1909.
 
-.. [Vollmer1995] Vollmer, 1995. C Program for Automatic Contouring of Spherical
+.. [Vollmer1995]_ Vollmer, 1995. C Program for Automatic Contouring of Spherical
        Orientation Data Using a Modified Kamb Method. Computers &
        Geosciences, Vol. 21, No. 1, pp. 31--49.
 
