@@ -217,10 +217,10 @@ class StereonetAxes(LambertAxes):
                 "right-hand rule". 
             rake_angle : The angle of the lineation(s) on the plane(s) measured 
                 in degrees downward from horizontal. Zero degrees corresponds to 
-                the "right hand" direction indicated by the strike, while 180
-                degrees or a negative angle correspond to the opposite 
+                the "right hand" direction indicated by the strike, while
+                negative angles are measured downward from the opposite strike
                 direction.
-            Additional parameters are passed on to `plot`.
+            Additional arguments are passed on to `plot`.
 
         Returns
         -------
