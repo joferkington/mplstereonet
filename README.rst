@@ -69,9 +69,9 @@ As a basic example::
     :align: center
 
 
-By default, a modified Kamb method with exponential smoothing [Vollmer1995] is
+By default, a modified Kamb method with exponential smoothing _[Vollmer1995] is
 used to estimate the orientation density distribution. Other methods (such as
-the "traditional" Kamb [Kamb1956] and "Schmidt" (a.k.a. 1%) methods) are
+the "traditional" Kamb _[Kamb1956] and "Schmidt" (a.k.a. 1%) methods) are
 available as well. The method and expected count (in standard deviations) can
 be controlled by the `method` and `sigma` keyword arguments, respectively.
 
