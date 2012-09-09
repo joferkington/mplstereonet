@@ -1,11 +1,16 @@
 mplstereonet
 ============
-`mplstereonet` provides lower-hemisphere equal-area stereonets for matplotlib.
+``mplstereonet`` provides lower-hemisphere equal-area and equal-angle stereonets
+for matplotlib.
+
+.. image:: http://joferkington.github.com/mplstereonet/images/equal_area_equal_angle_comparison.png
+    :alt: Comparison of equal angle and equal area stereonets.
+    :align: center
 
 Basic Usage
 -----------
 In most cases, you'll want to ``import mplstereonet`` and then make an axes
-with ``projection="stereonet"``.
+with ``projection="stereonet"`` (By default, this is an equal-area stereonet).
 
 As an example::
 
