@@ -47,6 +47,8 @@ def stereonet_projection_explanation(ax):
     ax.set_xticks(np.radians(np.arange(-80, 90, 10)))
     ax.set_xticklabels([fmt(np.radians(item)) for item in labels])
 
+    ax.set_xlabel('Dip or Plunge')
+
     xlabel_halo(ax)
     return ax
 
@@ -62,13 +64,15 @@ def native_projection_explanation(ax):
     ax.set_xticks(np.radians(np.arange(-80, 90, 10)))
     ax.tick_params(label1On=True)
 
+    ax.set_xlabel('Longitude')
+
     xlabel_halo(ax)
     return ax
 
 def xlabel_halo(ax):
     """Add a white "halo" around the xlabels."""
     import matplotlib.patheffects as effects
-    for tick in ax.get_xticklabels():
+    for tick in ax.get_xticklabels() + [ax.xaxis.label]:
         tick.set_path_effects([effects.withStroke(linewidth=4, foreground='w')])
 
 if __name__ == '__main__':
