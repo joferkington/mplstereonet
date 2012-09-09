@@ -6,6 +6,7 @@ for matplotlib.
 .. image:: http://joferkington.github.com/mplstereonet/images/equal_area_equal_angle_comparison.png
     :alt: Comparison of equal angle and equal area stereonets.
     :align: center
+    :target: https://github.com/joferkington/mplstereonet/blob/master/examples/equal_area_equal_angle_comparison.py
 
 Basic Usage
 -----------
@@ -31,6 +32,7 @@ As an example::
 .. image:: http://joferkington.github.com/mplstereonet/images/basic.png
     :alt: A basic stereonet with a plane, pole to the plane, and rake along the plane
     :align: center
+    :target: https://github.com/joferkington/mplstereonet/blob/master/examples/basic.py
     
 Planes, lines, poles, and rakes can be plotted using axes methods (e.g.
 ``ax.line(plunge, bearing)`` or ``ax.rake(strike, dip, rake_angle)``).
@@ -72,6 +74,7 @@ As a basic example::
 .. image:: http://joferkington.github.com/mplstereonet/images/contouring.png
     :alt: Orientation density contours.
     :align: center
+    :target: https://github.com/joferkington/mplstereonet/blob/master/examples/contouring.py
 
 
 By default, a modified Kamb method with exponential smoothing [Vollmer1995]_ is
@@ -83,6 +86,7 @@ be controlled by the `method` and `sigma` keyword arguments, respectively.
 .. image:: http://joferkington.github.com/mplstereonet/images/contour_angelier_data.png
     :alt: Orientation density contours.
     :align: center
+    :target: https://github.com/joferkington/mplstereonet/blob/master/examples/contour_angelier_data.py
 
 
 References
