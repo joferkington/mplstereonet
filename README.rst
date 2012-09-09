@@ -88,6 +88,39 @@ be controlled by the `method` and `sigma` keyword arguments, respectively.
     :align: center
     :target: https://github.com/joferkington/mplstereonet/blob/master/examples/contour_angelier_data.py
 
+Utilities
+---------
+``mplstereonet`` also includes a number of utilities to parse structural
+measurements in either quadrant or azimuth form such that they follow the
+right-hand-rule. 
+
+For an example, see parsing_example.py_::
+
+    Parse quadrant azimuth measurements
+    "N30E" --> 30.0
+    "E30N" --> 60.0
+    "W10S" --> 260.0
+    "N 10 W" --> 350.0
+    
+    Parse quadrant strike/dip measurements.
+    Note that the output follows the right-hand-rule.
+    "215/10" --> Strike: 215.0, Dip: 10.0
+    "215/10E" --> Strike: 35.0, Dip: 10.0
+    "215/10NW" --> Strike: 215.0, Dip: 10.0
+    "N30E/45NW" --> Strike: 210.0, Dip: 45.0
+    "E10N   20 N" --> Strike: 260.0, Dip: 20.0
+    "W30N/46.7 S" --> Strike: 120.0, Dip: 46.7
+    
+    Similarly, you can parse rake measurements that don't follow the RHR.
+    "N30E/45NW 10NE" --> Strike: 210.0, Dip: 45.0, Rake: 170.0
+    "210 45 30N" --> Strike: 210.0, Dip: 45.0, Rake: 150.0
+    "N30E/45NW raking 10SW" --> Strike: 210.0, Dip: 45.0, Rake: 10.0
+
+Additionally, you can find plane intersections and make other calculations by
+combining utility functions.  See plane_intersection.py_ and
+parse_anglier_data.py_ for examples.
+
+
 
 References
 ----------
@@ -100,4 +133,8 @@ References
        Orientation Data Using a Modified Kamb Method. Computers &
        Geosciences, Vol. 21, No. 1, pp. 31--49.
 
+.. _parsing_example.py: https://github.com/joferkington/mplstereonet/blob/master/examples/parsing_example.py
 
+.. _plane_intersection.py: https://github.com/joferkington/mplstereonet/blob/master/examples/plane_intersection.py
+
+.. _parse_anglier_data.py: https://github.com/joferkington/mplstereonet/blob/master/examples/parse_angelier_data.py
