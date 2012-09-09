@@ -3,42 +3,31 @@ import numpy as np
 import matplotlib as mpl
 from matplotlib.transforms import Affine2D
 from matplotlib.projections import register_projection, LambertAxes
-from matplotlib.path import Path
 from matplotlib.axes import Axes
 from matplotlib.ticker import NullLocator
 
 import stereonet_math
 import contouring
-
-class StereonetLambertTransform(LambertAxes.LambertTransform):
-    def transform_path(self, path):
-        # Only interpolate paths with only two points.
-        # This will interpolate grid lines but leave more complex paths (e.g.
-        # contours) alone. If we don't do this, we'll have problems with
-        # contourf and other plotting functions. There should be a better way...
-        if len(path.vertices) == 2:
-            ipath = path.interpolated(self._resolution)
-        else:
-            ipath = path
-        return Path(self.transform(ipath.vertices), ipath.codes)
+import stereonet_transforms
 
 class StereonetAxes(LambertAxes):
-    """An axis representing a lower-hemisphere "schmitt" (a.k.a. equal area) 
+    """An axes representing a lower-hemisphere "schmitt" (a.k.a. equal area) 
     projection."""
     name = 'stereonet'
     RESOLUTION = 30
+    _base_transform = stereonet_transforms.LambertTransform
+
     def __init__(self, *args, **kwargs):
         self.horizon = np.radians(90)
         LambertAxes.__init__(self, *args, **kwargs)
 
     def _get_core_transform(self, resolution):
-        return StereonetLambertTransform(
-            self._center_longitude,
-            self._center_latitude,
-            resolution)
+        return self._base_transform(self._center_longitude,
+                                    self._center_latitude,
+                                    resolution)
 
     def _get_affine_transform(self):
-        transform = self._get_core_transform(1)
+        transform = self._get_core_transform(self.RESOLUTION)
         xscale, _ = transform.transform_point((self.horizon, 0))  
         _, yscale = transform.transform_point((0, np.pi / 2.0))
         return Affine2D() \
@@ -548,5 +537,18 @@ class StereonetAxes(LambertAxes):
         return self.contourf(lon, lat, totals, **kwargs)
 
 
+class EqualAngleAxes(StereonetAxes):
+    """An axes representing a lower-hemisphere "Wulff" (a.k.a. equal angle) 
+    projection."""
+    _base_transform = stereonet_transforms.StereographicTransform
+    name = 'equal_angle_stereonet'
+
+class EqualAreaAxes(StereonetAxes):
+    """An axes representing a lower-hemisphere "Schmitt" (a.k.a. equal area) 
+    projection."""
+    name = 'equal_area_stereonet'
+
 register_projection(StereonetAxes)
+register_projection(EqualAreaAxes)
+register_projection(EqualAngleAxes)
 
