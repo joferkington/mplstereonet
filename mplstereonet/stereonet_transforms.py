@@ -3,6 +3,8 @@ from matplotlib.path import Path
 from matplotlib.transforms import Transform
 
 class BaseStereonetTransform(Transform):
+    """An abstract base class for all forward and inverse transforms relating
+    to stereonets. Not meant to be initiated directly."""
     input_dims = 2
     output_dims = 2
     is_separable = False
@@ -30,9 +32,26 @@ class BaseStereonetTransform(Transform):
         return Path(self.transform(ipath.vertices), ipath.codes)
     transform_path.__doc__ = Transform.transform_path.__doc__
 
+    def inverted(self):
+        """Return the inverse of the transform."""
+        # This is a bit of hackery so that we can put a single "inverse" 
+        # function here. If we just made "self._inverse_type" point to the class
+        # in question, it wouldn't be defined yet. This way, it's done at 
+        # at runtime and we avoid the definition problem. Hackish, but better
+        # than repeating code everywhere or making a relatively complex 
+        # metaclass.
+        inverse_type = globals()[self._inverse_type]
+        return inverse_type(self._center_longitude, self._center_latitude,
+                            self._resolution)
+    inverted.__doc__ = Transform.inverted.__doc__
+
+
+
 # Both the Lambert and Stereographic projections are very mathematically 
 # similar, so we'll inherit from base classes that describes the common math.
 class BaseForwardTransform(BaseStereonetTransform):
+    """A base class for both Lambert and Stereographic forward transforms."""
+    _inverse_type = 'BaseInvertedTransform'
     def transform(self, ll):
         longitude = ll[:, 0:1]
         latitude  = ll[:, 1:2]
@@ -54,20 +73,15 @@ class BaseForwardTransform(BaseStereonetTransform):
                np.sin(clat)*cos_lat*cos_diff_long)
 
         return np.concatenate((x, y), 1)
-    transform.__doc__ = transform.__doc__
-
-    def inverted(self):
-        return InvertedLambertTransform(
-            self._center_longitude,
-            self._center_latitude,
-            self._resolution)
-    inverted.__doc__ = inverted.__doc__
+    transform.__doc__ = BaseStereonetTransform.transform.__doc__
 
     def _calculate_k(self, inner_k):
         """Subclasses must implement!."""
         pass
 
 class BaseInvertedTransform(BaseStereonetTransform):
+    """A base class for both Lambert and Stereographic inverse transforms."""
+    _inverse_type = 'BaseForwardTransform'
     def transform(self, xy):
         x = xy[:, 0:1]
         y = xy[:, 1:2]
@@ -86,29 +100,30 @@ class BaseInvertedTransform(BaseStereonetTransform):
         return np.concatenate((lon, lat), 1)
     transform.__doc__ = BaseStereonetTransform.transform.__doc__
 
-    def inverted(self):
-        return LambertTransform(
-            self._center_longitude,
-            self._center_latitude,
-            self._resolution)
-    inverted.__doc__ = BaseStereonetTransform.inverted.__doc__
-
     def _calculate_c(self, p):
         """Subclasses must implement!."""
         pass
 
 class LambertTransform(BaseForwardTransform):
+    """The Lambert (a.k.a. "equal area") forward transform."""
+    _inverse_type = 'InvertedLambertTransform'
     def _calculate_k(self, inner_k):
         return np.sqrt(2.0 / inner_k)
 
 class InvertedLambertTransform(BaseInvertedTransform):
+    """The Lambert (a.k.a. "equal area") inverse transform."""
+    _inverse_type = 'LambertTransform'
     def _calculate_c(self, p):
         return 2.0 * np.arcsin(0.5 * p)
 
 class StereographicTransform(BaseForwardTransform):
+    """The Stereographic (a.k.a. "equal angle") forward transform."""
+    _inverse_type = 'InvertedStereographicTransform'
     def _calculate_k(self, inner_k):
         return 2 / inner_k
 
 class InvertedStereographicTransform(BaseInvertedTransform):
+    """The Stereographic (a.k.a. "equal angle") inverse transform."""
+    _inverse_type = 'StereographicTransform'
     def _calculate_c(self, p):
         return 2.0 * np.arctan(0.5 * p)
