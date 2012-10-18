@@ -10,6 +10,6 @@ setup(
     url = 'https://github.com/joferkington/mplstereonet/',
     packages = ['mplstereonet'],
     install_requires = [
-        'matplotlib >= 0.98',
+        'matplotlib >= 1.1',
         'numpy >= 1.1']
 )
