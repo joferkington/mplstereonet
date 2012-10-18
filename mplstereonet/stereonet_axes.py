@@ -19,6 +19,7 @@ class StereonetAxes(LambertAxes):
 
     def __init__(self, *args, **kwargs):
         self.horizon = np.radians(90)
+        self._rotation = -np.radians(kwargs.pop('rotation', 0))
         LambertAxes.__init__(self, *args, **kwargs)
 
     def _get_core_transform(self, resolution):
@@ -31,6 +32,7 @@ class StereonetAxes(LambertAxes):
         xscale, _ = transform.transform_point((self.horizon, 0))  
         _, yscale = transform.transform_point((0, np.pi / 2.0))
         return Affine2D() \
+            .rotate(np.radians(self.rotation)) \
             .scale(0.5 / xscale, 0.5 / yscale) \
             .translate(0.5, 0.5)
 
@@ -65,6 +67,17 @@ class StereonetAxes(LambertAxes):
         self._polar.set_position(pos, which)
         LambertAxes.set_position(self, pos, which)
 
+    def set_rotation(self, rotation):
+        self._rotation = np.radians(rotation)
+        self._polar.set_theta_offset(self._rotation + np.pi / 2.0)
+        self.transData.invalidate()
+        self.transAxes.invalidate()
+        self._set_lim_and_transforms()
+    def get_rotation(self):
+        """The rotation of the stereonet in degrees clockwise from North."""
+        return np.degrees(self._rotation)
+    rotation = property(get_rotation, set_rotation)
+
     def cla(self):
         Axes.cla(self)
 
@@ -90,7 +103,7 @@ class StereonetAxes(LambertAxes):
         Axes.set_ylim(self, -np.pi / 2.0, np.pi / 2.0)
 
         # Set up the azimuth ticks.
-        self._polar.set_theta_zero_location('N')
+        self._polar.set_theta_offset(np.radians(self.rotation + 90))
         self._polar.set_theta_direction(-1)
         self._polar.grid(False)
         self._polar.set_rticks([])
