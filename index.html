@@ -38,18 +38,12 @@
         <article class="markdown-body">
           <h1>mplstereonet</h1>
 
-<p><code>mplstereonet</code> provides lower-hemisphere equal-area and equal-angle stereonets
-for matplotlib.</p>
-
-<p>.. image:: <a href="http://joferkington.github.com/mplstereonet/images/equal_area_equal_angle_comparison.png">http://joferkington.github.com/mplstereonet/images/equal_area_equal_angle_comparison.png</a>
-    :alt: Comparison of equal angle and equal area stereonets.
-    :align: center
-    :target: <a href="https://github.com/joferkington/mplstereonet/blob/master/examples/equal_area_equal_angle_comparison.py">https://github.com/joferkington/mplstereonet/blob/master/examples/equal_area_equal_angle_comparison.py</a></p>
+<p><code>mplstereonet</code> provides lower-hemisphere equal-area stereonets for matplotlib.</p>
 
 <h2>Basic Usage</h2>
 
 <p>In most cases, you'll want to <code>import mplstereonet</code> and then make an axes
-with <code>projection="stereonet"</code> (By default, this is an equal-area stereonet).</p>
+with <code>projection="stereonet"</code>.</p>
 
 <p>As an example::</p>
 
@@ -59,19 +53,10 @@ import mplstereonet
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='stereonet')
 
-strike, dip = 315, 30
-ax.plane(strike, dip, 'g-', linewidth=2)
-ax.pole(strike, dip, 'g^', markersize=18)
-ax.rake(strike, dip, -25)
-ax.grid()
+ax.plane(315, 35)
 
 plt.show()
 </code></pre>
-
-<p>.. image:: <a href="http://joferkington.github.com/mplstereonet/images/basic.png">http://joferkington.github.com/mplstereonet/images/basic.png</a>
-    :alt: A basic stereonet with a plane, pole to the plane, and rake along the plane
-    :align: center
-    :target: <a href="https://github.com/joferkington/mplstereonet/blob/master/examples/basic.py">https://github.com/joferkington/mplstereonet/blob/master/examples/basic.py</a></p>
 
 <p>Planes, lines, poles, and rakes can be plotted using axes methods (e.g.
 <code>ax.line(plunge, bearing)</code> or <code>ax.rake(strike, dip, rake_angle)</code>).</p>
@@ -79,108 +64,12 @@ plt.show()
 <p>All planar measurements are expected to follow the right-hand-rule to indicate
 dip direction. As an example, 315/30S would be 135/30 follwing the right-hand
 rule.</p>
-
-<h2>Density Contouring</h2>
-
-<p><code>mplstereonet</code> also provides a few different methods of producing contoured
-orientation density diagrams.</p>
-
-<p>The <code>ax.density_contour</code> and <code>ax.density_contourf</code> axes methods provide density
-contour lines and filled density contours, respectively.  "Raw" density grids
-can be produced with the <code>mplstereonet.density_grid</code> function.</p>
-
-<p>As a basic example::</p>
-
-<pre><code>import matplotlib.pyplot as plt
-import numpy as np
-import mplstereonet
-
-fig, ax = plt.subplots(subplot_kw=dict(projection='stereonet'))
-
-strike, dip = 90, 80
-num = 10
-strikes = strike + 10 * np.random.randn(num)
-dips = dip + 10 * np.random.randn(num)
-
-cax = ax.density_contourf(strikes, dips, measurement='poles')
-
-ax.pole(strikes, dips)
-ax.grid(True)
-fig.colorbar(cax)
-
-plt.show()
-</code></pre>
-
-<p>.. image:: <a href="http://joferkington.github.com/mplstereonet/images/contouring.png">http://joferkington.github.com/mplstereonet/images/contouring.png</a>
-    :alt: Orientation density contours.
-    :align: center
-    :target: <a href="https://github.com/joferkington/mplstereonet/blob/master/examples/contouring.py">https://github.com/joferkington/mplstereonet/blob/master/examples/contouring.py</a></p>
-
-<p>By default, a modified Kamb method with exponential smoothing [Vollmer1995]_ is
-used to estimate the orientation density distribution. Other methods (such as
-the "traditional" Kamb [Kamb1956]_ and "Schmidt" (a.k.a. 1%) methods) are
-available as well. The method and expected count (in standard deviations) can
-be controlled by the <code>method</code> and <code>sigma</code> keyword arguments, respectively.</p>
-
-<p>.. image:: <a href="http://joferkington.github.com/mplstereonet/images/contour_angelier_data.png">http://joferkington.github.com/mplstereonet/images/contour_angelier_data.png</a>
-    :alt: Orientation density contours.
-    :align: center
-    :target: <a href="https://github.com/joferkington/mplstereonet/blob/master/examples/contour_angelier_data.py">https://github.com/joferkington/mplstereonet/blob/master/examples/contour_angelier_data.py</a></p>
-
-<h2>Utilities</h2>
-
-<p><code>mplstereonet</code> also includes a number of utilities to parse structural
-measurements in either quadrant or azimuth form such that they follow the
-right-hand-rule. </p>
-
-<p>For an example, see parsing<em>example.py</em>::</p>
-
-<pre><code>Parse quadrant azimuth measurements
-"N30E" --&gt; 30.0
-"E30N" --&gt; 60.0
-"W10S" --&gt; 260.0
-"N 10 W" --&gt; 350.0
-
-Parse quadrant strike/dip measurements.
-Note that the output follows the right-hand-rule.
-"215/10" --&gt; Strike: 215.0, Dip: 10.0
-"215/10E" --&gt; Strike: 35.0, Dip: 10.0
-"215/10NW" --&gt; Strike: 215.0, Dip: 10.0
-"N30E/45NW" --&gt; Strike: 210.0, Dip: 45.0
-"E10N   20 N" --&gt; Strike: 260.0, Dip: 20.0
-"W30N/46.7 S" --&gt; Strike: 120.0, Dip: 46.7
-
-Similarly, you can parse rake measurements that don't follow the RHR.
-"N30E/45NW 10NE" --&gt; Strike: 210.0, Dip: 45.0, Rake: 170.0
-"210 45 30N" --&gt; Strike: 210.0, Dip: 45.0, Rake: 150.0
-"N30E/45NW raking 10SW" --&gt; Strike: 210.0, Dip: 45.0, Rake: 10.0
-</code></pre>
-
-<p>Additionally, you can find plane intersections and make other calculations by
-combining utility functions.  See plane<em>intersection.py</em> and
-parse<em>anglier_data.py</em> for examples.</p>
-
-<h2>References</h2>
-
-<p>.. [Kamb1956] Kamb, 1959. Ice Petrofabric Observations from Blue Glacier,
-       Washington, in Relation to Theory and Experiment. Journal of
-       Geophysical Research, Vol. 64, No. 11, pp. 1891--1909.</p>
-
-<p>.. [Vollmer1995] Vollmer, 1995. C Program for Automatic Contouring of Spherical
-       Orientation Data Using a Modified Kamb Method. Computers &amp;
-       Geosciences, Vol. 21, No. 1, pp. 31--49.</p>
-
-<p>.. _parsing_example.py: <a href="https://github.com/joferkington/mplstereonet/blob/master/examples/parsing_example.py">https://github.com/joferkington/mplstereonet/blob/master/examples/parsing_example.py</a></p>
-
-<p>.. _plane_intersection.py: <a href="https://github.com/joferkington/mplstereonet/blob/master/examples/plane_intersection.py">https://github.com/joferkington/mplstereonet/blob/master/examples/plane_intersection.py</a></p>
-
-<p>.. _parse_anglier_data.py: <a href="https://github.com/joferkington/mplstereonet/blob/master/examples/parse_angelier_data.py">https://github.com/joferkington/mplstereonet/blob/master/examples/parse_angelier_data.py</a></p>
         </article>
       </div>
     </div>
     <footer>
       <div class="owner">
-      <p><a href="https://github.com/joferkington" class="avatar"><img src="https://secure.gravatar.com/avatar/342bd0a61c7081db529c856d3bcd9545?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png" width="48" height="48"/></a> <a href="https://github.com/joferkington">joferkington</a> maintains <a href="https://github.com/joferkington/mplstereonet">Mplstereonet</a></p>
+      <p><a href="https://github.com/joferkington" class="avatar"><img src="https://secure.gravatar.com/avatar/342bd0a61c7081db529c856d3bcd9545?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-140.png" width="48" height="48"/></a> <a href="https://github.com/joferkington">joferkington</a> maintains <a href="https://github.com/joferkington/mplstereonet">Mplstereonet</a></p>
 
 
       </div>
