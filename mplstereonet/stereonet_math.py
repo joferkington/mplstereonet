@@ -67,9 +67,9 @@ def cart2sph(x, y, z):
 
 def _rotate(lon, lat, theta):
     """
-    Rotate "lon", "lat" coords (in degrees) about the X-axis by "theta" degrees. 
-    This effectively simulates rotating a physical stereonet.
-    Returns rotated lon, lat coords in radians.
+    Rotate "lon", "lat" coords (in _degrees_) about the X-axis by "theta"
+    degrees.  This effectively simulates rotating a physical stereonet.
+    Returns rotated lon, lat coords in _radians_).
     """
     # Convert input to numpy arrays in radians
     lon, lat = np.atleast_1d(lon, lat)
