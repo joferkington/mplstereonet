@@ -141,5 +141,19 @@ class TestPlaneIntersection:
         correct = np.array([item[1] for item in self.data]).T
         assert np.allclose(results, correct)
         
+class TestAntipode:
+    def setup(self):
+        self.data = [
+                     [(0, 0),  (np.pi, 0)],
+                     [(0, np.pi/2), (np.pi, -np.pi/2)],
+                     [(0.5, 1), (np.pi - 0.5, -1)],
+                    ]
 
+    def test_basic(self):
+        for indata, outdata in self.data:
+            (x,), (y,) = smath.antipode(*indata)
+            assert np.allclose((x, y), outdata)
 
+    def test_multiple(self):
+        (inlon, outlon), (inlat, outlat) = np.array(self.data).T
+        assert np.allclose(smath.antipode(inlon, inlat), (outlon, outlat))

@@ -88,6 +88,31 @@ def _rotate(lon, lat, theta):
     lon, lat = cart2sph(X,Y,Z) 
     return lon, lat # in radians!
 
+def antipode(lon, lat):
+    """
+    Calculates the antipode (opposite point on the globe) of the given point or
+    points. Input and output is expected to be in radians.
+
+    `lon` and `lat` may be sequences or single values.
+
+    Parameters
+    ----------
+        lon : number or sequence of numbers
+            Longitude in radians
+        lat : number or sequence of numbers
+            Latitude in radians
+
+    Returns
+    -------
+        lon, lat: Sequences (regardless of whether or not the input was a 
+            single value or a sequence) of longitude and latitude in radians.
+    """
+    lon, lat = np.atleast_1d(lon, lat)
+    anti_lat = -lat
+    anti_lon = np.pi - lon
+    anti_lon[anti_lon > np.pi] -= 2 * np.pi
+    return anti_lon, anti_lat
+
 def plane(strike, dip, segments=100):
     """
     Calculates the longitude and latitude of `segments` points along the 
