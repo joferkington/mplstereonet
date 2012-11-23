@@ -18,25 +18,45 @@ class StereonetAxes(LambertAxes):
     _base_transform = stereonet_transforms.LambertTransform
 
     def __init__(self, *args, **kwargs):
+        """Initialization is identical to a normal Axes object except for the
+        following kwarg:
+
+        Parameters:
+        -----------
+            rotation : number
+                The rotation of the stereonet in degrees clockwise from North.
+
+        All additional args and kwargs are identical to Axes.__init__
+        """
+        # There's also center_latitude and center_longitude, but I'm 
+        # deliberately keeping these undocumented until they're fully supported.
         self.horizon = np.radians(90)
         self._rotation = -np.radians(kwargs.pop('rotation', 0))
         LambertAxes.__init__(self, *args, **kwargs)
 
     def _get_core_transform(self, resolution):
+        """The projection for the stereonet as a matplotlib transform. This is
+        primarily called by LambertAxes._set_lim_and_transforms."""
         return self._base_transform(self._center_longitude,
                                     self._center_latitude,
                                     resolution)
 
     def _get_affine_transform(self):
+        """The affine portion of the base transform. This is called by 
+        LambertAxes._set_lim_and_transforms."""
         transform = self._get_core_transform(self.RESOLUTION)
+        # How big is the projected globe?
         xscale, _ = transform.transform_point((self.horizon, 0))  
         _, yscale = transform.transform_point((0, np.pi / 2.0))
+        # Create an affine transform to stretch the projection from 0-1
         return Affine2D() \
             .rotate(np.radians(self.rotation)) \
             .scale(0.5 / xscale, 0.5 / yscale) \
             .translate(0.5, 0.5)
 
     def _set_lim_and_transforms(self):
+        """Setup the key transforms for the axes.""" 
+        # Most of the transforms are set up correctly by LambertAxes
         LambertAxes._set_lim_and_transforms(self)
 
         # Transform for latitude ticks. These are typically unused, but just
@@ -66,8 +86,10 @@ class StereonetAxes(LambertAxes):
     def set_position(self, pos, which='both'):
         self._polar.set_position(pos, which)
         LambertAxes.set_position(self, pos, which)
+    set_position.__doc__ = Axes.set_position.__doc__
 
     def set_rotation(self, rotation):
+        """Set the rotation of the stereonet in degrees clockwise from North."""
         self._rotation = np.radians(rotation)
         self._polar.set_theta_offset(self._rotation + np.pi / 2.0)
         self.transData.invalidate()
@@ -107,6 +129,7 @@ class StereonetAxes(LambertAxes):
         self._polar.set_theta_direction(-1)
         self._polar.grid(False)
         self._polar.set_rticks([])
+    cla.__doc__ = Axes.cla.__doc__
 
     @property
     def _polar(self):
@@ -280,6 +303,8 @@ class StereonetAxes(LambertAxes):
         return args, kwargs
 
     def _contour_helper(self, args, kwargs):
+        """Unify defaults and common functionality of density_contour and 
+        density_contourf."""
         contour_kwargs = {}
         contour_kwargs['measurement'] = kwargs.pop('measurement', 'poles')
         contour_kwargs['method'] = kwargs.pop('method', 'exponential_kamb')
