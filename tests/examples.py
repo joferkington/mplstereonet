@@ -72,6 +72,8 @@ def run_file(example_filename):
 
     # Direction that we'll execute the file in
     example_dir = os.path.dirname(example_filename)
+    if not example_dir:
+        example_dir = '.'
 
     # File-like object that stdout will be captured in
     printed_output = StringIO()
