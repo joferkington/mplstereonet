@@ -7,10 +7,6 @@ import mplstereonet
 
 import parse_angelier_data
 
-def bottom_annotate(ax, text):
-    ax.annotate(text, xy=(0.5, 0), xycoords='axes fraction', xytext=(0, -5),
-                textcoords='offset points', ha='center', va='top')
-
 def plot(ax, strike, dip, rake, **kwargs):
     ax.rake(strike, dip, rake, 'ko', markersize=2)
     ax.density_contour(strike, dip, rake, measurement='rakes', **kwargs)
@@ -42,7 +38,7 @@ for sigma, ax, contour in zip([3, 2, 1], axes[:,1], contours):
     plot(ax, strike, dip, rake, method='linear_kamb', sigma=sigma, 
         levels=contour)
     template = r'$E={}\sigma$ Contours: ${}\sigma,{}\sigma,\ldots$'
-    bottom_annotate(ax, template.format(sigma, *contour[:2]))
+    ax.set_xlabel(template.format(sigma, *contour[:2]))
 
 # Kamb contouring with exponential smoothing (after Vollmer, 1995)
 for sigma, ax, contour in zip([3, 2, 1], axes[:,2], contours):
@@ -63,11 +59,11 @@ axes[0,-1].set_visible(False)
 plot(axes[1,-1], strike, dip, rake, method='schmidt', gridsize=25,
      levels=range(3,20,3))
 axes[1,-1].set_title('Schmidt')
-bottom_annotate(axes[1, -1], 'Contours: $3\%,6\%,\ldots$')
+axes[1, -1].set_xlabel('Contours: $3\%,6\%,\ldots$')
 
 # Raw data.
 axes[-1,-1].set_azimuth_ticks([])
 axes[-1,-1].rake(strike, dip, rake, 'ko', markersize=2)
-bottom_annotate(axes[-1,-1], 'N={}'.format(len(strike)))
+axes[-1,-1].set_xlabel('N={}'.format(len(strike)))
 
 plt.show()
