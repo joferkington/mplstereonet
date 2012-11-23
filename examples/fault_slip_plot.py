@@ -16,34 +16,27 @@ def main():
     # Load data from Angelier, 1979
     strikes, dips, rakes = parse_angelier_data.load()
     
-    fig, (ax1, ax2) = setup_figure()
+    params = dict(projection='stereonet', azimuth_ticks=[])
+    fig, (ax1, ax2) = plt.subplots(ncols=2, subplot_kw=params)
 
     fault_and_striae_plot(ax1, strikes, dips, rakes)
     ax1.set_title('Fault-and-Striae Diagram')
-    ax1.set_xlabel('Lineation direction plotted at rake location on plane')
+    ax1.set_xlabel('Lineation direction plotted\nat rake location on plane')
 
     tangent_lineation_plot(ax2, strikes, dips, rakes)
     ax2.set_title('Tangent Lineation Diagram')
-    ax2.set_xlabel('Lineation direction plotted at pole location of plane')
+    ax2.set_xlabel('Lineation direction plotted\nat pole location of plane')
 
     fig.suptitle('Fault-slip data from Angelier, 1979', y=0.05)
+    fig.tight_layout()
 
     plt.show()
-
-def setup_figure():
-    """Set up the figure and axes."""
-    fig, axes = plt.subplots(ncols=2, figsize=(20,10),
-                        subplot_kw=dict(projection='stereonet'))
-    for ax in axes:
-        ax.set_azimuth_ticks([])
-        ax.grid(True)
-    return fig, axes
 
 def fault_and_striae_plot(ax, strikes, dips, rakes):
     """Makes a fault-and-striae plot (a.k.a. "Ball of String") for normal faults
     with the given strikes, dips, and rakes."""
     # Plot the planes
-    lines = ax.plane(strikes, dips, 'k-')
+    lines = ax.plane(strikes, dips, 'k-', lw=0.5)
 
     # Calculate the position of the rake of the lineations, but don't plot yet
     x, y = mplstereonet.rake(strikes, dips, rakes)
@@ -55,7 +48,7 @@ def fault_and_striae_plot(ax, strikes, dips, rakes):
     u, v = x / mag, y / mag
 
     # Plot the arrows at the rake locations...
-    arrows = ax.quiver(x, y, u, v, width=2, units='dots')
+    arrows = ax.quiver(x, y, u, v, width=1, headwidth=4, units='dots')
     return lines, arrows
 
 def tangent_lineation_plot(ax, strikes, dips, rakes):
@@ -74,8 +67,8 @@ def tangent_lineation_plot(ax, strikes, dips, rakes):
     # Calculate the position of the poles
     pole_x, pole_y = mplstereonet.pole(strikes, dips)
 
-    # Plot the arrows at the pole locations...
-    arrows = ax.quiver(pole_x, pole_y, u, v, width=2, units='dots', 
+    # Plot the arrows centered on the pole locations...
+    arrows = ax.quiver(pole_x, pole_y, u, v, width=1, headwidth=4, units='dots', 
                        pivot='middle')
     return arrows
 
