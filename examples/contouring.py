@@ -2,6 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import mplstereonet
 
+# Fix random seed so that output is consistent
+np.random.seed(1977)
+
 fig, ax = plt.subplots(subplot_kw=dict(projection='stereonet'))
 
 strike, dip = 90, 80
