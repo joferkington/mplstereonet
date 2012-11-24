@@ -84,6 +84,7 @@ class StereonetAxes(LambertAxes):
             Affine2D().translate(8.0, 0.0)
 
     def set_position(self, pos, which='both'):
+        """Identical to Axes.set_position (This docstring is overwritten)."""
         self._polar.set_position(pos, which)
         LambertAxes.set_position(self, pos, which)
     set_position.__doc__ = Axes.set_position.__doc__
@@ -101,6 +102,7 @@ class StereonetAxes(LambertAxes):
     rotation = property(get_rotation, set_rotation)
 
     def cla(self):
+        """Identical to Axes.cla (This docstring is overwritten)."""
         Axes.cla(self)
 
         # Set grid defaults...
