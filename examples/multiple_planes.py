@@ -4,7 +4,7 @@
 import matplotlib.pyplot as plt
 import mplstereonet
 
-fig, ax = plt.subplots(subplot_kw=dict(projection='stereonet'))
+fig, ax = mplstereonet.subplots()
 
 strikes = [22, 317, 170, 220]
 dips = [10, 20, 30, 40]

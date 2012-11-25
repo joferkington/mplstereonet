@@ -5,7 +5,7 @@ import mplstereonet
 # Fix random seed so that output is consistent
 np.random.seed(1977)
 
-fig, ax = plt.subplots(subplot_kw=dict(projection='stereonet'))
+fig, ax = mplstereonet.subplots()
 
 strike, dip = 90, 80
 num = 10

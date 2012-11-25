@@ -16,8 +16,7 @@ def plot(ax, strike, dip, rake, **kwargs):
 strike, dip, rake = parse_angelier_data.load()
 
 # Setup a subplot grid
-fig, axes = plt.subplots(nrows=3, ncols=4, 
-                         subplot_kw=dict(projection='stereonet'))
+fig, axes = mplstereonet.subplots(nrows=3, ncols=4)
 
 # Hide azimuth tick labels
 for ax in axes.flat:

@@ -16,8 +16,7 @@ def main():
 
 def setup_figure():
     """Setup the figure and axes"""
-    fig, axes = plt.subplots(ncols=2, figsize=(20,10),
-                        subplot_kw=dict(projection='stereonet'))
+    fig, axes = mplstereonet.subplots(ncols=2, figsize=(20,10))
     for ax in axes:
         # Make the grid lines solid.
         ax.grid(ls='-')

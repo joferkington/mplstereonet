@@ -7,7 +7,7 @@ import mplstereonet
 strike1, dip1 = 315, 30
 strike2, dip2 = 120, 40
 
-fig, ax = plt.subplots(subplot_kw=dict(projection='stereonet'))
+fig, ax = mplstereonet.subplots()
 
 # Plot the two planes...
 ax.plane(strike1, dip1)
