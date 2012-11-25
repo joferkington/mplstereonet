@@ -101,6 +101,8 @@ def subplots(nrows=1, ncols=1, sharex=False, sharey=False, squeeze=True,
                of the resulting array can be controlled with the squeeze
                keyword, see above.
     """
+    if projection in ['equal_area', 'equal_angle']:
+        projection += '_stereonet'
     if subplot_kw == None:
         subplot_kw = {}
     subplot_kw['projection'] = projection
