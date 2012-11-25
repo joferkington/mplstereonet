@@ -2,7 +2,6 @@ import numpy as np
 import stereonet_math
 import matplotlib.delaunay as delaunay
 
-
 def points_on_hemisphere(num):
     """
     Generates `num` points on a hemisphere using a golden section spiral.
@@ -20,6 +19,13 @@ def points_on_hemisphere(num):
     return x[hemisphere], y[hemisphere], z[hemisphere]
 
 def count_points(lons, lats, func, sigma, num=10000):
+    """This function actually calculates the point density of the input ("lons"
+    and "lats") points at a series of "counter stations". Creates "num" counter
+    stations in a regular arrangement around a hemisphere, calculate the
+    distance to all input points at each counter station, and then calculate
+    the density using "func"."""
+    # Basically, we can't model this as a convolution as we're not in cartesian
+    # space, so we have to iterate throught the counters.
     xyz_counters = np.vstack(points_on_hemisphere(num)).T
     xyz_points = stereonet_math.sph2cart(lons, lats)
     xyz_points = np.vstack(xyz_points).T
@@ -34,7 +40,8 @@ def count_points(lons, lats, func, sigma, num=10000):
     return counter_lon, counter_lat, totals
 
 def grid_data(lons, lats, z, gridsize=(100,100)):
-    bound = np.pi / 2.0 + 0.1
+    """Interpolate data onto a regular grid between -pi/2 to pi/2 in x and y."""
+    bound = np.pi / 2.0 + 0.1 # We need to go a bit beyond the bounds...
     nrows, ncols = gridsize
     xmin, xmax, ymin, ymax = -bound, bound, -bound, bound
 
@@ -166,6 +173,7 @@ def density_grid(*args, **kwargs):
     return xi, yi, zi
 
 def exponential_kamb(cos_dist, sigma=3):
+    """Kernel function from Vollmer for exponential smoothing."""
     n = float(cos_dist.size)
     f = 2 * (1.0 + n / sigma**2)
     count = np.exp(f * (cos_dist - 1)).sum()
@@ -173,6 +181,7 @@ def exponential_kamb(cos_dist, sigma=3):
     return (count - 0.5) / units 
 
 def linear_inverse_kamb(cos_dist, sigma=3):
+    """Kernel function from Vollmer for linear smoothing."""
     n = float(cos_dist.size)
     radius = kamb_radius(n, sigma)
     f = 2 / (1 - radius)
@@ -181,6 +190,7 @@ def linear_inverse_kamb(cos_dist, sigma=3):
     return (count - 0.5) / kamb_units(n, radius) 
 
 def square_inverse_kamb(cos_dist, sigma=3):
+    """Kernel function from Vollemer for inverse square smoothing."""
     n = float(cos_dist.size)
     radius = kamb_radius(n, sigma)
     f = 3 / (1 - radius)**2
@@ -189,20 +199,23 @@ def square_inverse_kamb(cos_dist, sigma=3):
     return (count - 0.5) / kamb_units(n, radius)
 
 def kamb_radius(n, sigma):
+    """Radius of kernel for Kamb-style smoothing."""
     a = sigma**2 / (float(n) + sigma**2)
     return (1 - a) 
 
 def kamb_units(n, radius):
+    """Normalization function for Kamb-style counting."""
     return np.sqrt(n * radius * (1 - radius))
 
 def kamb_count(cos_dist, sigma=3):
+    """Original Kamb kernel function (raw count within radius)."""
     n = float(cos_dist.size)
     dist = kamb_radius(n, sigma)
     count = (cos_dist >= dist).sum()
     return (count - 0.5) / kamb_units(n, dist)
 
 def schmidt_count(cos_dist, sigma=None):
+    """Schmidt (a.k.a. 1%) counting kernel function."""
     radius = 0.01
     count = ((1 - cos_dist) <= radius).sum()
     return (count - 0.5) / (cos_dist.size * radius)
-
