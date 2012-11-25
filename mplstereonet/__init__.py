@@ -7,6 +7,7 @@ from stereonet_math import plane_intersection, project_onto_plane
 from contouring import density_grid
 from utilities import parse_quadrant_measurement, parse_strike_dip, parse_rake
 from utilities import parse_azimuth, parse_plunge_bearing
+from convenience_functions import subplots
 
 
 __all__ = ['StereonetAxes', 'pole', 'plane', 'line', 'rake', 
@@ -15,4 +16,4 @@ __all__ = ['StereonetAxes', 'pole', 'plane', 'line', 'rake',
            'xyz2stereonet', 'stereonet2xyz', 'vector2pole', 
            'project_onto_plane', 'azimuth2rake', 'parse_azimuth',
            'parse_quadrant_measurement', 'parse_strike_dip', 'parse_rake',
-           'parse_plunge_bearing']
+           'parse_plunge_bearing', 'subplots']
