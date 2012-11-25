@@ -12,6 +12,8 @@ Basic Usage
 -----------
 In most cases, you'll want to ``import mplstereonet`` and then make an axes
 with ``projection="stereonet"`` (By default, this is an equal-area stereonet).
+Alternately, you can use ``mplstereonet.subplots``, which functions identically
+to ``matplotlib.pyplot.subplots``, but creates stereonet axes.
 
 As an example::
 
@@ -56,7 +58,7 @@ As a basic example::
     import numpy as np
     import mplstereonet
     
-    fig, ax = plt.subplots(subplot_kw=dict(projection='stereonet'))
+    fig, ax = mplstereonet.subplots()
     
     strike, dip = 90, 80
     num = 10
