@@ -4,8 +4,10 @@
 import matplotlib.pyplot as plt
 import mplstereonet
 
+# Make a figure with a single stereonet axes
 fig, ax = mplstereonet.subplots()
 
+# These follow the right hand rule to indicate dip direction
 strikes = [22, 317, 170, 220]
 dips = [10, 20, 30, 40]
 

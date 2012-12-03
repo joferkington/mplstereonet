@@ -1,3 +1,4 @@
+"""A quick visual comparison of equal area vs. equal angle nets."""
 import matplotlib.pyplot as plt
 import mplstereonet 
 
