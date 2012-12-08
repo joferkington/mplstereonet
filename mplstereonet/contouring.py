@@ -1,7 +1,7 @@
 import numpy as np
 from . import stereonet_math
 
-def _count_points(lons, lats, func, sigma, gridsize=(100,100)):
+def _count_points(lons, lats, func, sigma, gridsize=(100,100), weights=1):
     """This function actually calculates the point density of the input ("lons"
     and "lats") points at a series of "counter stations". Creates "num" counter
     stations on a regular lon, lat grid around a hemisphere, calculate the
@@ -24,7 +24,8 @@ def _count_points(lons, lats, func, sigma, gridsize=(100,100)):
     totals = np.zeros(xyz_counters.shape[0], dtype=np.float)
     for i, xyz in enumerate(xyz_counters):
         cos_dist = np.abs(np.dot(xyz, xyz_points.T))
-        totals[i] = func(cos_dist, sigma)
+        density, scale = func(cos_dist, sigma)
+        totals[i] = (density.sum() - 0.5) / scale
 
     # Traditionally, the negative values (while valid, as they represent areas
     # with less than expected point-density) are not returned.
@@ -137,32 +138,6 @@ def density_grid(*args, **kwargs):
     lon, lat, z = _count_points(lon, lat, func, sigma, gridsize)
     return lon, lat, z
 
-def _exponential_kamb(cos_dist, sigma=3):
-    """Kernel function from Vollmer for exponential smoothing."""
-    n = float(cos_dist.size)
-    f = 2 * (1.0 + n / sigma**2)
-    count = np.exp(f * (cos_dist - 1)).sum()
-    units = np.sqrt(n * (f/2.0 - 1) / f**2) 
-    return (count - 0.5) / units 
-
-def _linear_inverse_kamb(cos_dist, sigma=3):
-    """Kernel function from Vollmer for linear smoothing."""
-    n = float(cos_dist.size)
-    radius = _kamb_radius(n, sigma)
-    f = 2 / (1 - radius)
-    cos_dist = cos_dist[cos_dist >= radius]
-    count = (f * (cos_dist - radius)).sum()
-    return (count - 0.5) / _kamb_units(n, radius) 
-
-def _square_inverse_kamb(cos_dist, sigma=3):
-    """Kernel function from Vollemer for inverse square smoothing."""
-    n = float(cos_dist.size)
-    radius = _kamb_radius(n, sigma)
-    f = 3 / (1 - radius)**2
-    cos_dist = cos_dist[cos_dist >= radius]
-    count = (f * (cos_dist - radius)**2).sum()
-    return (count - 0.5) / _kamb_units(n, radius)
-
 def _kamb_radius(n, sigma):
     """Radius of kernel for Kamb-style smoothing."""
     a = sigma**2 / (float(n) + sigma**2)
@@ -172,15 +147,43 @@ def _kamb_units(n, radius):
     """Normalization function for Kamb-style counting."""
     return np.sqrt(n * radius * (1 - radius))
 
+# All of the following kernel functions return an _unsummed_ distribution and
+# a normalization factor
+def _exponential_kamb(cos_dist, sigma=3):
+    """Kernel function from Vollmer for exponential smoothing."""
+    n = float(cos_dist.size)
+    f = 2 * (1.0 + n / sigma**2)
+    count = np.exp(f * (cos_dist - 1))
+    units = np.sqrt(n * (f/2.0 - 1) / f**2) 
+    return count, units
+
+def _linear_inverse_kamb(cos_dist, sigma=3):
+    """Kernel function from Vollmer for linear smoothing."""
+    n = float(cos_dist.size)
+    radius = _kamb_radius(n, sigma)
+    f = 2 / (1 - radius)
+    cos_dist = cos_dist[cos_dist >= radius]
+    count = (f * (cos_dist - radius))
+    return count, _kamb_units(n, radius) 
+
+def _square_inverse_kamb(cos_dist, sigma=3):
+    """Kernel function from Vollemer for inverse square smoothing."""
+    n = float(cos_dist.size)
+    radius = _kamb_radius(n, sigma)
+    f = 3 / (1 - radius)**2
+    cos_dist = cos_dist[cos_dist >= radius]
+    count = (f * (cos_dist - radius)**2)
+    return count, _kamb_units(n, radius)
+
 def _kamb_count(cos_dist, sigma=3):
     """Original Kamb kernel function (raw count within radius)."""
     n = float(cos_dist.size)
     dist = _kamb_radius(n, sigma)
-    count = (cos_dist >= dist).sum()
-    return (count - 0.5) / _kamb_units(n, dist)
+    count = (cos_dist >= dist)
+    return count, _kamb_units(n, dist)
 
 def _schmidt_count(cos_dist, sigma=None):
     """Schmidt (a.k.a. 1%) counting kernel function."""
     radius = 0.01
-    count = ((1 - cos_dist) <= radius).sum()
-    return (count - 0.5) / (cos_dist.size * radius)
+    count = ((1 - cos_dist) <= radius)
+    return count, (cos_dist.size * radius)
