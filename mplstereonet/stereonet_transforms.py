@@ -20,7 +20,7 @@ class BaseStereonetTransform(Transform):
         self._center_longitude = center_longitude
         self._center_latitude = center_latitude
 
-    def transform_path(self, path):
+    def transform_path_non_affine(self, path):
         # Only interpolate paths with only two points.
         # This will interpolate grid lines but leave more complex paths (e.g.
         # contours) alone. If we don't do this, we'll have problems with
@@ -30,7 +30,16 @@ class BaseStereonetTransform(Transform):
         else:
             ipath = path
         return Path(self.transform(ipath.vertices), ipath.codes)
-    transform_path.__doc__ = Transform.transform_path.__doc__
+    transform_path_non_affine.__doc__ = \
+            Transform.transform_path_non_affine.__doc__
+
+    # For older (v1.1.x) versions of matplotlib, we need to implement transform
+    # explicitly, instead of just "transform_non_affine" (and implementing
+    # the non-affine portion directly as "transform" causes major problems with
+    # v1.2.x and newer)
+    def transform(self, ll):
+        return self.transform_affine(self.transform_non_affine(ll))
+    transform.__doc__ = Transform.transform.__doc__
 
     def inverted(self):
         """Return the inverse of the transform."""
@@ -52,7 +61,7 @@ class BaseStereonetTransform(Transform):
 class BaseForwardTransform(BaseStereonetTransform):
     """A base class for both Lambert and Stereographic forward transforms."""
     _inverse_type = 'BaseInvertedTransform'
-    def transform(self, ll):
+    def transform_non_affine(self, ll):
         longitude = ll[:, 0:1]
         latitude  = ll[:, 1:2]
         clong = self._center_longitude
@@ -73,7 +82,8 @@ class BaseForwardTransform(BaseStereonetTransform):
                np.sin(clat)*cos_lat*cos_diff_long)
 
         return np.concatenate((x, y), 1)
-    transform.__doc__ = BaseStereonetTransform.transform.__doc__
+    transform_non_affine.__doc__ = \
+            BaseStereonetTransform.transform_non_affine.__doc__
 
     def _calculate_k(self, inner_k):
         """Subclasses must implement!."""
