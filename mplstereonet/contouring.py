@@ -1,5 +1,5 @@
 import numpy as np
-import stereonet_math
+from . import stereonet_math
 import matplotlib.delaunay as delaunay
 
 def _points_on_hemisphere(num):

@@ -1,6 +1,6 @@
 import numpy as np
 import re
-import stereonet_math as smath
+from . import stereonet_math as smath
 
 def parse_strike_dip(strike, dip):
     """
