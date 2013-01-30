@@ -8,6 +8,12 @@ for matplotlib.
     :align: center
     :target: https://github.com/joferkington/mplstereonet/blob/master/examples/equal_area_equal_angle_comparison.py
 
+What's New
+----------
+Major changes in ``mplstereonet-v0.3`` are compatibility with ``matplotlib-v1.2``, a new 
+convenience function: ``mplstereonet.subplots``, basic support for rotated stereonets, and 
+several new examples.
+
 Basic Usage
 -----------
 In most cases, you'll want to ``import mplstereonet`` and then make an axes
