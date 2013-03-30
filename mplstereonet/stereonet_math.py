@@ -67,9 +67,9 @@ def cart2sph(x, y, z):
 
 def _rotate(lon, lat, theta):
     """
-    Rotate "lon", "lat" coords (in degrees) about the X-axis by "theta" degrees. 
-    This effectively simulates rotating a physical stereonet.
-    Returns rotated lon, lat coords in radians.
+    Rotate "lon", "lat" coords (in _degrees_) about the X-axis by "theta"
+    degrees.  This effectively simulates rotating a physical stereonet.
+    Returns rotated lon, lat coords in _radians_).
     """
     # Convert input to numpy arrays in radians
     lon, lat = np.atleast_1d(lon, lat)
@@ -87,6 +87,31 @@ def _rotate(lon, lat, theta):
     # Now convert back to spherical coords (longitude and latitude, ignore R)
     lon, lat = cart2sph(X,Y,Z) 
     return lon, lat # in radians!
+
+def antipode(lon, lat):
+    """
+    Calculates the antipode (opposite point on the globe) of the given point or
+    points. Input and output is expected to be in radians.
+
+    `lon` and `lat` may be sequences or single values.
+
+    Parameters
+    ----------
+        lon : number or sequence of numbers
+            Longitude in radians
+        lat : number or sequence of numbers
+            Latitude in radians
+
+    Returns
+    -------
+        lon, lat: Sequences (regardless of whether or not the input was a 
+            single value or a sequence) of longitude and latitude in radians.
+    """
+    lon, lat = np.atleast_1d(lon, lat)
+    anti_lat = -lat
+    anti_lon = np.pi - lon
+    anti_lon[anti_lon > np.pi] -= 2 * np.pi
+    return anti_lon, anti_lat
 
 def plane(strike, dip, segments=100):
     """
