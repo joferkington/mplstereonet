@@ -1,59 +1,38 @@
 import numpy as np
 import stereonet_math
-import matplotlib.delaunay as delaunay
 
-def _points_on_hemisphere(num):
-    """
-    Generates `num` points on a hemisphere using a golden section spiral.
-    """
-    num = num * 2
-    inc = np.pi * (3 - np.sqrt(5))
-    off = 2.0 / num
-    k = np.arange(num)
-    y = k * off - 1 + off / 2.0
-    r = np.sqrt(1 - y**2)
-    phi = k * inc
-    x = np.cos(phi) * r
-    z = np.sin(phi) * r
-    hemisphere = x > 0
-    return x[hemisphere], y[hemisphere], z[hemisphere]
-
-def _count_points(lons, lats, func, sigma, num=10000):
+def _count_points(lons, lats, func, sigma, gridsize=(100,100)):
     """This function actually calculates the point density of the input ("lons"
     and "lats") points at a series of "counter stations". Creates "num" counter
-    stations in a regular arrangement around a hemisphere, calculate the
+    stations on a regular lon, lat grid around a hemisphere, calculate the
     distance to all input points at each counter station, and then calculate
     the density using "func"."""
-    # Basically, we can't model this as a convolution as we're not in cartesian
-    # space, so we have to iterate throught the counters.
-    xyz_counters = np.vstack(_points_on_hemisphere(num)).T
+    # Generate a regular grid of "counters" to measure on...
+    bound = np.pi / 2.0 + 0.1 # We need to go a bit beyond the bounds...
+    nrows, ncols = gridsize
+    xmin, xmax, ymin, ymax = -bound, bound, -bound, bound
+    lon, lat = np.mgrid[xmin : xmax : ncols * 1j, ymin : ymax : nrows * 1j]
+
+    xyz_counters = stereonet_math.sph2cart(lon.ravel(), lat.ravel())
+    xyz_counters = np.vstack(xyz_counters).T
     xyz_points = stereonet_math.sph2cart(lons, lats)
     xyz_points = np.vstack(xyz_points).T
 
+    # Basically, we can't model this as a convolution as we're not in cartesian
+    # space, so we have to iterate through and call the kernel function at 
+    # each "counter".
     totals = np.zeros(xyz_counters.shape[0], dtype=np.float)
     for i, xyz in enumerate(xyz_counters):
         cos_dist = np.abs(np.dot(xyz, xyz_points.T))
         totals[i] = func(cos_dist, sigma)
 
+    # Traditionally, the negative values (while valid, as they represent areas
+    # with less than expected point-density) are not returned.
     totals[totals < 0] = 0
     counter_lon, counter_lat = stereonet_math.cart2sph(*xyz_counters.T)
+    for item in [counter_lon, counter_lat, totals]:
+        item.shape = gridsize
     return counter_lon, counter_lat, totals
-
-def _grid_data(lons, lats, z, gridsize=(100,100)):
-    """Interpolate density data onto a regular grid between -pi/2 to pi/2 in 
-    x and y."""
-    bound = np.pi / 2.0 + 0.1 # We need to go a bit beyond the bounds...
-    nrows, ncols = gridsize
-    xmin, xmax, ymin, ymax = -bound, bound, -bound, bound
-
-    tri = delaunay.Triangulation(lons, lats)
-    interp = delaunay.LinearInterpolator(tri, z, default_value=0)
-
-    slices = np.s_[xmin : xmax : ncols * 1j, ymin : ymax : nrows * 1j]
-    zi = interp[slices]
-
-    xi, yi = np.ogrid[slices]
-    return xi.ravel(), yi.ravel(), zi
 
 def density_grid(*args, **kwargs):
     """
@@ -113,12 +92,6 @@ def density_grid(*args, **kwargs):
             The size of the grid that the density is estimated on. If a single
             int is given, it is interpreted as an NxN grid. If a tuple of ints
             is given it is interpreted as (nrows, ncols).  Defaults to 100.
-        num_counters : int, optional
-            The number of "counting points" (arranged following a golden
-            section spiral) that density is estimated at on the surface of
-            hemisphere.  This is then interpolated onto a regular grid in
-            lat-long space (see "gridsize" above). Defaults to 1/2 of the total
-            number of cells in the regular grid.
 
     Returns:
     --------
@@ -150,10 +123,6 @@ def density_grid(*args, **kwargs):
     except TypeError:
         pass
 
-    num_counters = kwargs.get('num_counters', None)
-    if num_counters is None:
-        num_counters = np.product(gridsize) / 2
-
     func = {'poles':stereonet_math.pole,
             'lines':stereonet_math.line,
             'rakes':stereonet_math.rake,
@@ -168,10 +137,8 @@ def density_grid(*args, **kwargs):
             'kamb':_kamb_count,
             'exponential_kamb':_exponential_kamb,
             }[method]
-    counter_lon, counter_lat, totals = _count_points(lon, lat, func, sigma,
-                                                     num_counters)
-    xi, yi, zi = _grid_data(counter_lon, counter_lat, totals, gridsize)
-    return xi, yi, zi
+    lon, lat, z = _count_points(lon, lat, func, sigma, gridsize)
+    return lon, lat, z
 
 def _exponential_kamb(cos_dist, sigma=3):
     """Kernel function from Vollmer for exponential smoothing."""

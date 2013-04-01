@@ -312,7 +312,6 @@ class StereonetAxes(LambertAxes):
         contour_kwargs['method'] = kwargs.pop('method', 'exponential_kamb')
         contour_kwargs['sigma'] = kwargs.pop('sigma', 3)
         contour_kwargs['gridsize'] = kwargs.pop('gridsize', 100)
-        contour_kwargs['num_counters'] = kwargs.pop('num_counters', None)
         lon, lat, totals = contouring.density_grid(*args, **contour_kwargs)
         return lon, lat, totals, kwargs
 
@@ -374,12 +373,6 @@ class StereonetAxes(LambertAxes):
                 single int is given, it is interpreted as an NxN grid. If a
                 tuple of ints is given it is interpreted as (nrows, ncols). 
                 Defaults to 100.
-            num_counters : int, optional
-                The number of "counting points" (arranged following a golden 
-                section spiral) that density is estimated at on the surface of
-                hemisphere.  This is then interpolated onto a regular grid in
-                lat-long space (see "gridsize" above). Defaults to 1/2 of the
-                total number of cells in the regular grid.
 
             Additional keyword arguments are passed on to matplotlib's `contour`
             function.
@@ -503,12 +496,6 @@ class StereonetAxes(LambertAxes):
                 single int is given, it is interpreted as an NxN grid. If a
                 tuple of ints is given it is interpreted as (nrows, ncols).
                 Defaults to 100.
-            num_counters : int, optional
-                The number of "counting points" (arranged following a golden 
-                section spiral) that density is estimated at on the surface of
-                hemisphere.  This is then interpolated onto a regular grid in
-                lat-long space (see "gridsize" above). Defaults to 1/2 of the
-                total number of cells in the regular grid.
 
             Additional keyword arguments are passed on to matplotlib's
             `contourf` function.
