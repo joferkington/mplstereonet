@@ -1,5 +1,5 @@
 import numpy as np
-import stereonet_math
+from . import stereonet_math
 
 def _count_points(lons, lats, func, sigma, gridsize=(100,100)):
     """This function actually calculates the point density of the input ("lons"

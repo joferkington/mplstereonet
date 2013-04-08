@@ -6,9 +6,9 @@ from matplotlib.projections import register_projection, LambertAxes
 from matplotlib.axes import Axes
 from matplotlib.ticker import NullLocator
 
-import stereonet_math
-import contouring
-import stereonet_transforms
+from . import stereonet_math
+from . import contouring
+from . import stereonet_transforms
 
 class StereonetAxes(LambertAxes):
     """An axes representing a lower-hemisphere "schmitt" (a.k.a. equal area) 
