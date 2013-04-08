@@ -73,7 +73,7 @@ def _rotate(lon, lat, theta):
     """
     # Convert input to numpy arrays in radians
     lon, lat = np.atleast_1d(lon, lat)
-    lon, lat = list(map(np.radians, [lon, lat]))
+    lon, lat = map(np.radians, [lon, lat])
     theta = np.radians(theta)
 
     # Convert to cartesian coords for the rotation
@@ -137,7 +137,7 @@ def plane(strike, dip, segments=100):
     strikes, dips = np.atleast_1d(strike, dip)
     lons = np.zeros((segments, strikes.size), dtype=np.float)
     lats = lons.copy()
-    for i, (strike, dip) in enumerate(list(zip(strikes, dips))):
+    for i, (strike, dip) in enumerate(zip(strikes, dips)):
         # We just plot a line of constant longitude and rotate it by the strike.
         dip = 90 - dip
         lon = dip * np.ones(segments)
