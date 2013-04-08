@@ -42,7 +42,7 @@ def stereonet_projection_explanation(ax):
 
     # Unhide the xticklabels and use them for dip labels
     ax.xaxis.set_tick_params(label1On=True)
-    labels = range(10, 100, 10) + range(80, 0, -10)
+    labels = list(range(10, 100, 10)) + list(range(80, 0, -10))
     ax.set_xticks(np.radians(np.arange(-80, 90, 10)))
     ax.set_xticklabels([fmt(np.radians(item)) for item in labels])
 

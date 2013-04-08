@@ -10,17 +10,17 @@ correct for this.
 """
 import mplstereonet
 
-print 'Parse quadrant azimuth measurements'
+print('Parse quadrant azimuth measurements')
 for original in ['N30E', 'E30N', 'W10S', 'N 10 W']:
     azi = mplstereonet.parse_quadrant_measurement(original)
-    print u'"{}" --> {:.1f}'.format(original, azi)
+    print('"{}" --> {:.1f}'.format(original, azi))
 
-print '\nParse quadrant strike/dip measurements.'
-print 'Note that the output follows the right-hand-rule.'
+print('\nParse quadrant strike/dip measurements.')
+print('Note that the output follows the right-hand-rule.')
 
 def parse_sd(original, seperator):
     strike, dip = mplstereonet.parse_strike_dip(*original.split(seperator))
-    print '"{}" --> Strike: {:.1f}, Dip: {:.1f}'.format(original, strike, dip)
+    print('"{}" --> Strike: {:.1f}, Dip: {:.1f}'.format(original, strike, dip))
 
 parse_sd('215/10', '/')
 parse_sd('215/10E', '/')
@@ -29,7 +29,7 @@ parse_sd('N30E/45NW', '/')
 parse_sd('E10N\t20 N', '\t')
 parse_sd('W30N/46.7 S', '/')
 
-print "\nSimilarly, you can parse rake measurements that don't follow the RHR."
+print("\nSimilarly, you can parse rake measurements that don't follow the RHR.")
 
 def split_rake(original, sep1=None, sep2=None):
     components = original.split(sep1)
@@ -43,7 +43,7 @@ def display_rake(original, sep1, sep2=None):
     components = split_rake(original, sep1, sep2)
     strike, dip, rake = mplstereonet.parse_rake(*components)
     template = '"{}" --> Strike: {:.1f}, Dip: {:.1f}, Rake: {:.1f}'
-    print template.format(original, strike, dip, rake)
+    print(template.format(original, strike, dip, rake))
 
 original = 'N30E/45NW 10NE'
 display_rake(original, '/')
