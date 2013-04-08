@@ -32,7 +32,7 @@ def compare_text(example_filename, output_text):
         saved_text = infile.read()
         assert output_text == saved_text
     
-def similar_images(orig_image, new_image, tol=1.0e-1):
+def similar_images(orig_image, new_image, tol=1.0e-6):
     """Compare two PIL image objects and return a boolean True/False of whether
     they are similar (True) or not (False). "tol" is a unitless float between
     0-1 that does not depend on the size of the images."""
