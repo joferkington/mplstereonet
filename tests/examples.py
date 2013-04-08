@@ -2,8 +2,8 @@
 import os
 import glob
 import sys
-from cStringIO import StringIO
-import Image
+import io
+from PIL import Image
 import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib._pylab_helpers as pylab_helpers
@@ -45,10 +45,9 @@ def _process_path(orig_filename, ext):
 
 def make_pil_image(fig):
     """Make a PIL image object from a matplotlib figure instance."""
-    outfile = StringIO()
-    fig.canvas.print_raw(outfile)
+    fig.canvas.draw()
     size = fig.canvas.get_width_height()
-    im = Image.fromstring('RGBA', size, outfile.getvalue())
+    im = Image.fromstring('RGB', size, fig.canvas.tostring_rgb())
     return im
 
 def run(example_filename):
@@ -76,7 +75,11 @@ def run_file(example_filename):
         example_dir = '.'
 
     # File-like object that stdout will be captured in
-    printed_output = StringIO()
+    # I can't find a better way to do this than version conditionals...
+    if sys.version_info.major >= 3:
+        printed_output = io.StringIO()
+    else:
+        printed_output = io.BytesIO()
 
     # Setup the environment for execution
     sys.path.append(example_dir)
@@ -86,7 +89,9 @@ def run_file(example_filename):
 
     try:
         # Run the file and capture anything it prints to stdout
-        execfile(example_filename, __main__.__dict__)
+        with open(example_filename) as infile:
+            code = compile(infile.read(), example_filename, 'exec')
+            exec(code, __main__.__dict__)
     finally:
         # Return the environment to "normal"
         os.chdir(prev_cwd)

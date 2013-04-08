@@ -1,5 +1,5 @@
 """Runs all examples and compares the output to previously generated output."""
-import Image
+from PIL import Image
 import numpy as np
 import examples
 
@@ -20,7 +20,7 @@ def compare_figure(example_filename, fig):
     orig_image = Image.open(orig_image_filename)
     new_image = examples.make_pil_image(fig)
     if not similar_images(orig_image, new_image):
-        print example_filename
+        print(example_filename)
         orig_image.show()
         new_image.show()
         assert False
@@ -32,10 +32,12 @@ def compare_text(example_filename, output_text):
         saved_text = infile.read()
         assert output_text == saved_text
     
-def similar_images(orig_image, new_image, tol=1.0e-6):
+def similar_images(orig_image, new_image, tol=1.0e-1):
     """Compare two PIL image objects and return a boolean True/False of whether
     they are similar (True) or not (False). "tol" is a unitless float between
     0-1 that does not depend on the size of the images."""
+    orig_image = orig_image.convert('RGB')
+    new_image = orig_image.convert('RGB')
     orig_data = np.array(orig_image, dtype=np.int16)
     new_data = np.array(new_image, dtype=np.int16)
     changed = new_data - orig_data
