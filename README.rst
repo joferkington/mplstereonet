@@ -45,12 +45,12 @@ rule.
 
 Density Contouring
 ------------------
-`mplstereonet` also provides a few different methods of producing contoured
+``mplstereonet`` also provides a few different methods of producing contoured
 orientation density diagrams.
 
-The `ax.density_contour` and `ax.density_contourf` axes methods provide density
+The ``ax.density_contour`` and ``ax.density_contourf`` axes methods provide density
 contour lines and filled density contours, respectively.  "Raw" density grids
-can be produced with the `mplstereonet.density_grid` function.
+can be produced with the ``mplstereonet.density_grid`` function.
 
 As a basic example::
 
@@ -83,7 +83,7 @@ By default, a modified Kamb method with exponential smoothing [Vollmer1995]_ is
 used to estimate the orientation density distribution. Other methods (such as
 the "traditional" Kamb [Kamb1956]_ and "Schmidt" (a.k.a. 1%) methods) are
 available as well. The method and expected count (in standard deviations) can
-be controlled by the `method` and `sigma` keyword arguments, respectively.
+be controlled by the ``method`` and ``sigma`` keyword arguments, respectively.
 
 .. image:: http://joferkington.github.com/mplstereonet/images/contour_angelier_data.png
     :alt: Orientation density contours.
@@ -121,8 +121,6 @@ For an example, see parsing_example.py_::
 Additionally, you can find plane intersections and make other calculations by
 combining utility functions.  See plane_intersection.py_ and
 parse_anglier_data.py_ for examples.
-
-
 
 References
 ----------
