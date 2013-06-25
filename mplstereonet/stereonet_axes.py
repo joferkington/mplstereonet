@@ -192,8 +192,6 @@ class StereonetAxes(LambertAxes):
         Plot lines representing planes on the axes. Additional arguments and
         keyword arguments are passed on to `ax.plot`.
 
-        `strike` and `dip` may be sequences or single values.
-    
         Parameters
         ----------
         strike, dip : number or sequences of numbers
@@ -219,8 +217,6 @@ class StereonetAxes(LambertAxes):
         Plot points representing poles to planes on the axes. Additional
         arguments and keyword arguments are passed on to `ax.plot`.
 
-        `strike` and `dip` may be sequences or single values.
-
         Parameters
         ----------
         strike, dip : numbers or sequences of numbers
@@ -242,8 +238,6 @@ class StereonetAxes(LambertAxes):
         """
         Plot points representing lineations along planes on the axes.
         Additional arguments and keyword arguments are passed on to `plot`.
-
-        `strike`, `dip`, and `rake_angle` may be sequences or single values.
 
         Parameters
         ----------
@@ -272,8 +266,6 @@ class StereonetAxes(LambertAxes):
         Plot points representing linear features on the axes. Additional
         arguments and keyword arguments are passed on to `plot`.
 
-        `plunge` and `bearing` may be sequences or single values.
-    
         Parameters
         ----------
         plunge, bearing : number or sequence of numbers

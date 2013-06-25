@@ -95,8 +95,6 @@ def antipode(lon, lat):
     Calculates the antipode (opposite point on the globe) of the given point or
     points. Input and output is expected to be in radians.
 
-    `lon` and `lat` may be sequences or single values.
-
     Parameters
     ----------
     lon : number or sequence of numbers
@@ -121,8 +119,6 @@ def plane(strike, dip, segments=100):
     Calculates the longitude and latitude of `segments` points along the 
     stereonet projection of each plane with a given `strike` and `dip` in 
     degrees.
-    
-    `strike` and `dip` may be sequences or single values.
     
     Parameters
     ----------
@@ -160,8 +156,6 @@ def pole(strike, dip):
     Calculates the longitude and latitude of the pole(s) to the plane(s) 
     specified by `strike` and `dip`, given in degrees.
 
-    `strike` and `dip` may be sequences or single values.
-    
     Parameters
     ----------
     strike : number or sequence of numbers
@@ -186,8 +180,6 @@ def rake(strike, dip, rake_angle):
     Calculates the longitude and latitude of the linear feature(s) specified by
     `strike`, `dip`, and `rake_angle`.
 
-    `strike`, `dip`, and `rake_angle` may be sequences or single values.
-    
     Parameters
     ----------
     strike : number or sequence of numbers
@@ -223,8 +215,6 @@ def line(plunge, bearing):
     Calculates the longitude and latitude of the linear feature(s) specified by
     `plunge` and `bearing`.
 
-    `plunge` and `bearing` may be sequences or single values.
-    
     Parameters
     ----------
     plunge : number or sequence of numbers
@@ -251,8 +241,6 @@ def plunge_bearing2pole(plunge, bearing):
     pole to the plane returned would plot at the same point as the specified
     plunge and bearing.)
 
-    `plunge` and `bearing` may be sequences or single values.
-    
     Parameters
     ----------
     plunge : number or sequence of numbers
