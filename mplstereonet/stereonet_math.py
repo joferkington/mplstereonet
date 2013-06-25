@@ -33,12 +33,14 @@ def sph2cart(lon, lat):
 
     Parameters
     ----------
-        lon : Longitude in radians
-        lat : Latitude in radians
+    lon : array-like
+        Longitude in radians
+    lat : array-like
+        Latitude in radians
 
     Returns
     -------
-        `x`, `y`, `z` : Arrays of cartesian coordinates
+    `x`, `y`, `z` : Arrays of cartesian coordinates
     """
     x = np.cos(lat)*np.cos(lon)
     y = np.cos(lat)*np.sin(lon)
@@ -53,12 +55,12 @@ def cart2sph(x, y, z):
 
     Parameters
     ----------
-        `x`, `y`, `z` : Arrays of cartesian coordinates
+    `x`, `y`, `z` : Arrays of cartesian coordinates
 
     Returns
     -------
-        lon : Longitude in radians
-        lat : Latitude in radians
+    lon : Longitude in radians
+    lat : Latitude in radians
     """
     r = np.sqrt(x**2 + y**2 + z**2)
     lat = np.arcsin(z/r)
@@ -97,15 +99,16 @@ def antipode(lon, lat):
 
     Parameters
     ----------
-        lon : number or sequence of numbers
-            Longitude in radians
-        lat : number or sequence of numbers
-            Latitude in radians
+    lon : number or sequence of numbers
+        Longitude in radians
+    lat : number or sequence of numbers
+        Latitude in radians
 
     Returns
     -------
-        lon, lat: Sequences (regardless of whether or not the input was a 
-            single value or a sequence) of longitude and latitude in radians.
+    lon, lat : arrays
+        Sequences (regardless of whether or not the input was a single value or
+        a sequence) of longitude and latitude in radians.
     """
     lon, lat = np.atleast_1d(lon, lat)
     anti_lat = -lat
@@ -123,16 +126,21 @@ def plane(strike, dip, segments=100):
     
     Parameters
     ----------
-        strike : The strike of the plane(s) in degrees, with dip direction 
-            indicated by the azimuth (e.g. 315 vs. 135) specified following the
-            "right hand rule". 
-        dip : The dip of the plane(s) in degrees.         
-        segments : The number of points in the returned `lon` and `lat` arrays.
-            Defaults to 100 segments.
+    strike : number or sequence of numbers
+        The strike of the plane(s) in degrees, with dip direction indicated by
+        the azimuth (e.g. 315 vs. 135) specified following the "right hand
+        rule". 
+    dip : number or sequence of numbers
+        The dip of the plane(s) in degrees.         
+    segments : number or sequence of numbers
+        The number of points in the returned `lon` and `lat` arrays.  Defaults
+        to 100 segments.
     
-    Returns:
-        lon, lat : num_segments x num_strikes arrays of longitude and latitude
-            in radians.
+    Returns
+    -------
+    lon, lat : arrays
+        `num_segments` x `num_strikes` arrays of longitude and latitude in
+        radians.
     """
     strikes, dips = np.atleast_1d(strike, dip)
     lons = np.zeros((segments, strikes.size), dtype=np.float)
@@ -156,13 +164,16 @@ def pole(strike, dip):
     
     Parameters
     ----------
-        strike : The strike of the plane(s) in degrees, with dip direction 
-            indicated by the azimuth (e.g. 315 vs. 135) specified following the
-            "right hand rule". 
-        dip : The dip of the plane(s) in degrees.     
+    strike : number or sequence of numbers
+        The strike of the plane(s) in degrees, with dip direction indicated by
+        the azimuth (e.g. 315 vs. 135) specified following the "right hand
+        rule". 
+    dip : number or sequence of numbers
+        The dip of the plane(s) in degrees.     
 
-    Returns:
-        lon, lat : Arrays of longitude and latitude in radians.
+    Returns
+    -------
+    lon, lat : Arrays of longitude and latitude in radians.
     """
     strike, dip = np.atleast_1d(strike, dip)
     # Plot the approriate point for a strike of 0 and rotate it
@@ -179,17 +190,21 @@ def rake(strike, dip, rake_angle):
     
     Parameters
     ----------
-        strike : The strike of the plane(s) in degrees, with dip direction 
-            indicated by the azimuth (e.g. 315 vs. 135) specified following the
-            "right hand rule". 
-        dip : The dip of the plane(s) in degrees. 
-        rake_angle : The angle of the lineation on the plane measured in degrees
-            downward from horizontal. Zero degrees corresponds to the "right-
-            hand" direction indicated by the strike, while 180 degrees or a 
-            negative angle corresponds to the opposite direction.
+    strike : number or sequence of numbers
+        The strike of the plane(s) in degrees, with dip direction indicated by
+        the azimuth (e.g. 315 vs. 135) specified following the "right hand
+        rule". 
+    dip : number or sequence of numbers
+        The dip of the plane(s) in degrees. 
+    rake_angle : number or sequence of numbers
+        The angle of the lineation on the plane measured in degrees downward
+        from horizontal. Zero degrees corresponds to the "right- hand"
+        direction indicated by the strike, while 180 degrees or a negative
+        angle corresponds to the opposite direction.
     
-    Returns:
-        lon, lat : Arrays of longitude and latitude in radians.
+    Returns
+    -------
+    lon, lat : Arrays of longitude and latitude in radians.
     """
     strike, dip, rake_angle = np.atleast_1d(strike, dip, rake_angle)
     # Plot the approriate point for a strike of 0 and rotate it
@@ -212,13 +227,15 @@ def line(plunge, bearing):
     
     Parameters
     ----------
-        plunge : The plunge of the line(s) in degrees. The plunge is measured 
-            in degrees downward from the end of the feature specified by the 
-            bearing.         
-        bearing : The bearing (azimuth) of the line(s) in degrees.
+    plunge : number or sequence of numbers
+        The plunge of the line(s) in degrees. The plunge is measured in degrees
+        downward from the end of the feature specified by the bearing.         
+    bearing : number or sequence of numbers
+        The bearing (azimuth) of the line(s) in degrees.
 
-    Returns:
-        lon, lat : Arrays of longitude and latitude in radians.
+    Returns
+    -------
+    lon, lat : Arrays of longitude and latitude in radians.
     """
     plunge, bearing = np.atleast_1d(plunge, bearing)
     # Plot the approriate point for a bearing of 0 and rotate it
@@ -238,15 +255,16 @@ def plunge_bearing2pole(plunge, bearing):
     
     Parameters
     ----------
-        plunge : The plunge of the line(s) in degrees. The plunge is measured 
-            in degrees downward from the end of the feature specified by the 
-            bearing.         
-        bearing : The bearing (azimuth) of the line(s) in degrees.
+    plunge : number or sequence of numbers
+        The plunge of the line(s) in degrees. The plunge is measured in degrees
+        downward from the end of the feature specified by the bearing.         
+    bearing : number or sequence of numbers
+        The bearing (azimuth) of the line(s) in degrees.
 
-    Returns:
-    --------
-        strike, dip : Arrays of strikes and dips in degrees following the 
-            right-hand-rule.
+    Returns
+    -------
+    strike, dip : arrays
+        Arrays of strikes and dips in degrees following the right-hand-rule.
     """
     plunge, bearing = np.atleast_1d(plunge, bearing)
     strike = bearing + 90
@@ -258,15 +276,20 @@ def mean_vector(lons, lats):
     """
     Returns the resultant vector from a series of longitudes and latitudes
 
-    Parameters:
-    -----------
-        lons : A sequence of longitudes (in radians)
-        lats : A sequence of latitudes (in radians)
+    Parameters
+    ----------
+        lons : array-like
+            A sequence of longitudes (in radians)
+        lats : array-like
+            A sequence of latitudes (in radians)
 
-    Returns:
-        mean_vec : A tuple of (lon, lat) in radians
-        r_value : The magnitude of the resultant vector (between 0 and 1)
-            This represents the degree of clustering in the data.
+    Returns
+    -------
+    mean_vec : tuple
+        (lon, lat) in radians
+    r_value : number
+        The magnitude of the resultant vector (between 0 and 1) This represents
+        the degree of clustering in the data.
     """
     xyz = sph2cart(lons, lats)
     xyz = np.vstack(xyz).T
@@ -280,15 +303,19 @@ def geographic2pole(lon, lat):
     Converts a longitude and latitude (from a stereonet) into the strike and dip
     of the plane whose pole lies at the given longitude(s) and latitude(s).
 
-    Parameters:
-    -----------
-        lon : A sequence of longitudes (or a single longitude) in radians
-        lat : A sequence of latitudes (or a single latitude) in radians
+    Parameters
+    ----------
+    lon : array-like
+        A sequence of longitudes (or a single longitude) in radians
+    lat : array-like
+        A sequence of latitudes (or a single latitude) in radians
 
-    Returns:
-    --------
-        strike : A sequence of strikes in degrees
-        dip : A sequence of dips in degrees
+    Returns
+    -------
+    strike : array
+        A sequence of strikes in degrees
+    dip : array
+        A sequence of dips in degrees
     """
     plunge, bearing = geographic2plunge_bearing(lon, lat)
     strike = bearing + 90 
@@ -301,15 +328,18 @@ def geographic2plunge_bearing(lon, lat):
     Converts longitude and latitude in stereonet coordinates into a 
     plunge/bearing.
 
-    Parameters:
-    -----------
-        lon, lat : Sequences of (or single) longitudes and latitudes in radians
-            as measured from a lower-hemisphere stereonet
+    Parameters
+    ----------
+    lon, lat : numbers or sequences of numbers
+        Longitudes and latitudes in radians as measured from a
+        lower-hemisphere stereonet
 
-    Returns:
-    --------
-        plunge : The plunge of the vector in degrees downward from horizontal.
-        bearing : The bearing of the vector in degrees clockwise from north.
+    Returns
+    -------
+    plunge : array
+        The plunge of the vector in degrees downward from horizontal.
+    bearing : array
+        The bearing of the vector in degrees clockwise from north.
     """
     lon, lat = np.atleast_1d(lon, lat)
     x, y, z = sph2cart(lon, lat)
@@ -342,17 +372,20 @@ def plane_intersection(strike1, dip1, strike2, dip2):
 
     Also accepts sequences of strike1s, dip1s, strike2s, dip2s.
 
-    Parameters:
-    -----------
-        strike1, dip1 : The strike and dip (in degrees, following the 
-            right-hand-rule) of the first plane(s).
-        strike2, dip2 : The strike and dip (in degrees, following the 
-            right-hand-rule) of the second plane(s).
+    Parameters
+    ----------
+    strike1, dip1 : numbers or sequences of numbers
+        The strike and dip (in degrees, following the right-hand-rule) of the
+        first plane(s).
+    strike2, dip2 : numbers or sequences of numbers
+        The strike and dip (in degrees, following the right-hand-rule) of the
+        second plane(s).
 
-    Returns:
-    --------
-        plunge, bearing : The plunge and bearing(s) (in degrees) of the line 
-            representing the intersection of the two planes.
+    Returns
+    -------
+    plunge, bearing : arrays
+        The plunge and bearing(s) (in degrees) of the line representing the
+        intersection of the two planes.
     """
     norm1 = sph2cart(*pole(strike1, dip1))
     norm2 = sph2cart(*pole(strike2, dip2))
@@ -368,21 +401,23 @@ def project_onto_plane(strike, dip, plunge, bearing):
     This is also useful for finding the rake angle of a feature that already
     intersects the plane in question.
 
-    Parameters:
-    -----------
-        strike, dip : The strike and dip (in degrees, following the 
-            right-hand-rule) or a sequence of strikes and dips of the plane(s).
-        plunge, bearing : The plunge and bearing (in degrees) or a sequence of
-            plunges and bearings of the linear feature(s) to be projected onto
-            the plane.
+    Parameters
+    ----------
+    strike, dip : numbers or sequences of numbers
+        The strike and dip (in degrees, following the right-hand-rule) of the
+        plane(s).  
+    plunge, bearing : numbers or sequences of numbers
+        The plunge and bearing (in degrees) or of the linear feature(s) to be
+        projected onto the plane.
 
-    Returns:
-    --------
-        rake : A sequence of rake angles measured downwards from horizontal in 
-            degrees.  Zero degrees corresponds to the "right- hand" direction
-            indicated by the strike, while a negative angle corresponds to the
-            opposite direction. Rakes returned by this function will always be
-            between -90 and 90 (inclusive).
+    Returns
+    -------
+    rake : array
+        A sequence of rake angles measured downwards from horizontal in
+        degrees.  Zero degrees corresponds to the "right- hand" direction
+        indicated by the strike, while a negative angle corresponds to the
+        opposite direction. Rakes returned by this function will always be
+        between -90 and 90 (inclusive).
     """
     # Project the line onto the plane
     norm = sph2cart(*pole(strike, dip))
@@ -408,17 +443,20 @@ def azimuth2rake(strike, dip, azimuth):
     """
     Projects an azimuth of a linear feature onto a plane as a rake angle.
 
-    Parameters:
-    -----------
-        strike, dip : The strike and dip of the plane in degrees following the
-            right-hand-rule.
-        azimuth : The azimuth of the linear feature in degrees clockwise from
-            north (i.e. a 0-360 azimuth).
+    Parameters
+    ----------
+    strike, dip : numbers
+        The strike and dip of the plane in degrees following the
+        right-hand-rule.
+    azimuth : numbers
+        The azimuth of the linear feature in degrees clockwise from north (i.e.
+        a 0-360 azimuth).
 
-    Returns:
-    --------
-        rake : A rake angle in degrees measured downwards from horizontal. 
-            Negative values correspond to the opposite end of the strike.
+    Returns
+    -------
+    rake : number
+        A rake angle in degrees measured downwards from horizontal.  Negative
+        values correspond to the opposite end of the strike.
     """
     plunge, bearing = plane_intersection(strike, dip, azimuth, 90)
     rake = project_onto_plane(strike, dip, plunge, bearing)
@@ -431,11 +469,13 @@ def xyz2stereonet(x, y, z):
 
     Parameters
     ----------
-        x, y, z : Sequences of world coordinates
+    x, y, z : array-likes
+        Sequences of world coordinates
 
-    Returns:
-    --------
-        lon, lat : Sequences of longitudes and latitudes (in radians)
+    Returns
+    -------
+    lon, lat : arrays
+        Sequences of longitudes and latitudes (in radians)
     """
     x, y, z = np.atleast_1d(x, y, z)
     return cart2sph(-z, x, y)
@@ -447,13 +487,15 @@ def stereonet2xyz(lon, lat):
 
     Parameters
     ----------
-        lon, lat : Sequences of longitudes and latitudes (in radians) from a
-            lower-hemisphere stereonet
+    lon, lat : array-likes
+        Sequences of longitudes and latitudes (in radians) from a
+        lower-hemisphere stereonet
 
-    Returns:
-    --------
-        x, y, z : The world x,y,z components of the vectors represented by the 
-            lon, lat coordinates on the stereonet.
+    Returns
+    -------
+    x, y, z : arrays
+        The world x,y,z components of the vectors represented by the lon, lat
+        coordinates on the stereonet.
     """
     lon, lat = np.atleast_1d(lon, lat)
     x, y, z = sph2cart(lon, lat)
@@ -464,16 +506,21 @@ def vector2plunge_bearing(x, y, z):
     Converts a vector or series of vectors given as x, y, z in world
     coordinates into plunge/bearings.
 
-    Parameters:
-    -----------
-        x : The x-component(s) of the normal vector
-        y : The y-component(s) of the normal vector
-        z : The z-component(s) of the normal vector
+    Parameters
+    ----------
+    x : number or sequence of numbers
+        The x-component(s) of the normal vector
+    y : number or sequence of numbers
+        The y-component(s) of the normal vector
+    z : number or sequence of numbers
+        The z-component(s) of the normal vector
 
-    Returns:
-    --------
-        plunge : The plunge of the vector in degrees downward from horizontal.
-        bearing : The bearing of the vector in degrees clockwise from north.
+    Returns
+    -------
+    plunge : array
+        The plunge of the vector in degrees downward from horizontal.
+    bearing : array
+        The bearing of the vector in degrees clockwise from north.
     """
     return geographic2plunge_bearing(*xyz2stereonet(x,y,z))
 
@@ -485,18 +532,21 @@ def vector2pole(x, y, z):
     treated as a normal vector and this returns the strike/dip of the 
     corresponding plane.)
 
-    Parameters:
-    -----------
-        x : The x-component(s) of the normal vector
-        y : The y-component(s) of the normal vector
-        z : The z-component(s) of the normal vector
+    Parameters
+    ----------
+    x : number or sequence of numbers
+        The x-component(s) of the normal vector
+    y : number or sequence of numbers
+        The y-component(s) of the normal vector
+    z : number or sequence of numbers
+        The z-component(s) of the normal vector
 
-    Returns:
-    --------
-        strike : The strike of the plane, in degrees clockwise from north.
-            Dip direction is indicated by the "right hand rule".
-        dip : The dip of the plane, in degrees downward from horizontal
+    Returns
+    -------
+    strike : array
+        The strike of the plane, in degrees clockwise from north.  Dip
+        direction is indicated by the "right hand rule".
+    dip : array
+        The dip of the plane, in degrees downward from horizontal.
     """
     return  geographic2pole(*xyz2stereonet(x, y, z))
-
-

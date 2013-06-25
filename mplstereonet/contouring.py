@@ -43,65 +43,62 @@ def density_grid(*args, **kwargs):
 
     Parameters
     ----------
+    *args : A variable number of sequences of measurements. By default, this
+        will be expected to be `strike` & `dip`, both array-like sequences
+        representing poles to planes.  (Rake measurements require three
+        parameters, thus the variable number of arguments.) The `measurement`
+        kwarg controls how these arguments are interpreted.
+    measurement : {'poles', 'lines', 'rakes', 'radians'}, optional 
+        Controls how the input arguments are interpreted. Defaults to "poles".  
+        May be one of the following:
+            `"poles"` : Arguments are assumed to be sequences of strikes and
+                dips of planes. Poles to these planes are used for density
+                contouring.
+            `"lines"` : Arguments are assumed to be sequences of plunges and
+                bearings of linear features.  
+            `"rakes"` : Arguments are assumed to be sequences of strikes, dips,
+                and rakes along the plane.
+            `"radians"` : Arguments are assumed to be "raw" longitudes and
+                latitudes in the underlying projection's coordinate system.
+    method : {'exponential_kamb', 'linear_kamb', 'kamb', 'schmidt'}, optional 
+        The method of density estimation to use. Defaults to
+        ``"exponential_kamb"``. 
+        May be one of the following:
+            `"exponential_kamb"` : A modified Kamb method using exponential 
+                smoothing _[1]. Units are in numbers of standard deviations by
+                which the density estimate differs from uniform.
+            `"linear_kamb"` : A modified Kamb method using linear smoothing
+                _[1]. Units are in numbers of standard deviations by which the
+                density estimate differs from uniform.
+            `"kamb"` : Kamb's method _[2] with no smoothing. Units are in
+                numbers of standard deviations by which the density estimate
+                differs from uniform.
+            `"schmidt"` : The traditional "Schmidt" (a.k.a. 1%) method. Counts
+                points within a counting circle comprising 1% of the total area
+                of the hemisphere. Does not take into account sample size.
+                Units are in points per 1% area.
+    sigma : int or float, optional
+        The number of standard deviations defining the expected number of
+        standard deviations by which a random sample from a uniform
+        distribution of points would be expected to vary from being evenly
+        distributed across the hemisphere.  This controls the size of the
+        counting circle, and therefore the degree of smoothing.  Higher sigmas
+        will lead to more smoothing of the resulting density distribution. This
+        parameter only applies to Kamb-based methods.  Defaults to 3.
+    gridsize : int or 2-item tuple of ints, optional
+        The size of the grid that the density is estimated on. If a single int
+        is given, it is interpreted as an NxN grid. If a tuple of ints is given
+        it is interpreted as (nrows, ncols).  Defaults to 100.
 
-        *args : A variable number of sequences of measurements. By default, this
-            will be expected to be `strike` & `dip`, both array-like sequences
-            representing poles to planes.  (Rake measurements require three
-            parameters, thus the variable number of arguments.) The
-            `measurement` kwarg controls how these arguments are interpreted.
-        measurement : string, optional 
-            Controls how the input arguments are interpreted. Defaults to
-            "poles".  
-            May be one of the following:
-                "poles" : Arguments are assumed to be sequences of strikes and 
-                    dips of planes. Poles to these planes are used for density
-                    contouring.
-                "lines" : Arguments are assumed to be sequences of plunges and
-                    bearings of linear features.  
-                "rakes" : Arguments are assumed to be sequences of strikes,
-                    dips, and rakes along the plane.
-                "radians" : Arguments are assumed to be "raw" longitudes and
-                    latitudes in the underlying projection's coordinate system.
-        method : string, optional 
-            The method of density estimation to use. Defaults to
-            "exponential_kamb". 
-            May be one of the following:
-                "exponential_kamb" : A modified Kamb method using exponential 
-                    smoothing _[1]. Units are in numbers of standard deviations
-                    by which the density estimate differs from uniform.
-                "linear_kamb" : A modified Kamb method using linear smoothing 
-                    _[1]. Units are in numbers of standard deviations by which
-                    the density estimate differs from uniform.
-                "kamb" : Kamb's method _[2] with no smoothing. Units are in
-                    numbers of standard deviations by which the density
-                    estimate differs from uniform.
-                "schmidt" : The traditional "Schmidt" (a.k.a. 1%) method. Counts
-                    points within a counting circle comprising 1% of the total
-                    area of the hemisphere. Does not take into account sample
-                    size. Units are in points per 1% area.
-        sigma : int or float, optional
-            The number of standard deviations defining the expected number of
-            standard deviations by which a random sample from a uniform
-            distribution of points would be expected to vary from being evenly
-            distributed across the hemisphere.  This controls the size of the
-            counting circle, and therefore the degree of smoothing.  Higher
-            sigmas will lead to more smoothing of the resulting density
-            distribution. This parameter only applies to Kamb-based methods.
-            Defaults to 3.
-        gridsize : int or 2-item tuple of ints, optional
-            The size of the grid that the density is estimated on. If a single
-            int is given, it is interpreted as an NxN grid. If a tuple of ints
-            is given it is interpreted as (nrows, ncols).  Defaults to 100.
-
-    Returns:
+    Returns
     --------
-        xi, yi, zi : The longitude, latitude and density values of the regularly
-            gridded density estimates. Longitude and latitude are in radians.
+    xi, yi, zi : The longitude, latitude and density values of the regularly
+        gridded density estimates. Longitude and latitude are in radians.
         
-    See Also:
+    See Also
     ---------
-        `mplstereonet.StereonetAxes.density_contourf`
-        `mplstereonet.StereonetAxes.density_contour`
+    `mplstereonet.StereonetAxes.density_contourf`
+    `mplstereonet.StereonetAxes.density_contour`
 
     References
     ----------

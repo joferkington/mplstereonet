@@ -21,10 +21,10 @@ class StereonetAxes(LambertAxes):
         """Initialization is identical to a normal Axes object except for the
         following kwarg:
 
-        Parameters:
+        Parameters
         -----------
-            rotation : number
-                The rotation of the stereonet in degrees clockwise from North.
+        rotation : number
+            The rotation of the stereonet in degrees clockwise from North.
 
         All additional args and kwargs are identical to Axes.__init__
         """
@@ -154,12 +154,15 @@ class StereonetAxes(LambertAxes):
 
         Parameters
         ----------
-            angles : A sequence of floats specifying the tick locations in 
-                degrees.
-            labels : A sequence of strings to use as a label at each location.
-                Defaults to a formatted version of the specified angles.
-            frac : The radial location of the tick labels. 1.0 is the along the
-                edge, 1.1 would be outside, and 0.9 would be inside.
+        angles : sequence of numbers
+            The tick locations in degrees.
+        labels : sequence of strings 
+            The tick label at each location.  Defaults to a formatted version
+            of the specified angles.
+        frac : number
+            The radial location of the tick labels. 1.0 is the along the edge,
+            1.1 would be outside, and 0.9 would be inside.
+        **kwargs
             Additional parameters are text properties for the labels.
         """
         return self._polar.set_thetagrids(angles, labels, frac, **kwargs)
@@ -173,7 +176,9 @@ class StereonetAxes(LambertAxes):
 
         Parameters
         ----------
-            labels : A sequence of strings
+        labels : A sequence of strings
+            Azimuth tick labels
+        **kwargs
             Additional parameters are text properties for the labels.
         """
         return self._polar.set_xticklabels(labels, fontdict, **kwargs)
@@ -191,17 +196,19 @@ class StereonetAxes(LambertAxes):
     
         Parameters
         ----------
-            strike, dip : The strike and dip of the plane(s) in degrees. The 
-                dip direction is defined by the strike following the 
-                "right-hand rule". 
-            segments : The number of segments to use for the line. Defaults
-                to 100 segments.
+        strike, dip : number or sequences of numbers
+            The strike and dip of the plane(s) in degrees. The dip direction is
+            defined by the strike following the "right-hand rule". 
+        segments : int
+            The number of segments to use for the line. Defaults to 100
+            segments.
+        **kwargs
             Additional parameters are passed on to `plot`.
 
         Returns
         -------
-            A sequence of Line2D artists representing the lines specified by
-            `strike` and `dip`.
+        A sequence of Line2D artists representing the lines specified by
+        `strike` and `dip`.
         """
         segments = kwargs.pop('segments', 100)
         lon, lat = stereonet_math.plane(strike, dip, segments)
@@ -216,15 +223,16 @@ class StereonetAxes(LambertAxes):
 
         Parameters
         ----------
-            strike, dip : The strike and dip of the plane(s) in degrees. The 
-                dip direction is defined by the strike following the 
-                "right-hand rule". 
+        strike, dip : numbers or sequences of numbers
+            The strike and dip of the plane(s) in degrees. The dip direction is
+            defined by the strike following the "right-hand rule". 
+        **kwargs
             Additional parameters are passed on to `plot`.
 
         Returns
         -------
-            A sequence of Line2D artists representing the point(s) specified by
-            `strike` and `dip`.
+        A sequence of Line2D artists representing the point(s) specified by
+        `strike` and `dip`.
         """
         lon, lat = stereonet_math.pole(strike, dip)
         args, kwargs = self._point_plot_defaults(args, kwargs)
@@ -239,20 +247,21 @@ class StereonetAxes(LambertAxes):
 
         Parameters
         ----------
-            strike, dip : The strike and dip of the plane(s) in degrees. The 
-                dip direction is defined by the strike following the 
-                "right-hand rule". 
-            rake_angle : The angle of the lineation(s) on the plane(s) measured 
-                in degrees downward from horizontal. Zero degrees corresponds to 
-                the "right hand" direction indicated by the strike, while
-                negative angles are measured downward from the opposite strike
-                direction.
+        strike, dip : number or sequences of numbers
+            The strike and dip of the plane(s) in degrees. The dip direction is
+            defined by the strike following the "right-hand rule". 
+        rake_angle : number or sequences of numbers
+            The angle of the lineation(s) on the plane(s) measured in degrees
+            downward from horizontal. Zero degrees corresponds to the "right
+            hand" direction indicated by the strike, while negative angles are
+            measured downward from the opposite strike direction.
+        **kwargs
             Additional arguments are passed on to `plot`.
 
         Returns
         -------
-            A sequence of Line2D artists representing the point(s) specified by
-            `strike` and `dip`.
+        A sequence of Line2D artists representing the point(s) specified by
+        `strike` and `dip`.
         """
         lon, lat = stereonet_math.rake(strike, dip, rake_angle)
         args, kwargs = self._point_plot_defaults(args, kwargs)
@@ -267,15 +276,17 @@ class StereonetAxes(LambertAxes):
     
         Parameters
         ----------
-            plunge, bearing : The plunge and bearing of the line(s) in degrees.
-                The plunge is measured in degrees downward from the end of the
-                feature specified by the bearing. 
+        plunge, bearing : number or sequence of numbers
+            The plunge and bearing of the line(s) in degrees.  The plunge is
+            measured in degrees downward from the end of the feature specified
+            by the bearing. 
+        **kwargs
             Additional parameters are passed on to `plot`.
 
         Returns
         -------
-            A sequence of Line2D artists representing the point(s) specified by
-            `strike` and `dip`.
+        A sequence of Line2D artists representing the point(s) specified by
+        `strike` and `dip`.
         """
         lon, lat = stereonet_math.line(plunge, bearing)
         args, kwargs = self._point_plot_defaults(args, kwargs)
@@ -287,13 +298,16 @@ class StereonetAxes(LambertAxes):
         
         Parameters
         ----------
-            args : A tuple of arguments representing additional parameters to be 
-                passed to `self.plot`.
-            kwargs : A dict of keyword arguments representing additional 
-                parameters to be passed to `self.plot`
+        args : tuple
+            Arguments representing additional parameters to be passed to
+            `self.plot`.
+        kwargs : dict
+            Keyword arguments representing additional parameters to be passed
+            to `self.plot`.
+
         Returns
         -------
-            Modified versions of `args` and `kwargs`.
+        Modified versions of `args` and `kwargs`.
         """
         if args:
             return args, kwargs
@@ -324,106 +338,104 @@ class StereonetAxes(LambertAxes):
 
         Parameters
         ----------
-            *args : A variable number of sequences of measurements. 
-                By default, this will be expected to be `strike` & `dip`, both
-                array-like sequences representing poles to planes.  (Rake
-                measurements require three parameters, thus the variable number
-                of arguments.) The `measurement` kwarg controls how these 
-                arguments are interpreted.
-            measurement : string, optional 
-                Controls how the input arguments are interpreted. Defaults to
-                "poles".  May be one of the following:
-                    "poles" : Arguments are assumed to be sequences of strikes
-                        and dips of planes. Poles to these planes are used for
-                        density contouring.
-                    "lines" : Arguments are assumed to be sequences of plunges
-                        and bearings of linear features.  
-                    "rakes" : Arguments are assumed to be sequences of strikes,
-                        dips, and rakes along the plane.
-                    "radians" : Arguments are assumed to be "raw" longitudes
-                        and latitudes in the underlying projection's coordinate
-                        system.
-            method : string, optional 
-                The method of density estimation to use. Defaults to
-                "exponential_kamb". May be one of the following:
-                "exponential_kamb" : A modified Kamb method using exponential 
-                    smoothing _[1]. Units are in numbers of standard deviations
-                    by which the density estimate differs from uniform.
-                "linear_kamb" : A modified Kamb method using linear smoothing 
-                    _[1]. Units are in numbers of standard deviations by which
-                    the density estimate differs from uniform.
-                "kamb" : Kamb's method _[2] with no smoothing. Units are in
-                    numbers of standard deviations by which the density
-                    estimate differs from uniform.
-                "schmidt" : The traditional "Schmidt" (a.k.a. 1%) method. Counts
-                    points within a counting circle comprising 1% of the total
-                    area of the hemisphere. Does not take into account sample
-                    size. Units are in points per 1% area.
-            sigma : int or float, optional
-                The number of standard deviations defining the expected number
-                of standard deviations by which a random sample from a uniform
-                distribution of points would be expected to vary from being 
-                evenly distributed across the hemisphere.  This controls the 
-                size of the counting circle, and therefore the degree of 
-                smoothing.  Higher sigmas will lead to more smoothing of the
-                resulting density distribution. This parameter only applies to 
-                Kamb-based methods.  Defaults to 3.
-            gridsize : int or 2-item tuple of ints, optional
-                The size of the grid that the density is estimated on. If a 
-                single int is given, it is interpreted as an NxN grid. If a
-                tuple of ints is given it is interpreted as (nrows, ncols). 
-                Defaults to 100.
-
-            Additional keyword arguments are passed on to matplotlib's `contour`
-            function.
+        *args : A variable number of sequences of measurements. 
+            By default, this will be expected to be `strike` & `dip`, both
+            array-like sequences representing poles to planes.  (Rake
+            measurements require three parameters, thus the variable number of
+            arguments.) The `measurement` kwarg controls how these arguments
+            are interpreted.
+        measurement : {'poles', 'lines', 'rakes', 'radians'}, optional 
+            Controls how the input arguments are interpreted. Defaults to
+            "poles".  May be one of the following:
+                "poles" : Arguments are assumed to be sequences of strikes
+                    and dips of planes. Poles to these planes are used for
+                    density contouring.
+                "lines" : Arguments are assumed to be sequences of plunges
+                    and bearings of linear features.  
+                "rakes" : Arguments are assumed to be sequences of strikes,
+                    dips, and rakes along the plane.
+                "radians" : Arguments are assumed to be "raw" longitudes
+                    and latitudes in the underlying projection's coordinate
+                    system.
+        method : {'exponential_kamb', 'linear_kamb', 'kamb', 'schmidt'} optional 
+            The method of density estimation to use. Defaults to
+            "exponential_kamb". May be one of the following:
+            "exponential_kamb" : A modified Kamb method using exponential
+                smoothing _[1]. Units are in numbers of standard deviations by
+                which the density estimate differs from uniform.
+            "linear_kamb" : A modified Kamb method using linear smoothing _[1].
+                Units are in numbers of standard deviations by which the
+                density estimate differs from uniform.
+            "kamb" : Kamb's method _[2] with no smoothing. Units are in numbers
+                of standard deviations by which the density estimate differs
+                from uniform.
+            "schmidt" : The traditional "Schmidt" (a.k.a. 1%) method. Counts
+                points within a counting circle comprising 1% of the total area
+                of the hemisphere. Does not take into account sample size.
+                Units are in points per 1% area.
+        sigma : int or float, optional
+            The number of standard deviations defining the expected number of
+            standard deviations by which a random sample from a uniform
+            distribution of points would be expected to vary from being evenly
+            distributed across the hemisphere.  This controls the size of the
+            counting circle, and therefore the degree of smoothing.  Higher
+            sigmas will lead to more smoothing of the resulting density
+            distribution. This parameter only applies to Kamb-based methods.
+            Defaults to 3.
+        gridsize : int or 2-item tuple of ints, optional
+            The size of the grid that the density is estimated on. If a single
+            int is given, it is interpreted as an NxN grid. If a tuple of ints
+            is given it is interpreted as (nrows, ncols).  Defaults to 100.
+        **kwargs
+            Additional keyword arguments are passed on to matplotlib's
+            `contour` function.
 
         Returns:
         --------
-            A matplotlib ContourSet.
+        A matplotlib ContourSet.
 
         See Also:
         ---------
-            mplstereonet.density_grid
-            mplstereonet.StereonetAxes.density_contourf
-            matplotlib.pyplot.contour
-            matplotlib.pyplot.clabel
-
+        mplstereonet.density_grid
+        mplstereonet.StereonetAxes.density_contourf
+        matplotlib.pyplot.contour
+        matplotlib.pyplot.clabel
 
         Examples:
         ---------
-            Plot density contours of poles to the specified planes using a
-            modified Kamb method with exponential smoothing [1]_.
+        Plot density contours of poles to the specified planes using a
+        modified Kamb method with exponential smoothing [1]_.
 
-            >>> strikes, dips = [120, 315, 86], [22, 85, 31]
-            >>> ax.density_contour(strikes, dips)
+        >>> strikes, dips = [120, 315, 86], [22, 85, 31]
+        >>> ax.density_contour(strikes, dips)
 
-            Plot density contours of a set of linear orientation measurements.
+        Plot density contours of a set of linear orientation measurements.
 
-            >>> plunges, bearings = [-10, 20, -30], [120, 315, 86]
-            >>> ax.density_contour(plunges, bearings, measurement='lines')
+        >>> plunges, bearings = [-10, 20, -30], [120, 315, 86]
+        >>> ax.density_contour(plunges, bearings, measurement='lines')
 
-            Plot density contours of a set of rake measurements.
+        Plot density contours of a set of rake measurements.
 
-            >>> strikes, dips, rakes = [120, 315, 86], [22, 85, 31], [-5, 20, 9]
-            >>> ax.density_contour(strikes, dips, rakes, measurement='rakes')
+        >>> strikes, dips, rakes = [120, 315, 86], [22, 85, 31], [-5, 20, 9]
+        >>> ax.density_contour(strikes, dips, rakes, measurement='rakes')
 
-            Plot density contours of a set of "raw" longitudes and latitudes.
+        Plot density contours of a set of "raw" longitudes and latitudes.
 
-            >>> lon, lat = np.radians([-40, 30, -85]), np.radians([21, -59, 45])
-            >>> ax.density_contour(lon, lat, measurement='radians')
+        >>> lon, lat = np.radians([-40, 30, -85]), np.radians([21, -59, 45])
+        >>> ax.density_contour(lon, lat, measurement='radians')
 
 
-            Plot density contours of poles to planes using a Kamb method [2]_
-            with the density estimated on a 10x10 grid (in long-lat space) 
+        Plot density contours of poles to planes using a Kamb method [2]_
+        with the density estimated on a 10x10 grid (in long-lat space) 
 
-            >>> strikes, dips = [120, 315, 86], [22, 85, 31]
-            >>> ax.density_contour(strikes, dips, method='kamb', gridsize=10)
+        >>> strikes, dips = [120, 315, 86], [22, 85, 31]
+        >>> ax.density_contour(strikes, dips, method='kamb', gridsize=10)
 
-            Plot density contours of poles to planes with contours at [1,2,3]
-            standard deviations.
+        Plot density contours of poles to planes with contours at [1,2,3]
+        standard deviations.
 
-            >>> strikes, dips = [120, 315, 86], [22, 85, 31]
-            >>> ax.density_contour(strikes, dips, levels=[1,2,3])
+        >>> strikes, dips = [120, 315, 86], [22, 85, 31]
+        >>> ax.density_contour(strikes, dips, levels=[1,2,3])
 
         References
         ----------
@@ -447,108 +459,105 @@ class StereonetAxes(LambertAxes):
 
         Parameters
         ----------
-            *args : A variable number of sequences of measurements. 
-                By default, this will be expected to be `strike` & `dip`, both
-                array-like sequences representing poles to planes.  (Rake
-                measurements require three parameters, thus the variable number
-                of arguments.) The `measurement` kwarg controls how these 
-                arguments are interpreted.
-            measurement : string, optional 
-                Controls how the input arguments are interpreted. Defaults to
-                "poles".  May be one of the following:
-                    "poles" : Arguments are assumed to be sequences of strikes
-                        and dips of planes. Poles to these planes are used for
-                        density contouring.
-                    "lines" : Arguments are assumed to be sequences of plunges
-                        and bearings of linear features.  
-                    "rakes" : Arguments are assumed to be sequences of strikes,
-                        dips, and rakes along the plane.
-                    "radians" : Arguments are assumed to be "raw" longitudes
-                        and latitudes in the underlying projection's coordinate
-                        system.
-            method : string, optional 
-                The method of density estimation to use. Defaults to
-                "exponential_kamb". May be one of the following:
-                "exponential_kamb" : A modified Kamb method using exponential 
-                    smoothing _[1]. Units are in numbers of standard deviations
-                    by which the density estimate differs from uniform.
-                "linear_kamb" : A modified Kamb method using linear smoothing 
-                    _[1]. Units are in numbers of standard deviations by which
-                    the density estimate differs from uniform.
-                "kamb" : Kamb's method _[2] with no smoothing. Units are in
-                    numbers of standard deviations by which the density
-                    estimate differs from uniform.
-                "schmidt" : The traditional "Schmidt" (a.k.a. 1%) method. Counts
-                    points within a counting circle comprising 1% of the total
-                    area of the hemisphere. Does not take into account sample
-                    size. Units are in points per 1% area.
-            sigma : int or float, optional
-                The number of standard deviations defining the expected number
-                of standard deviations by which a random sample from a uniform
-                distribution of points would be expected to vary from being 
-                evenly distributed across the hemisphere.  This controls the 
-                size of the counting circle, and therefore the degree of 
-                smoothing.  Higher sigmas will lead to more smoothing of the
-                resulting density distribution. This parameter only applies to 
-                Kamb-based methods.  Defaults to 3.
-            gridsize : int or 2-item tuple of ints, optional
-                The size of the grid that the density is estimated on. If a 
-                single int is given, it is interpreted as an NxN grid. If a
-                tuple of ints is given it is interpreted as (nrows, ncols).
-                Defaults to 100.
-
+        *args : A variable number of sequences of measurements. 
+            By default, this will be expected to be `strike` & `dip`, both
+            array-like sequences representing poles to planes.  (Rake
+            measurements require three parameters, thus the variable number of
+            arguments.) The `measurement` kwarg controls how these arguments
+            are interpreted.
+        measurement : {'poles', 'lines', 'rakes', 'radians'}, optional 
+            Controls how the input arguments are interpreted. Defaults to
+            "poles".  May be one of the following:
+                "poles" : Arguments are assumed to be sequences of strikes and
+                    dips of planes. Poles to these planes are used for density
+                    contouring.
+                "lines" : Arguments are assumed to be sequences of plunges and
+                    bearings of linear features.  
+                "rakes" : Arguments are assumed to be sequences of strikes,
+                    dips, and rakes along the plane.
+                "radians" : Arguments are assumed to be "raw" longitudes and
+                    latitudes in the underlying projection's coordinate system.
+        method : {'exponential_kamb', 'linear_kamb', 'kamb', 'schmidt'} optional 
+            The method of density estimation to use. Defaults to
+            "exponential_kamb". May be one of the following:
+            "exponential_kamb" : A modified Kamb method using exponential
+                smoothing _[1]. Units are in numbers of standard deviations by
+                which the density estimate differs from uniform.
+            "linear_kamb" : A modified Kamb method using linear smoothing _[1].
+                Units are in numbers of standard deviations by which the
+                density estimate differs from uniform.
+            "kamb" : Kamb's method _[2] with no smoothing. Units are in numbers
+                of standard deviations by which the density estimate differs
+                from uniform.
+            "schmidt" : The traditional "Schmidt" (a.k.a. 1%) method. Counts
+                points within a counting circle comprising 1% of the total area
+                of the hemisphere. Does not take into account sample size.
+                Units are in points per 1% area.
+        sigma : int or float, optional
+            The number of standard deviations defining the expected number of
+            standard deviations by which a random sample from a uniform
+            distribution of points would be expected to vary from being evenly
+            distributed across the hemisphere.  This controls the size of the
+            counting circle, and therefore the degree of smoothing.  Higher
+            sigmas will lead to more smoothing of the resulting density
+            distribution. This parameter only applies to Kamb-based methods.
+            Defaults to 3.
+        gridsize : int or 2-item tuple of ints, optional
+            The size of the grid that the density is estimated on. If a single
+            int is given, it is interpreted as an NxN grid. If a tuple of ints
+            is given it is interpreted as (nrows, ncols).  Defaults to 100.
+        **kwargs
             Additional keyword arguments are passed on to matplotlib's
             `contourf` function.
 
         Returns:
         --------
-            A matplotlib `QuadContourSet`.
+        A matplotlib `QuadContourSet`.
 
         See Also:
         ---------
-            `mplstereonet.density_grid`
-            `mplstereonet.StereonetAxes.density_contour`
-            `matplotlib.pyplot.contourf`
-            `matplotlib.pyplot.clabel`
-
+        `mplstereonet.density_grid`
+        `mplstereonet.StereonetAxes.density_contour`
+        `matplotlib.pyplot.contourf`
+        `matplotlib.pyplot.clabel`
 
         Examples:
         ---------
-            Plot filled density contours of poles to the specified planes using
-            a modified Kamb method with exponential smoothing [1]_.
+        Plot filled density contours of poles to the specified planes using
+        a modified Kamb method with exponential smoothing [1]_.
 
-            >>> strikes, dips = [120, 315, 86], [22, 85, 31]
-            >>> ax.density_contourf(strikes, dips)
+        >>> strikes, dips = [120, 315, 86], [22, 85, 31]
+        >>> ax.density_contourf(strikes, dips)
 
-            Plot filled density contours of a set of linear orientation
-            measurements.
+        Plot filled density contours of a set of linear orientation
+        measurements.
 
-            >>> plunges, bearings = [-10, 20, -30], [120, 315, 86]
-            >>> ax.density_contourf(plunges, bearings, measurement='lines')
+        >>> plunges, bearings = [-10, 20, -30], [120, 315, 86]
+        >>> ax.density_contourf(plunges, bearings, measurement='lines')
 
-            Plot filled density contours of a set of rake measurements.
+        Plot filled density contours of a set of rake measurements.
 
-            >>> strikes, dips, rakes = [120, 315, 86], [22, 85, 31], [-5, 20, 9]
-            >>> ax.density_contourf(strikes, dips, rakes, measurement='rakes')
+        >>> strikes, dips, rakes = [120, 315, 86], [22, 85, 31], [-5, 20, 9]
+        >>> ax.density_contourf(strikes, dips, rakes, measurement='rakes')
 
-            Plot filled density contours of a set of "raw" longitudes and
-            latitudes.
+        Plot filled density contours of a set of "raw" longitudes and
+        latitudes.
 
-            >>> lon, lat = np.radians([-40, 30, -85]), np.radians([21, -59, 45])
-            >>> ax.density_contourf(lon, lat, measurement='radians')
+        >>> lon, lat = np.radians([-40, 30, -85]), np.radians([21, -59, 45])
+        >>> ax.density_contourf(lon, lat, measurement='radians')
 
 
-            Plot filled density contours of poles to planes using a Kamb method
-            [2]_ with the density estimated on a 10x10 grid (in long-lat space) 
+        Plot filled density contours of poles to planes using a Kamb method
+        [2]_ with the density estimated on a 10x10 grid (in long-lat space) 
 
-            >>> strikes, dips = [120, 315, 86], [22, 85, 31]
-            >>> ax.density_contourf(strikes, dips, method='kamb', gridsize=10)
+        >>> strikes, dips = [120, 315, 86], [22, 85, 31]
+        >>> ax.density_contourf(strikes, dips, method='kamb', gridsize=10)
 
-            Plot filled density contours of poles to planes with contours at
-            [1,2,3] standard deviations.
+        Plot filled density contours of poles to planes with contours at
+        [1,2,3] standard deviations.
 
-            >>> strikes, dips = [120, 315, 86], [22, 85, 31]
-            >>> ax.density_contourf(strikes, dips, levels=[1,2,3])
+        >>> strikes, dips = [120, 315, 86], [22, 85, 31]
+        >>> ax.density_contourf(strikes, dips, levels=[1,2,3])
 
         References
         ----------

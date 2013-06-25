@@ -15,17 +15,20 @@ def parse_strike_dip(strike, dip):
     For example, this would convert a strike of "N30E" and a dip of "45NW" to
     a strike of 210 and a dip of 45.
 
-    Parameters:
-    -----------
-        strike : A string representing a strike measurement. May be in azimuth 
-            or quadrant format. 
-        dip : A string representing the dip angle and direction of a plane.
+    Parameters
+    ----------
+    strike : string
+        A strike measurement. May be in azimuth or quadrant format. 
+    dip : string
+        The dip angle and direction of a plane.
 
-    Returns:
-    --------
-        azi : A float representing the azimuth of the strike of the plane with
-            dip direction indicated following the right-hand-rule.
-        dip : A float representing the dip of the plane.
+    Returns
+    -------
+    azi : float
+        Azimuth in degrees of the strike of the plane with dip direction
+        indicated following the right-hand-rule.
+    dip : float
+        Dip of the plane in degrees.
     """
     strike = parse_azimuth(strike)
     dip, direction = split_trailing_letters(dip)
@@ -58,18 +61,20 @@ def parse_rake(strike, dip, rake):
     If no directions are specified, the measuriement is assumed to follow the 
     usual right-hand-rule convention.
 
-    Parameters:
-    -----------
-        strike : A string representing a strike measurement. May be in azimuth 
-            or quadrant format. 
-        dip : A string representing the dip angle and direction of a plane.
-        rake : A string representing the rake angle and direction that the rake
-            is measured from.
+    Parameters
+    ----------
+    strike : string
+        A strike measurement. May be in azimuth or quadrant format. 
+    dip : string
+        The dip angle and direction of a plane.
+    rake : string
+        The rake angle and direction that the rake is measured from.
 
-    Returns:
-    --------
-        strike, dip, rake : Floating point measurements of strike, dip, and rake
-            following the conventions outlined above.
+    Returns
+    -------
+    strike, dip, rake : floats
+        Measurements of strike, dip, and rake following the conventions
+        outlined above.
     """
     strike, dip = parse_strike_dip(strike, dip)
     rake, direction = split_trailing_letters(rake)
@@ -97,13 +102,19 @@ def parse_plunge_bearing(plunge, bearing):
     specified direction corresponds to the opposite end specified by the
     bearing.
 
-    Parameters:
-    -----------
-        plunge : A string representing a plunge measurement.
-        bearing : A string representing a bearing measurement. May be in azimuth
-            or quadrant format.
+    Parameters
+    ----------
+    plunge : string
+        A plunge measurement.
+    bearing : string
+        A bearing measurement. May be in azimuth or quadrant format.
 
-    Examples:
+    Returns
+    -------
+    plunge, bearing: floats
+        The plunge and bearing following the conventions outlined above.
+
+    Examples
     ---------
 
         >>> parse_plunge_bearing("30NW", 160)
@@ -167,19 +178,21 @@ def parse_azimuth(azimuth):
     """
     Parses an azimuth measurement in azimuth or quadrant format.
 
-    Parameters:
+    Parameters
     -----------
-        azimuth : A string or number representing an azimuth
+    azimuth : string or number 
+        An azimuth measurement in degrees or a quadrant measurement of azimuth.
 
     Returns:
     --------
-        azi : A float in the range 0-360
+    azi : float
+        The azimuth in degrees clockwise from north (range: 0-360)
 
     See Also:
     ---------
-        `parse_quadrant_measurement`
-        `parse_strike_dip`
-        `parse_plunge_bearing`
+    `parse_quadrant_measurement`
+    `parse_strike_dip`
+    `parse_plunge_bearing`
     """
     try:
         azimuth = float(azimuth)
@@ -199,18 +212,19 @@ def parse_quadrant_measurement(quad_azimuth):
 
     For ambiguous quadrant measurements such as "N30S", a ValueError is raised.
 
-    Parameters:
+    Parameters
     -----------
-        quad_azimuth : A string representing a strike measurement in quadrant 
-            form.
+    quad_azimuth : string 
+        An azimuth measurement in quadrant form.
 
     Returns:
     --------
-        azi : An azimuth in degrees clockwise from north.
+    azi : float
+        An azimuth in degrees clockwise from north.
 
     See Also:
     ---------
-        `parse_azimuth`
+    `parse_azimuth`
     """
     def rotation_direction(first, second):
         return np.cross(_azimuth2vec(first), _azimuth2vec(second))
@@ -240,4 +254,3 @@ def parse_quadrant_measurement(quad_azimuth):
         azi -= 360
 
     return azi
-
