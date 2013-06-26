@@ -97,8 +97,8 @@ def density_grid(*args, **kwargs):
         
     See Also
     ---------
-    `mplstereonet.StereonetAxes.density_contourf`
-    `mplstereonet.StereonetAxes.density_contour`
+    mplstereonet.StereonetAxes.density_contourf
+    mplstereonet.StereonetAxes.density_contour
 
     References
     ----------

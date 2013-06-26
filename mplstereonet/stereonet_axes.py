@@ -311,8 +311,8 @@ class StereonetAxes(LambertAxes):
         return args, kwargs
 
     def _contour_helper(self, args, kwargs):
-        """Unify defaults and common functionality of density_contour and 
-        density_contourf."""
+        """Unify defaults and common functionality of ``density_contour`` and 
+        ``density_contourf``."""
         contour_kwargs = {}
         contour_kwargs['measurement'] = kwargs.pop('measurement', 'poles')
         contour_kwargs['method'] = kwargs.pop('method', 'exponential_kamb')
