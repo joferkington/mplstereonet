@@ -318,6 +318,7 @@ class StereonetAxes(LambertAxes):
         contour_kwargs['method'] = kwargs.pop('method', 'exponential_kamb')
         contour_kwargs['sigma'] = kwargs.pop('sigma', 3)
         contour_kwargs['gridsize'] = kwargs.pop('gridsize', 100)
+        contour_kwargs['weights'] = kwargs.pop('weights', 1)
         lon, lat, totals = contouring.density_grid(*args, **contour_kwargs)
         return lon, lat, totals, kwargs
 
@@ -378,6 +379,10 @@ class StereonetAxes(LambertAxes):
             The size of the grid that the density is estimated on. If a single
             int is given, it is interpreted as an NxN grid. If a tuple of ints
             is given it is interpreted as (nrows, ncols).  Defaults to 100.
+        weights : array-like, optional
+            The relative weight to be applied to each input measurement. The array
+            will be normalized to sum to 1, so absolute value of the weights do not
+            affect the result.
         **kwargs
             Additional keyword arguments are passed on to matplotlib's
             `contour` function.
@@ -498,6 +503,10 @@ class StereonetAxes(LambertAxes):
             The size of the grid that the density is estimated on. If a single
             int is given, it is interpreted as an NxN grid. If a tuple of ints
             is given it is interpreted as (nrows, ncols).  Defaults to 100.
+        weights : array-like, optional
+            The relative weight to be applied to each input measurement. The array
+            will be normalized to sum to 1, so absolute value of the weights do not
+            affect the result.
         **kwargs
             Additional keyword arguments are passed on to matplotlib's
             `contourf` function.

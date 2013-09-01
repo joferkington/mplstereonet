@@ -8,6 +8,10 @@ def _count_points(lons, lats, func, sigma, gridsize=(100,100), weights=1):
     to all input points at each counter station, and then calculates the
     density using "func".  Each input point is weighted by the corresponding
     item of "weights".  The weights are normalized to 1 before calculation."""
+    # Normalize the weights
+    weights = np.asarray(weights, dtype=np.float)
+    weights /= weights.mean()
+
     # Generate a regular grid of "counters" to measure on...
     bound = np.pi / 2.0 + 0.1 # We need to go a bit beyond the bounds...
     nrows, ncols = gridsize
@@ -26,6 +30,7 @@ def _count_points(lons, lats, func, sigma, gridsize=(100,100), weights=1):
     for i, xyz in enumerate(xyz_counters):
         cos_dist = np.abs(np.dot(xyz, xyz_points.T))
         density, scale = func(cos_dist, sigma)
+        density *= weights
         totals[i] = (density.sum() - 0.5) / scale
 
     # Traditionally, the negative values (while valid, as they represent areas
@@ -91,6 +96,10 @@ def density_grid(*args, **kwargs):
         The size of the grid that the density is estimated on. If a single int
         is given, it is interpreted as an NxN grid. If a tuple of ints is given
         it is interpreted as (nrows, ncols).  Defaults to 100.
+    weights : array-like, optional
+        The relative weight to be applied to each input measurement. The array
+        will be normalized to sum to 1, so absolute value of the weights do not
+        affect the result.
 
     Returns
     --------
@@ -116,6 +125,7 @@ def density_grid(*args, **kwargs):
         return x, y
     measurement = kwargs.get('measurement', 'poles')
     gridsize = kwargs.get('gridsize', 100)
+    weights = kwargs.get('weights', 1)
     try:
         gridsize = int(gridsize)
         gridsize = (gridsize, gridsize)
@@ -136,7 +146,7 @@ def density_grid(*args, **kwargs):
             'kamb':_kamb_count,
             'exponential_kamb':_exponential_kamb,
             }[method]
-    lon, lat, z = _count_points(lon, lat, func, sigma, gridsize)
+    lon, lat, z = _count_points(lon, lat, func, sigma, gridsize, weights)
     return lon, lat, z
 
 def _kamb_radius(n, sigma):
