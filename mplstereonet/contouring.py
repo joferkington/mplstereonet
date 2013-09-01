@@ -3,10 +3,11 @@ from . import stereonet_math
 
 def _count_points(lons, lats, func, sigma, gridsize=(100,100), weights=1):
     """This function actually calculates the point density of the input ("lons"
-    and "lats") points at a series of "counter stations". Creates "num" counter
-    stations on a regular lon, lat grid around a hemisphere, calculate the
-    distance to all input points at each counter station, and then calculate
-    the density using "func"."""
+    and "lats") points at a series of counter stations. Creates "gridsize"
+    regular grid of counter stations in lat-long space, calculates the distance
+    to all input points at each counter station, and then calculates the
+    density using "func".  Each input point is weighted by the corresponding
+    item of "weights".  The weights are normalized to 1 before calculation."""
     # Generate a regular grid of "counters" to measure on...
     bound = np.pi / 2.0 + 0.1 # We need to go a bit beyond the bounds...
     nrows, ncols = gridsize
