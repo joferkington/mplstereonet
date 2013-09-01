@@ -19,7 +19,7 @@ def _count_points(lons, lats, func, sigma, gridsize=(100,100), weights=1):
     xyz_points = np.vstack(xyz_points).T
 
     # Basically, we can't model this as a convolution as we're not in cartesian
-    # space, so we have to iterate through and call the kernel function at 
+    # space, so we have to iterate through and call the kernel function at
     # each "counter".
     totals = np.zeros(xyz_counters.shape[0], dtype=np.float)
     for i, xyz in enumerate(xyz_counters):
@@ -49,23 +49,23 @@ def density_grid(*args, **kwargs):
         representing poles to planes.  (Rake measurements require three
         parameters, thus the variable number of arguments.) The `measurement`
         kwarg controls how these arguments are interpreted.
-    measurement : {'poles', 'lines', 'rakes', 'radians'}, optional 
-        Controls how the input arguments are interpreted. Defaults to "poles".  
+    measurement : {'poles', 'lines', 'rakes', 'radians'}, optional
+        Controls how the input arguments are interpreted. Defaults to "poles".
         May be one of the following:
             `"poles"` : Arguments are assumed to be sequences of strikes and
                 dips of planes. Poles to these planes are used for density
                 contouring.
             `"lines"` : Arguments are assumed to be sequences of plunges and
-                bearings of linear features.  
+                bearings of linear features.
             `"rakes"` : Arguments are assumed to be sequences of strikes, dips,
                 and rakes along the plane.
             `"radians"` : Arguments are assumed to be "raw" longitudes and
                 latitudes in the underlying projection's coordinate system.
-    method : {'exponential_kamb', 'linear_kamb', 'kamb', 'schmidt'}, optional 
+    method : {'exponential_kamb', 'linear_kamb', 'kamb', 'schmidt'}, optional
         The method of density estimation to use. Defaults to
-        ``"exponential_kamb"``. 
+        ``"exponential_kamb"``.
         May be one of the following:
-            `"exponential_kamb"` : A modified Kamb method using exponential 
+            `"exponential_kamb"` : A modified Kamb method using exponential
                 smoothing _[1]. Units are in numbers of standard deviations by
                 which the density estimate differs from uniform.
             `"linear_kamb"` : A modified Kamb method using linear smoothing
@@ -95,7 +95,7 @@ def density_grid(*args, **kwargs):
     --------
     xi, yi, zi : The longitude, latitude and density values of the regularly
         gridded density estimates. Longitude and latitude are in radians.
-        
+
     See Also
     ---------
     mplstereonet.StereonetAxes.density_contourf
@@ -141,7 +141,7 @@ def density_grid(*args, **kwargs):
 def _kamb_radius(n, sigma):
     """Radius of kernel for Kamb-style smoothing."""
     a = sigma**2 / (float(n) + sigma**2)
-    return (1 - a) 
+    return (1 - a)
 
 def _kamb_units(n, radius):
     """Normalization function for Kamb-style counting."""
@@ -154,7 +154,7 @@ def _exponential_kamb(cos_dist, sigma=3):
     n = float(cos_dist.size)
     f = 2 * (1.0 + n / sigma**2)
     count = np.exp(f * (cos_dist - 1))
-    units = np.sqrt(n * (f/2.0 - 1) / f**2) 
+    units = np.sqrt(n * (f/2.0 - 1) / f**2)
     return count, units
 
 def _linear_inverse_kamb(cos_dist, sigma=3):
@@ -164,7 +164,7 @@ def _linear_inverse_kamb(cos_dist, sigma=3):
     f = 2 / (1 - radius)
     cos_dist = cos_dist[cos_dist >= radius]
     count = (f * (cos_dist - radius))
-    return count, _kamb_units(n, radius) 
+    return count, _kamb_units(n, radius)
 
 def _square_inverse_kamb(cos_dist, sigma=3):
     """Kernel function from Vollemer for inverse square smoothing."""
