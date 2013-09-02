@@ -13,7 +13,7 @@ def _count_points(lons, lats, func, sigma, gridsize=(100,100), weights=1):
     weights /= weights.mean()
 
     # Generate a regular grid of "counters" to measure on...
-    bound = np.pi / 2.0 + 0.1 # We need to go a bit beyond the bounds...
+    bound = np.pi / 2.0
     nrows, ncols = gridsize
     xmin, xmax, ymin, ymax = -bound, bound, -bound, bound
     lon, lat = np.mgrid[xmin : xmax : ncols * 1j, ymin : ymax : nrows * 1j]
