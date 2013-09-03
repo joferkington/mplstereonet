@@ -2,7 +2,7 @@ import mplstereonet
 import numpy as np
 
 class TestDensityGridding:
-    def basic_value_test(self):
+    def test_basic_values(self):
         #------------------ Test default results ------------------------------
         x, y, result = mplstereonet.density_grid(0, 0, gridsize=(10,10))
         expected = np.array(
@@ -26,14 +26,14 @@ class TestDensityGridding:
              0.        ,  0.        ,  0.        ,  0.        ,  0.        ],
            [ 0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
              0.        ,  0.        ,  0.        ,  0.        ,  0.        ]])
-        np.testing.assert_array_equal(result, expected)
+        assert np.allclose(result, expected)
 
         #--------------- Test exponential kamb results ------------------------
         # The default is "exponential_kamb", so this should be the same as the
         # "expected" array above.
         x, y, result = mplstereonet.density_grid(0, 0, gridsize=(10,10),
                                                 method='exponential_kamb')
-        np.testing.assert_array_equal(result, expected)
+        assert np.allclose(result, expected)
 
         #----------------- Test linear kamb results ---------------------------
         x, y, result = mplstereonet.density_grid(0, 0, gridsize=(10,10),
@@ -59,9 +59,11 @@ class TestDensityGridding:
              0.08758584,  0.        ,  0.        ,  0.        ,  0.        ],
            [ 0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
              0.        ,  0.        ,  0.        ,  0.        ,  0.        ]])
-        np.testing.assert_array_equal(result, expected)
+        assert np.allclose(result, expected)
 
         #-------------- Test Traditional Kamb Results -------------------------
+        x, y, result = mplstereonet.density_grid(0, 0, gridsize=(10,10),
+                                                method='kamb')
         expected = np.array(
           [[ 0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
              0.        ,  0.        ,  0.        ,  0.        ,  0.        ],
@@ -83,7 +85,7 @@ class TestDensityGridding:
              1.66666667,  1.66666667,  1.66666667,  1.66666667,  0.        ],
            [ 0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
              0.        ,  0.        ,  0.        ,  0.        ,  0.        ]])
-        np.testing.assert_array_equal(result, expected)
+        assert np.allclose(result, expected)
 
     def test_gridsize_shape(self):
         x, y, z = mplstereonet.density_grid(0, 0, gridsize=(10,10))
