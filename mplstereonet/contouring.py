@@ -197,4 +197,6 @@ def _schmidt_count(cos_dist, sigma=None):
     """Schmidt (a.k.a. 1%) counting kernel function."""
     radius = 0.01
     count = ((1 - cos_dist) <= radius)
+    # To offset the count.sum() - 0.5 required for the kamb methods...
+    count = 0.5 / count.size + count
     return count, (cos_dist.size * radius)

@@ -86,6 +86,16 @@ class TestDensityGridding:
            [ 0.        ,  0.        ,  0.        ,  0.        ,  0.        ,
              0.        ,  0.        ,  0.        ,  0.        ,  0.        ]])
         assert np.allclose(result, expected)
+    
+        #----------- Test Schmidt (a.k.a. 1%) Results -------------------------
+        x, y, result = mplstereonet.density_grid(0, 0, gridsize=(5,5),
+                                                 method='schmidt')
+        expected = np.array([[   0.,    0.,    0.,    0.,    0.],
+                             [   0.,    0.,    0.,    0.,    0.],
+                             [   0.,    0.,  100.,    0.,    0.],
+                             [   0.,    0.,    0.,    0.,    0.],
+                             [   0.,    0.,    0.,    0.,    0.]])
+        assert np.allclose(result, expected)
 
     def test_gridsize_shape(self):
         x, y, z = mplstereonet.density_grid(0, 0, gridsize=(10,10))
