@@ -1,13 +1,15 @@
 import numpy as np
 from . import stereonet_math
 
-def _count_points(lons, lats, func, sigma, gridsize=(100,100), weights=1):
+def _count_points(lons, lats, func, sigma, gridsize=(100,100), weights=None):
     """This function actually calculates the point density of the input ("lons"
     and "lats") points at a series of counter stations. Creates "gridsize"
     regular grid of counter stations in lat-long space, calculates the distance
     to all input points at each counter station, and then calculates the
     density using "func".  Each input point is weighted by the corresponding
     item of "weights".  The weights are normalized to 1 before calculation."""
+    if weights in (None, False):
+        weights = 1
     # Normalize the weights
     weights = np.asarray(weights, dtype=np.float)
     weights /= weights.mean()
@@ -99,7 +101,7 @@ def density_grid(*args, **kwargs):
     weights : array-like, optional
         The relative weight to be applied to each input measurement. The array
         will be normalized to sum to 1, so absolute value of the weights do not
-        affect the result.
+        affect the result. Defaults to None.
 
     Returns
     --------
@@ -125,7 +127,7 @@ def density_grid(*args, **kwargs):
         return x, y
     measurement = kwargs.get('measurement', 'poles')
     gridsize = kwargs.get('gridsize', 100)
-    weights = kwargs.get('weights', 1)
+    weights = kwargs.get('weights', None)
     try:
         gridsize = int(gridsize)
         gridsize = (gridsize, gridsize)
