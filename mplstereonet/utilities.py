@@ -140,6 +140,52 @@ def parse_plunge_bearing(plunge, bearing):
 
     return plunge, bearing
 
+def dip_direction2strike(azimuth):
+    """
+    Converts a planar measurment of dip direction using the dip-azimuth
+    convention into a strike using the right-hand-rule.
+
+    Parameters
+    ----------
+    azimuth : number or string
+        The dip direction of the plane in degrees. This can be either a
+        numerical azimuth in the 0-360 range or a string representing a quadrant
+        measurement (e.g. N30W).
+
+    Returns
+    -------
+    strike : number
+        The strike of the plane in degrees following the right-hand-rule.
+    """
+    azimuth = parse_azimuth(azimuth)
+    strike = azimuth - 90
+    if strike < 0:
+        strike += 360
+    return strike
+
+def strike2dip_direction(strike):
+    """
+    Converts a planar measurement of strike using the right-hand-rule into the
+    dip direction (i.e. the direction that the plane dips).
+
+    Parameters
+    ----------
+    strike : number or string
+        The strike direction of the plane in degrees. This can be either a
+        numerical azimuth in the 0-360 range or a string representing a quadrant
+        measurement (e.g. N30W).
+
+    Returns
+    -------
+    azimuth : number
+        The dip direction of the plane in degrees (0-360).
+    """
+    strike = parse_azimuth(strike)
+    dip_direction = strike + 90
+    if dip_direction > 360:
+        dip_direction -= 360
+    return dip_direction
+
 def opposite_end(azimuth, quadrant):
     direc = quadrantletter_to_azimuth(quadrant)
     dot = np.dot(_azimuth2vec(direc), _azimuth2vec(azimuth))
