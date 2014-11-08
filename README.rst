@@ -8,6 +8,16 @@ for matplotlib.
     :align: center
     :target: https://github.com/joferkington/mplstereonet/blob/master/examples/equal_area_equal_angle_comparison.py
 
+What's New
+----------
+Major changes in ``mplstereonet-v0.3`` are:
+
+* Full python 3.x compatibility
+* Support for weighting density estimates
+* Better contour of density estimates near the poles
+* Utilities to convert between dip-azimuth/dip and strike/dip conventions (``dip_direction2strike`` and ``strike2dip_direction``)
+* The ``mplstereonet.antipode`` function to calculate the polar opposite of a point(s)
+
 Basic Usage
 -----------
 In most cases, you'll want to ``import mplstereonet`` and then make an axes
