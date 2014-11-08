@@ -10,7 +10,9 @@ from .utilities import parse_quadrant_measurement, parse_strike_dip, parse_rake
 from .utilities import parse_azimuth, parse_plunge_bearing
 from .convenience_functions import subplots
 
-__all__ = ['StereonetAxes', 'pole', 'plane', 'line', 'rake', 
+__version__ = '0.5-dev'
+
+__all__ = ['StereonetAxes', 'pole', 'plane', 'line', 'rake',
            'plunge_bearing2pole', 'geographic2pole', 'vector2plunge_bearing',
            'geographic2plunge_bearing', 'density_grid', 'plane_intersection',
            'xyz2stereonet', 'stereonet2xyz', 'vector2pole', 'antipode',
