@@ -315,6 +315,31 @@ def plunge_bearing2pole(plunge, bearing):
     strike[strike >= 360] -= 360
     return strike, dip
 
+def pole2plunge_bearing(strike, dip):
+    """
+    Converts the given *strike* and *dip* in dgrees of a plane(s) to a plunge
+    and bearing of its pole.
+
+    Parameters
+    ----------
+    strike : number or sequence of numbers
+        The strike of the plane(s) in degrees, with dip direction indicated by
+        the azimuth (e.g. 315 vs. 135) specified following the "right hand
+        rule".
+    dip : number or sequence of numbers
+        The dip of the plane(s) in degrees.
+
+    Returns
+    -------
+    plunge, bearing : arrays
+        Arrays of plunges and bearings of the pole to the plane(s) in degrees.
+    """
+    strike, dip = np.atleast_1d(strike, dip)
+    bearing = strike - 90
+    plunge = 90 - dip
+    bearing[bearing < 0] += 360
+    return plunge, bearing
+
 def mean_vector(lons, lats):
     """
     Returns the resultant vector from a series of longitudes and latitudes
