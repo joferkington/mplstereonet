@@ -67,7 +67,7 @@ def cart2sph(x, y, z):
     lon = np.arctan2(y, x)
     return lon, lat
 
-def _rotate(lon, lat, theta):
+def _rotate(lon, lat, theta, axis='x'):
     """
     Rotate "lon", "lat" coords (in _degrees_) about the X-axis by "theta"
     degrees.  This effectively simulates rotating a physical stereonet.
@@ -81,14 +81,30 @@ def _rotate(lon, lat, theta):
     # Convert to cartesian coords for the rotation
     x, y, z = sph2cart(lon, lat)
 
-    # This is just a rotation matrix for a rotation about the X-axis
+    lookup = {'x':_rotate_x, 'y':_rotate_y, 'z':_rotate_z}
+    X, Y, Z = lookup[axis](x, y, z, theta)
+
+    # Now convert back to spherical coords (longitude and latitude, ignore R)
+    lon, lat = cart2sph(X,Y,Z)
+    return lon, lat # in radians!
+
+def _rotate_x(x, y, z, theta):
     X = x
     Y = y*np.cos(theta) + z*np.sin(theta)
     Z = -y*np.sin(theta) + z*np.cos(theta)
+    return X, Y, Z
 
-    # Now convert back to spherical coords (longitude and latitude, ignore R)
-    lon, lat = cart2sph(X,Y,Z) 
-    return lon, lat # in radians!
+def _rotate_y(x, y, z, theta):
+    X = x*np.cos(theta) + -z*np.sin(theta)
+    Y = y
+    Z = x*np.sin(theta) + z*np.cos(theta)
+    return X, Y, Z
+
+def _rotate_z(x, y, z, theta):
+    X = y*np.cos(theta) + x*np.sin(theta)
+    Y = -y*np.sin(theta) + x*np.cos(theta)
+    Z = z
+    return X, Y, Z
 
 def antipode(lon, lat):
     """
@@ -185,15 +201,15 @@ def rake(strike, dip, rake_angle):
     strike : number or sequence of numbers
         The strike of the plane(s) in degrees, with dip direction indicated by
         the azimuth (e.g. 315 vs. 135) specified following the "right hand
-        rule". 
+        rule".
     dip : number or sequence of numbers
-        The dip of the plane(s) in degrees. 
+        The dip of the plane(s) in degrees.
     rake_angle : number or sequence of numbers
         The angle of the lineation on the plane measured in degrees downward
         from horizontal. Zero degrees corresponds to the "right- hand"
         direction indicated by the strike, while 180 degrees or a negative
         angle corresponds to the opposite direction.
-    
+
     Returns
     -------
     lon, lat : Arrays of longitude and latitude in radians.
@@ -219,7 +235,7 @@ def line(plunge, bearing):
     ----------
     plunge : number or sequence of numbers
         The plunge of the line(s) in degrees. The plunge is measured in degrees
-        downward from the end of the feature specified by the bearing.         
+        downward from the end of the feature specified by the bearing.
     bearing : number or sequence of numbers
         The bearing (azimuth) of the line(s) in degrees.
 
@@ -233,6 +249,42 @@ def line(plunge, bearing):
     lon = 0
     lon, lat = _rotate(lon, lat, bearing)
     return lon, lat
+
+def cone(plunge, bearing, angle, segments=100):
+    """
+    Calculates the longitude and latitude of the small circle (i.e. a cone)
+    centered at the given *plunge* and *bearing* with an apical angle of
+    *angle*, all in degrees.
+
+    Parameters
+    ----------
+    plunge : number or sequence of numbers
+        The plunge of the center of the cone(s) in degrees. The plunge is
+        measured in degrees downward from the end of the feature specified by
+        the bearing.
+    bearing : number or sequence of numbers
+        The bearing (azimuth) of the center of the cone(s) in degrees.
+    angle : number or sequence of numbers
+        The apical angle (i.e. radius) of the cone(s) in degrees.
+    segments : int, optional
+        The number of vertices in the small circle.
+
+    Returns
+    -------
+    lon, lat : arrays
+        `num_measurements` x `num_segments` arrays of longitude and latitude in
+        radians.
+    """
+    plunges, bearings, angles = np.atleast_1d(plunge, bearing, angle)
+    lons, lats = [], []
+    for plunge, bearing, angle in zip(plunges, bearings, angles):
+        lat = (90 - angle) * np.ones(segments, dtype=float)
+        lon = np.linspace(-180, 180, segments)
+        lon, lat = _rotate(lon, lat, -plunge, axis='y')
+        lon, lat = _rotate(np.degrees(lon), np.degrees(lat), bearing, axis='x')
+        lons.append(lon)
+        lats.append(lat)
+    return np.vstack(lons), np.vstack(lats)
 
 def plunge_bearing2pole(plunge, bearing):
     """

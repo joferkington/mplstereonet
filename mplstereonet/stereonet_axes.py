@@ -6,6 +6,10 @@ from matplotlib.projections import register_projection, LambertAxes
 from matplotlib.axes import Axes
 from matplotlib.ticker import NullLocator
 
+import matplotlib.path as mpath
+import matplotlib.patches as mpatches
+import matplotlib.collections as mcollections
+
 from . import stereonet_math
 from . import contouring
 from . import stereonet_transforms
@@ -186,6 +190,62 @@ class StereonetAxes(LambertAxes):
     def get_azimuth_ticklabels(self, minor=False):
         """Get the azimuth tick labels as a list of Text artists."""
         return self._polar.get_xticklabels(minor)
+
+    def cone(self, plunge, bearing, angle, segments=100, bidirectional=True,
+             **kwargs):
+        """
+        Plot a polygon of a small circle (a.k.a. a cone) with an angular radius
+        of *angle* centered at a p/b of *plunge*, *bearing*. Additional keyword
+        arguments are passed on to the ``PathCollection``.  (e.g. to have an
+        unfilled small small circle, pass "facecolor='none'".)
+
+        Parameters
+        ----------
+        plunge : number or sequence of numbers
+            The plunge of the center of the cone in degrees.
+        bearing : number or sequence of numbers
+            The bearing of the center of the cone in degrees.
+        angle : number or sequence of numbers
+            The angular radius of the cone in degrees.
+        segments : int, optional
+            The number of vertices to use for the cone. Defaults to 100.
+        bidirectional : boolean, optional
+            Whether or not to draw two patches (the one given and its antipode)
+            for each measurement. Defaults to True.
+        **kwargs
+            Additional parameters are ``matplotlib.collections.PatchCollection``
+            properties.
+
+        Returns
+        -------
+        collection : ``matplotlib.collections.PathCollection``
+
+        Notes
+        -----
+        If *bidirectional* is ``True``, two circles will be plotted, even if
+        only one of each pair is visible. This is the default behavior.
+        """
+        plunge, bearing, angle = np.atleast_1d(plunge, bearing, angle)
+        patches = []
+        lons, lats = stereonet_math.cone(plunge, bearing, angle, segments)
+        codes = mpath.Path.LINETO * np.ones(segments, dtype=np.uint8)
+        codes[0] = mpath.Path.MOVETO
+
+        if bidirectional:
+            p, b = -plunge, bearing + 180
+            alons, alats = stereonet_math.cone(p, b, angle, segments)
+            codes = np.hstack([codes, codes])
+            lons = np.hstack([lons, alons])
+            lats = np.hstack([lats, alats])
+
+        for lon, lat in zip(lons, lats):
+            xy = np.vstack([lon, lat]).T
+            path = mpath.Path(xy, codes)
+            patches.append(mpatches.PathPatch(path))
+
+        col = mcollections.PatchCollection(patches, **kwargs)
+        self.add_collection(col)
+        return col
 
     def plane(self, strike, dip, *args, **kwargs):
         """
