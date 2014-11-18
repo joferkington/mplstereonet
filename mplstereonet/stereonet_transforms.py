@@ -49,11 +49,11 @@ class BaseStereonetTransform(Transform):
 
     def inverted(self):
         """Return the inverse of the transform."""
-        # This is a bit of hackery so that we can put a single "inverse" 
+        # This is a bit of hackery so that we can put a single "inverse"
         # function here. If we just made "self._inverse_type" point to the class
-        # in question, it wouldn't be defined yet. This way, it's done at 
+        # in question, it wouldn't be defined yet. This way, it's done at
         # at runtime and we avoid the definition problem. Hackish, but better
-        # than repeating code everywhere or making a relatively complex 
+        # than repeating code everywhere or making a relatively complex
         # metaclass.
         inverse_type = globals()[self._inverse_type]
         return inverse_type(self._center_longitude, self._center_latitude,
@@ -62,7 +62,7 @@ class BaseStereonetTransform(Transform):
 
 
 
-# Both the Lambert and Stereographic projections are very mathematically 
+# Both the Lambert and Stereographic projections are very mathematically
 # similar, so we'll inherit from base classes that describes the common math.
 class BaseForwardTransform(BaseStereonetTransform):
     """A base class for both Lambert and Stereographic forward transforms."""

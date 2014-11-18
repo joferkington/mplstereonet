@@ -10,7 +10,7 @@ fig, ax = mplstereonet.subplots()
 
 # Generate a random scatter of planes around the given plane
 # All measurements follow the right-hand-rule to indicate dip direction
-strike, dip = 90, 80 
+strike, dip = 90, 80
 num = 10
 strikes = strike + 10 * np.random.randn(num)
 dips = dip + 10 * np.random.randn(num)
@@ -19,7 +19,7 @@ dips = dip + 10 * np.random.randn(num)
 # By default this uses a modified Kamb contouring technique with exponential
 # smoothing (See Vollmer, 1995)
 cax = ax.density_contourf(strikes, dips, measurement='poles')
-                          
+
 # Plot the poles as points on top of the contours
 ax.pole(strikes, dips)
 

@@ -1,8 +1,8 @@
-def subplots(nrows=1, ncols=1, sharex=False, sharey=False, squeeze=True, 
-            subplot_kw=None, hemisphere='lower', projection='equal_area', 
+def subplots(nrows=1, ncols=1, sharex=False, sharey=False, squeeze=True,
+            subplot_kw=None, hemisphere='lower', projection='equal_area',
             **fig_kw):
     """
-    Identical to matplotlib.pyplot.subplots, except that this will default to 
+    Identical to matplotlib.pyplot.subplots, except that this will default to
     producing equal-area stereonet axes.
 
     This prevents constantly doing:
@@ -14,7 +14,7 @@ def subplots(nrows=1, ncols=1, sharex=False, sharey=False, squeeze=True,
         >>> fig = plt.figure()
         >>> ax = fig.add_subplot(111, projection='stereonet')
 
-    Using this function also avoids having ``mplstereonet`` continually appear 
+    Using this function also avoids having ``mplstereonet`` continually appear
     to be an unused import when one of the above methods are used.
 
     Parameters
@@ -26,13 +26,13 @@ def subplots(nrows=1, ncols=1, sharex=False, sharey=False, squeeze=True,
       Number of columns of the subplot grid.  Defaults to 1.
 
     hemisphere : string
-        Currently this has no effect. When upper hemisphere and dual 
+        Currently this has no effect. When upper hemisphere and dual
         hemisphere plots are implemented, this will control which hemisphere
         is displayed.
 
     projection : string
         The projection for the axes. Defaults to 'equal_area'--an equal-area
-        (a.k.a. "Schmidtt") stereonet. May also be 'equal_angle' for an 
+        (a.k.a. "Schmidtt") stereonet. May also be 'equal_angle' for an
         equal-angle (a.k.a. "Wulff") stereonet or any other valid matplotlib
         projection (e.g. 'polar' or 'rectilinear' for a "normal" axes).
 
@@ -104,6 +104,6 @@ def subplots(nrows=1, ncols=1, sharex=False, sharey=False, squeeze=True,
     if subplot_kw == None:
         subplot_kw = {}
     subplot_kw['projection'] = projection
-    return plt.subplots(nrows, ncols, sharex=sharex, sharey=sharey, 
+    return plt.subplots(nrows, ncols, sharex=sharex, sharey=sharey,
                         squeeze=squeeze, subplot_kw=subplot_kw, **fig_kw)
 

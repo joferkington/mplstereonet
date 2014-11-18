@@ -16,7 +16,7 @@ class TestGeographic2various:
     def test_geographic2pole(self):
         for (strike, dip) in self.strike_dip:
             lon, lat = smath.pole(strike, dip)
-            assert np.allclose(smath.geographic2pole(lon, lat), 
+            assert np.allclose(smath.geographic2pole(lon, lat),
                                [[strike], [dip]])
 
     def test_geographic2plunge_bearing(self):
@@ -140,7 +140,7 @@ class TestPlaneIntersection:
         results = smath.plane_intersection(*planes)
         correct = np.array([item[1] for item in self.data]).T
         assert np.allclose(results, correct)
-        
+
 class TestAntipode:
     def setup(self):
         self.data = [

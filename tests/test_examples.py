@@ -14,7 +14,7 @@ def test_all_examples():
             compare_figure(filename, fig)
 
 def compare_figure(example_filename, fig):
-    """Compare a figure object with a previously saved image of it. 
+    """Compare a figure object with a previously saved image of it.
     "example_filename" is the filename of the python script used."""
     orig_image_filename = examples.image_filename(example_filename, fig)
     orig_image = Image.open(orig_image_filename)
@@ -31,7 +31,7 @@ def compare_text(example_filename, output_text):
     with open(examples.text_filename(example_filename), 'r') as infile:
         saved_text = infile.read()
         assert output_text == saved_text
-    
+
 def similar_images(orig_image, new_image, tol=1.0e-6):
     """Compare two PIL image objects and return a boolean True/False of whether
     they are similar (True) or not (False). "tol" is a unitless float between

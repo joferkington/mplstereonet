@@ -4,10 +4,10 @@ from . import stereonet_math as smath
 
 def parse_strike_dip(strike, dip):
     """
-    Parses strings of strike and dip and returns strike and dip measurements 
+    Parses strings of strike and dip and returns strike and dip measurements
     following the right-hand-rule.
 
-    Dip directions are parsed, and if the measurement does not follow the 
+    Dip directions are parsed, and if the measurement does not follow the
     right-hand-rule, the opposite end of the strike measurement is returned.
 
     Accepts either quadrant-formatted or azimuth-formatted strikes.
@@ -18,7 +18,7 @@ def parse_strike_dip(strike, dip):
     Parameters
     ----------
     strike : string
-        A strike measurement. May be in azimuth or quadrant format. 
+        A strike measurement. May be in azimuth or quadrant format.
     dip : string
         The dip angle and direction of a plane.
 
@@ -53,18 +53,18 @@ def parse_rake(strike, dip, rake):
 
     Accepts either quadrant-formatted or azimuth-formatted strikes.
 
-    For example, this would convert a strike of "N30E", dip of "45NW", with a 
+    For example, this would convert a strike of "N30E", dip of "45NW", with a
     rake of "10NE" to a strike of 210, dip of 45, and rake of 170.
 
     Rake angles returned by this function will always be between 0 and 180
 
-    If no directions are specified, the measuriement is assumed to follow the 
+    If no directions are specified, the measuriement is assumed to follow the
     usual right-hand-rule convention.
 
     Parameters
     ----------
     strike : string
-        A strike measurement. May be in azimuth or quadrant format. 
+        A strike measurement. May be in azimuth or quadrant format.
     dip : string
         The dip angle and direction of a plane.
     rake : string
@@ -226,7 +226,7 @@ def parse_azimuth(azimuth):
 
     Parameters
     -----------
-    azimuth : string or number 
+    azimuth : string or number
         An azimuth measurement in degrees or a quadrant measurement of azimuth.
 
     Returns:
@@ -260,7 +260,7 @@ def parse_quadrant_measurement(quad_azimuth):
 
     Parameters
     -----------
-    quad_azimuth : string 
+    quad_azimuth : string
         An azimuth measurement in quadrant form.
 
     Returns:
@@ -292,7 +292,7 @@ def parse_quadrant_measurement(quad_azimuth):
     # Catch ambiguous measurements such as N10S and raise an error
     if abs(direc) < 0.9:
         raise ValueError('{} is not a valid azimuth'.format(quad_azimuth))
-        
+
     # Ensure that 0 <= azi <= 360
     if azi < 0:
         azi += 360

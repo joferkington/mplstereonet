@@ -10,7 +10,7 @@ A stereonet in <long,lat> coordinates:
            *         *
             *       *
                ***
-             <0,-90>                  
+             <0,-90>
 
 If strike=0, plotting lines, rakes, planes or poles to planes is simple.  For a
 plane, it's a line of constant longitude at long=90-dip.  For a line, it's a
@@ -19,7 +19,7 @@ lat=90-rake.  These points can then be rotated to the proper strike. (A
 rotation matrix around the X-axis is much simpler than the trig otherwise
 necessary!)
 
-All of these assume that strikes and dips follow the "right-hand-rule". 
+All of these assume that strikes and dips follow the "right-hand-rule".
 In other words, if we're facing in the direction given for the strike, the plane
 dips to our right.
 """
@@ -27,7 +27,7 @@ import numpy as np
 
 def sph2cart(lon, lat):
     """
-    Converts a longitude and latitude (or sequence of lons and lats) given in 
+    Converts a longitude and latitude (or sequence of lons and lats) given in
     _radians_ to cartesian coordinates, `x`, `y`, `z`, where x=0, y=0, z=0 is
     the center of the globe.
 
@@ -132,22 +132,22 @@ def antipode(lon, lat):
 
 def plane(strike, dip, segments=100):
     """
-    Calculates the longitude and latitude of `segments` points along the 
-    stereonet projection of each plane with a given `strike` and `dip` in 
+    Calculates the longitude and latitude of `segments` points along the
+    stereonet projection of each plane with a given `strike` and `dip` in
     degrees.
-    
+
     Parameters
     ----------
     strike : number or sequence of numbers
         The strike of the plane(s) in degrees, with dip direction indicated by
         the azimuth (e.g. 315 vs. 135) specified following the "right hand
-        rule". 
+        rule".
     dip : number or sequence of numbers
-        The dip of the plane(s) in degrees.         
+        The dip of the plane(s) in degrees.
     segments : number or sequence of numbers
         The number of points in the returned `lon` and `lat` arrays.  Defaults
         to 100 segments.
-    
+
     Returns
     -------
     lon, lat : arrays
@@ -169,7 +169,7 @@ def plane(strike, dip, segments=100):
 
 def pole(strike, dip):
     """
-    Calculates the longitude and latitude of the pole(s) to the plane(s) 
+    Calculates the longitude and latitude of the pole(s) to the plane(s)
     specified by `strike` and `dip`, given in degrees.
 
     Parameters
@@ -177,9 +177,9 @@ def pole(strike, dip):
     strike : number or sequence of numbers
         The strike of the plane(s) in degrees, with dip direction indicated by
         the azimuth (e.g. 315 vs. 135) specified following the "right hand
-        rule". 
+        rule".
     dip : number or sequence of numbers
-        The dip of the plane(s) in degrees.     
+        The dip of the plane(s) in degrees.
 
     Returns
     -------
@@ -300,7 +300,7 @@ def plunge_bearing2pole(plunge, bearing):
     ----------
     plunge : number or sequence of numbers
         The plunge of the line(s) in degrees. The plunge is measured in degrees
-        downward from the end of the feature specified by the bearing.         
+        downward from the end of the feature specified by the bearing.
     bearing : number or sequence of numbers
         The bearing (azimuth) of the line(s) in degrees.
 
@@ -386,14 +386,14 @@ def geographic2pole(lon, lat):
         A sequence of dips in degrees
     """
     plunge, bearing = geographic2plunge_bearing(lon, lat)
-    strike = bearing + 90 
+    strike = bearing + 90
     strike[strike >= 360] -= 360
     dip = 90 - plunge
     return strike, dip
 
 def geographic2plunge_bearing(lon, lat):
     """
-    Converts longitude and latitude in stereonet coordinates into a 
+    Converts longitude and latitude in stereonet coordinates into a
     plunge/bearing.
 
     Parameters
@@ -463,7 +463,7 @@ def plane_intersection(strike1, dip1, strike2, dip2):
 
 def project_onto_plane(strike, dip, plunge, bearing):
     """
-    Projects a linear feature(s) onto the surface of a plane. Returns a rake 
+    Projects a linear feature(s) onto the surface of a plane. Returns a rake
     angle(s) along the plane.
 
     This is also useful for finding the rake angle of a feature that already
@@ -473,7 +473,7 @@ def project_onto_plane(strike, dip, plunge, bearing):
     ----------
     strike, dip : numbers or sequences of numbers
         The strike and dip (in degrees, following the right-hand-rule) of the
-        plane(s).  
+        plane(s).
     plunge, bearing : numbers or sequences of numbers
         The plunge and bearing (in degrees) or of the linear feature(s) to be
         projected onto the plane.
@@ -595,9 +595,9 @@ def vector2plunge_bearing(x, y, z):
 def vector2pole(x, y, z):
     """
     Converts a vector or series of vectors given as x, y, z in world
-    coordinates into the strike/dip of the planes whose normal vectors are 
-    parallel to the specified vectors.  (In other words, each xi,yi,zi is 
-    treated as a normal vector and this returns the strike/dip of the 
+    coordinates into the strike/dip of the planes whose normal vectors are
+    parallel to the specified vectors.  (In other words, each xi,yi,zi is
+    treated as a normal vector and this returns the strike/dip of the
     corresponding plane.)
 
     Parameters

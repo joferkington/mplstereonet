@@ -1,5 +1,5 @@
 """
-This is meant to serve as an example of slightly more complex parsing of 
+This is meant to serve as an example of slightly more complex parsing of
 orientation measurements.
 
 Angelier, 1979's seminal paper on paleostress determination includes a table
@@ -50,7 +50,7 @@ def load():
                 # normally.
                 strike, dip, rake = mplstereonet.parse_rake(strike, dip, rake)
             else:
-                # Otherwise, it's actually an azimuthal measurement of the 
+                # Otherwise, it's actually an azimuthal measurement of the
                 # slickenslide directions, so we need to convert it to a rake.
                 strike, dip = mplstereonet.parse_strike_dip(strike, dip)
                 azimuth = float(rake)

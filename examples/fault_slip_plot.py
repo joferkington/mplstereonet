@@ -15,7 +15,7 @@ import parse_angelier_data
 def main():
     # Load data from Angelier, 1979
     strikes, dips, rakes = parse_angelier_data.load()
-    
+
     params = dict(projection='stereonet', azimuth_ticks=[])
     fig, (ax1, ax2) = plt.subplots(ncols=2, subplot_kw=params)
 
@@ -68,7 +68,7 @@ def tangent_lineation_plot(ax, strikes, dips, rakes):
     pole_x, pole_y = mplstereonet.pole(strikes, dips)
 
     # Plot the arrows centered on the pole locations...
-    arrows = ax.quiver(pole_x, pole_y, u, v, width=1, headwidth=4, units='dots', 
+    arrows = ax.quiver(pole_x, pole_y, u, v, width=1, headwidth=4, units='dots',
                        pivot='middle')
     return arrows
 

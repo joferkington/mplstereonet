@@ -1,14 +1,14 @@
 """A quick visual comparison of equal area vs. equal angle nets."""
 import matplotlib.pyplot as plt
-import mplstereonet 
+import mplstereonet
 
 fig = plt.figure()
 
-# Make an "equal area" (a.k.a. "Schmidt") stereonet 
+# Make an "equal area" (a.k.a. "Schmidt") stereonet
 # (Lambert Azimuthal Equal Area Projection)
 ax1 = fig.add_subplot(1,2,1, projection='equal_area_stereonet')
 
-# Make an "equal angle" (a.k.a. "Wulff" or "True") stereonet 
+# Make an "equal angle" (a.k.a. "Wulff" or "True") stereonet
 # (Stereographic projection)
 ax2 = fig.add_subplot(1,2,2, projection='equal_angle_stereonet')
 

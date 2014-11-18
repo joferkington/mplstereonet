@@ -1,7 +1,7 @@
 """
-This figure illustrates the difference between the "internal" coordinate 
+This figure illustrates the difference between the "internal" coordinate
 system of longitude and latitude that plotting actually takes place in (e.g.
-if you were to use `ax.plot` or any other "raw" matplotlib command) and the 
+if you were to use `ax.plot` or any other "raw" matplotlib command) and the
 conceptual coordinate system that a lower-hemisphere stereonet represents.
 """
 import matplotlib.pyplot as plt

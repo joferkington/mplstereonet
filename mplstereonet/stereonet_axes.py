@@ -15,7 +15,7 @@ from . import contouring
 from . import stereonet_transforms
 
 class StereonetAxes(LambertAxes):
-    """An axes representing a lower-hemisphere "schmitt" (a.k.a. equal area) 
+    """An axes representing a lower-hemisphere "schmitt" (a.k.a. equal area)
     projection."""
     name = 'stereonet'
     RESOLUTION = 30
@@ -32,7 +32,7 @@ class StereonetAxes(LambertAxes):
 
         All additional args and kwargs are identical to Axes.__init__
         """
-        # There's also center_latitude and center_longitude, but I'm 
+        # There's also center_latitude and center_longitude, but I'm
         # deliberately keeping these undocumented until they're fully supported.
         self.horizon = np.radians(90)
         self._rotation = -np.radians(kwargs.pop('rotation', 0))
@@ -46,11 +46,11 @@ class StereonetAxes(LambertAxes):
                                     resolution)
 
     def _get_affine_transform(self):
-        """The affine portion of the base transform. This is called by 
+        """The affine portion of the base transform. This is called by
         LambertAxes._set_lim_and_transforms."""
         transform = self._get_core_transform(self.RESOLUTION)
         # How big is the projected globe?
-        xscale, _ = transform.transform_point((self.horizon, 0))  
+        xscale, _ = transform.transform_point((self.horizon, 0))
         _, yscale = transform.transform_point((0, np.pi / 2.0))
         # Create an affine transform to stretch the projection from 0-1
         return Affine2D() \
@@ -59,7 +59,7 @@ class StereonetAxes(LambertAxes):
             .translate(0.5, 0.5)
 
     def _set_lim_and_transforms(self):
-        """Setup the key transforms for the axes.""" 
+        """Setup the key transforms for the axes."""
         # Most of the transforms are set up correctly by LambertAxes
         LambertAxes._set_lim_and_transforms(self)
 
@@ -68,7 +68,7 @@ class StereonetAxes(LambertAxes):
         yaxis_stretch = Affine2D().scale(2 * self.horizon, 1.0)
         yaxis_stretch = yaxis_stretch.translate(-self.horizon, 0.0)
 
-        # These are identical to LambertAxes._set_lim_and_transforms, but we 
+        # These are identical to LambertAxes._set_lim_and_transforms, but we
         # need to update things to reflect the new "yaxis_stretch"
         yaxis_space = Affine2D().scale(1.0, 1.1)
         self._yaxis_transform = \
@@ -147,20 +147,20 @@ class StereonetAxes(LambertAxes):
             return self._hidden_polar_axes
         except AttributeError:
             fig = self.get_figure()
-            self._hidden_polar_axes = fig.add_axes(self.get_position(True), 
+            self._hidden_polar_axes = fig.add_axes(self.get_position(True),
                                         frameon=False, projection='polar')
             return self._hidden_polar_axes
 
     def set_azimuth_ticks(self, angles, labels=None, frac=None, **kwargs):
         """
         Sets the azimuthal tick locations (Note: tick lines are not currently
-        drawn or supported.).  
+        drawn or supported.).
 
         Parameters
         ----------
         angles : sequence of numbers
             The tick locations in degrees.
-        labels : sequence of strings 
+        labels : sequence of strings
             The tick label at each location.  Defaults to a formatted version
             of the specified angles.
         frac : number
@@ -280,7 +280,7 @@ class StereonetAxes(LambertAxes):
         ----------
         strike, dip : numbers or sequences of numbers
             The strike and dip of the plane(s) in degrees. The dip direction is
-            defined by the strike following the "right-hand rule". 
+            defined by the strike following the "right-hand rule".
         **kwargs
             Additional parameters are passed on to `plot`.
 
@@ -302,7 +302,7 @@ class StereonetAxes(LambertAxes):
         ----------
         strike, dip : number or sequences of numbers
             The strike and dip of the plane(s) in degrees. The dip direction is
-            defined by the strike following the "right-hand rule". 
+            defined by the strike following the "right-hand rule".
         rake_angle : number or sequences of numbers
             The angle of the lineation(s) on the plane(s) measured in degrees
             downward from horizontal. Zero degrees corresponds to the "right
@@ -330,7 +330,7 @@ class StereonetAxes(LambertAxes):
         plunge, bearing : number or sequence of numbers
             The plunge and bearing of the line(s) in degrees.  The plunge is
             measured in degrees downward from the end of the feature specified
-            by the bearing. 
+            by the bearing.
         **kwargs
             Additional parameters are passed on to `plot`.
 
@@ -344,9 +344,9 @@ class StereonetAxes(LambertAxes):
         return self.plot([lon], [lat], *args, **kwargs)
 
     def _point_plot_defaults(self, args, kwargs):
-        """To avoid confusion for new users, this ensures that "scattered" 
+        """To avoid confusion for new users, this ensures that "scattered"
         points are plotted by by `plot` instead of points joined by a line.
-        
+
         Parameters
         ----------
         args : tuple
@@ -370,7 +370,7 @@ class StereonetAxes(LambertAxes):
         return args, kwargs
 
     def _contour_helper(self, args, kwargs):
-        """Unify defaults and common functionality of ``density_contour`` and 
+        """Unify defaults and common functionality of ``density_contour`` and
         ``density_contourf``."""
         contour_kwargs = {}
         contour_kwargs['measurement'] = kwargs.pop('measurement', 'poles')
@@ -383,33 +383,33 @@ class StereonetAxes(LambertAxes):
 
     def density_contour(self, *args, **kwargs):
         """
-        Estimates point density of the given linear orientation measurements 
+        Estimates point density of the given linear orientation measurements
         (Interpreted as poles, lines, rakes, or "raw" longitudes and latitudes
         based on the `measurement` keyword argument.) and plots contour lines of
         the resulting density distribution.
 
         Parameters
         ----------
-        *args : A variable number of sequences of measurements. 
+        *args : A variable number of sequences of measurements.
             By default, this will be expected to be `strike` & `dip`, both
             array-like sequences representing poles to planes.  (Rake
             measurements require three parameters, thus the variable number of
             arguments.) The `measurement` kwarg controls how these arguments
             are interpreted.
-        measurement : {'poles', 'lines', 'rakes', 'radians'}, optional 
+        measurement : {'poles', 'lines', 'rakes', 'radians'}, optional
             Controls how the input arguments are interpreted. Defaults to
             "poles".  May be one of the following:
                 "poles" : Arguments are assumed to be sequences of strikes
                     and dips of planes. Poles to these planes are used for
                     density contouring.
                 "lines" : Arguments are assumed to be sequences of plunges
-                    and bearings of linear features.  
+                    and bearings of linear features.
                 "rakes" : Arguments are assumed to be sequences of strikes,
                     dips, and rakes along the plane.
                 "radians" : Arguments are assumed to be "raw" longitudes
                     and latitudes in the underlying projection's coordinate
                     system.
-        method : {'exponential_kamb', 'linear_kamb', 'kamb', 'schmidt'} optional 
+        method : {'exponential_kamb', 'linear_kamb', 'kamb', 'schmidt'} optional
             The method of density estimation to use. Defaults to
             "exponential_kamb". May be one of the following:
             "exponential_kamb" : A modified Kamb method using exponential
@@ -482,7 +482,7 @@ class StereonetAxes(LambertAxes):
 
 
         Plot density contours of poles to planes using a Kamb method [2]_
-        with the density estimated on a 10x10 grid (in long-lat space) 
+        with the density estimated on a 10x10 grid (in long-lat space)
 
         >>> strikes, dips = [120, 315, 86], [22, 85, 31]
         >>> ax.density_contour(strikes, dips, method='kamb', gridsize=10)
@@ -508,32 +508,32 @@ class StereonetAxes(LambertAxes):
 
     def density_contourf(self, *args, **kwargs):
         """
-        Estimates point density of the given linear orientation measurements 
+        Estimates point density of the given linear orientation measurements
         (Interpreted as poles, lines, rakes, or "raw" longitudes and latitudes
         based on the `measurement` keyword argument.) and plots filled contours
         of the resulting density distribution.
 
         Parameters
         ----------
-        *args : A variable number of sequences of measurements. 
+        *args : A variable number of sequences of measurements.
             By default, this will be expected to be `strike` & `dip`, both
             array-like sequences representing poles to planes.  (Rake
             measurements require three parameters, thus the variable number of
             arguments.) The `measurement` kwarg controls how these arguments
             are interpreted.
-        measurement : {'poles', 'lines', 'rakes', 'radians'}, optional 
+        measurement : {'poles', 'lines', 'rakes', 'radians'}, optional
             Controls how the input arguments are interpreted. Defaults to
             "poles".  May be one of the following:
                 "poles" : Arguments are assumed to be sequences of strikes and
                     dips of planes. Poles to these planes are used for density
                     contouring.
                 "lines" : Arguments are assumed to be sequences of plunges and
-                    bearings of linear features.  
+                    bearings of linear features.
                 "rakes" : Arguments are assumed to be sequences of strikes,
                     dips, and rakes along the plane.
                 "radians" : Arguments are assumed to be "raw" longitudes and
                     latitudes in the underlying projection's coordinate system.
-        method : {'exponential_kamb', 'linear_kamb', 'kamb', 'schmidt'} optional 
+        method : {'exponential_kamb', 'linear_kamb', 'kamb', 'schmidt'} optional
             The method of density estimation to use. Defaults to
             "exponential_kamb". May be one of the following:
             "exponential_kamb" : A modified Kamb method using exponential
@@ -608,7 +608,7 @@ class StereonetAxes(LambertAxes):
 
 
         Plot filled density contours of poles to planes using a Kamb method
-        [2]_ with the density estimated on a 10x10 grid (in long-lat space) 
+        [2]_ with the density estimated on a 10x10 grid (in long-lat space)
 
         >>> strikes, dips = [120, 315, 86], [22, 85, 31]
         >>> ax.density_contourf(strikes, dips, method='kamb', gridsize=10)
@@ -634,13 +634,13 @@ class StereonetAxes(LambertAxes):
 
 
 class EqualAngleAxes(StereonetAxes):
-    """An axes representing a lower-hemisphere "Wulff" (a.k.a. equal angle) 
+    """An axes representing a lower-hemisphere "Wulff" (a.k.a. equal angle)
     projection."""
     _base_transform = stereonet_transforms.StereographicTransform
     name = 'equal_angle_stereonet'
 
 class EqualAreaAxes(StereonetAxes):
-    """An axes representing a lower-hemisphere "Schmitt" (a.k.a. equal area) 
+    """An axes representing a lower-hemisphere "Schmitt" (a.k.a. equal area)
     projection."""
     name = 'equal_area_stereonet'
 

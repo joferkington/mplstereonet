@@ -2,10 +2,10 @@
 Basic quadrant, strike/dip, and rake parsing.
 
 `mplstereonet` expects measurements to follow the
-"right-hand-rule" (RHR) to indicate dip direction.  
+"right-hand-rule" (RHR) to indicate dip direction.
 
 If you have a set of measurements that don't necessarily follow the RHR, there
-are a number of parsing and standardization functions in `mplstereonet` to 
+are a number of parsing and standardization functions in `mplstereonet` to
 correct for this.
 """
 import mplstereonet

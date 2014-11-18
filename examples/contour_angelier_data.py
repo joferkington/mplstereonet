@@ -27,21 +27,21 @@ contours = [range(2, 18, 2), range(1,21,2), range(1,22,2)]
 # "Standard" Kamb contouring with different confidence levels.
 for sigma, ax, contour in zip([3, 2, 1], axes[:,0], contours):
     # We're reducing the gridsize to more closely match a traditional
-    # hand-contouring grid, similar to Kamb's original work and Vollmer's 
+    # hand-contouring grid, similar to Kamb's original work and Vollmer's
     # Figure 5. `gridsize=10` produces a 10x10 grid of density estimates.
-    plot(ax, strike, dip, rake, method='kamb', sigma=sigma, 
+    plot(ax, strike, dip, rake, method='kamb', sigma=sigma,
         levels=contour, gridsize=10)
 
 # Kamb contouring with inverse-linear smoothing (after Vollmer, 1995)
 for sigma, ax, contour in zip([3, 2, 1], axes[:,1], contours):
-    plot(ax, strike, dip, rake, method='linear_kamb', sigma=sigma, 
+    plot(ax, strike, dip, rake, method='linear_kamb', sigma=sigma,
         levels=contour)
     template = r'$E={}\sigma$ Contours: ${}\sigma,{}\sigma,\ldots$'
     ax.set_xlabel(template.format(sigma, *contour[:2]))
 
 # Kamb contouring with exponential smoothing (after Vollmer, 1995)
 for sigma, ax, contour in zip([3, 2, 1], axes[:,2], contours):
-    plot(ax, strike, dip, rake, method='exponential_kamb', sigma=sigma, 
+    plot(ax, strike, dip, rake, method='exponential_kamb', sigma=sigma,
         levels=contour)
 
 
