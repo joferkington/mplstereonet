@@ -256,10 +256,9 @@ class StereonetAxes(LambertAxes):
         ----------
         strike, dip : number or sequences of numbers
             The strike and dip of the plane(s) in degrees. The dip direction is
-            defined by the strike following the "right-hand rule". 
-        segments : int
-            The number of segments to use for the line. Defaults to 100
-            segments.
+            defined by the strike following the "right-hand rule".
+        segments : int, optional
+            The number of vertices to use for the line. Defaults to 100.
         **kwargs
             Additional parameters are passed on to `plot`.
 

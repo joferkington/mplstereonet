@@ -346,10 +346,10 @@ def mean_vector(lons, lats):
 
     Parameters
     ----------
-        lons : array-like
-            A sequence of longitudes (in radians)
-        lats : array-like
-            A sequence of latitudes (in radians)
+    lons : array-like
+        A sequence of longitudes (in radians)
+    lats : array-like
+        A sequence of latitudes (in radians)
 
     Returns
     -------
