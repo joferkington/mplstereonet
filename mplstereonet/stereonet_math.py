@@ -186,6 +186,9 @@ def pole(strike, dip):
     lon, lat : Arrays of longitude and latitude in radians.
     """
     strike, dip = np.atleast_1d(strike, dip)
+    mask = dip > 90
+    dip[mask] = 180 - dip[mask]
+    strike[mask] += 180
     # Plot the approriate point for a strike of 0 and rotate it
     lon, lat = -dip, 0.0
     lon, lat = _rotate(lon, lat, strike)
