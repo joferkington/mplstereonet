@@ -124,11 +124,8 @@ def antipode(lon, lat):
         Sequences (regardless of whether or not the input was a single value or
         a sequence) of longitude and latitude in radians.
     """
-    lon, lat = np.atleast_1d(lon, lat)
-    anti_lat = -lat
-    anti_lon = np.pi - lon
-    anti_lon[anti_lon > np.pi] -= 2 * np.pi
-    return anti_lon, anti_lat
+    x, y, z = sph2cart(lon, lat)
+    return cart2sph(-x, -y, -z)
 
 def plane(strike, dip, segments=100):
     """

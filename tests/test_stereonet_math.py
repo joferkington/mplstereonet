@@ -82,6 +82,17 @@ class TestCartesianSphericalConversions:
             lon1, lat1 = smath.cart2sph(x,y,z)
             assert np.allclose([lon, lat], [lon1, lat1])
 
+    def test_round_trip(self):
+        for x in np.arange(-1, 1.1, 0.1):
+            for y in np.arange(-1, 1.1, 0.1):
+                for z in np.arange(-1, 1.1, 0.1):
+                    if np.allclose([x, y, z], [0, 0, 0]):
+                        continue
+                    xyz2 = smath.sph2cart(*smath.cart2sph(x, y, z))
+                    xyz2 /= np.linalg.norm(xyz2)
+                    xyz1 = np.array([x, y, z]) / np.linalg.norm([x, y, z])
+                    assert np.allclose(xyz1, xyz2)
+
 class TestProjectOntoPlane:
     def setup(self):
         self.data = [
@@ -145,15 +156,38 @@ class TestAntipode:
     def setup(self):
         self.data = [
                      [(0, 0),  (np.pi, 0)],
-                     [(0, np.pi/2), (np.pi, -np.pi/2)],
-                     [(0.5, 1), (np.pi - 0.5, -1)],
+                     [(0, np.pi/2), (0, -np.pi/2)],
+                     [(0.5, 1), (0.5 - np.pi, -1)],
                     ]
 
     def test_basic(self):
         for indata, outdata in self.data:
-            (x,), (y,) = smath.antipode(*indata)
-            assert np.allclose((x, y), outdata)
+            x, y = smath.antipode(*indata)
+            compare_lonlat(x, y, *outdata)
 
     def test_multiple(self):
         (inlon, outlon), (inlat, outlat) = np.array(self.data).T
-        assert np.allclose(smath.antipode(inlon, inlat), (outlon, outlat))
+        compare_lonlat(outlon, outlat, *smath.antipode(inlon, inlat))
+
+    def test_roundtrip(self):
+        for strike in range(0, 370, 10):
+            for dip in range(0, 100, 10):
+                lon, lat = smath.pole(strike, dip)
+                lon2, lat2 = smath.antipode(*smath.antipode(lon, lat))
+                compare_lonlat(lon, lat, lon2, lat2)
+
+    def test_cos_distance(self):
+        for lon in range(0, 370, 10):
+            for lat in range(-90, 100, 10):
+                lon1, lat1 = np.radians([lon, lat])
+                lon2, lat2 = smath.antipode(lon1, lat1)
+                xyz1 = smath.sph2cart(lon1, lat1)
+                xyz2 = smath.sph2cart(lon2, lat2)
+                mag = np.linalg.norm(np.cross(xyz1, xyz2))
+                assert np.allclose(0, mag)
+
+def compare_lonlat(lon1, lat1, lon2, lat2):
+    """Avoid ambiguities in strike/dip or lon/lat conventions."""
+    x1, y1, z1 = smath.sph2cart(lon1, lat1)
+    x2, y2, z2 = smath.sph2cart(lon2, lat2)
+    assert np.allclose([x1, y1, z1], [x2, y2, z2], atol=1e-7)
