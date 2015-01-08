@@ -8,6 +8,9 @@ def _count_points(lons, lats, func, sigma, gridsize=(100,100), weights=None):
     to all input points at each counter station, and then calculates the
     density using "func".  Each input point is weighted by the corresponding
     item of "weights".  The weights are normalized to 1 before calculation."""
+    lons = np.atleast_1d(np.squeeze(lons))
+    lats = np.atleast_1d(np.squeeze(lats))
+
     if weights in (None, False):
         weights = 1
     # Normalize the weights
