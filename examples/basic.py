@@ -1,5 +1,5 @@
 """
-As an exmaple of basic functionality, let's plot a plane, the pole to the
+As an example of basic functionality, let's plot a plane, the pole to the
 plane, and a rake along the plane.
 """
 import matplotlib.pyplot as plt
