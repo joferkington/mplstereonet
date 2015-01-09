@@ -3,7 +3,7 @@ Illustrates two different methods of plotting fault slip data.
 
 A fault-and-striae diagram is the traditional method.  The tangent-lineation
 diagram follows Twiss & Unruh, 1988 (this style was originally introduced by
-Goldstein & Marshak, 1988 and also by Hoppener, 1955, but both used the opposite
+Goldstein & Marshak, 1988 and also by Hoeppener, 1955, but both used the opposite
 convention for arrow direction).
 """
 import matplotlib.pyplot as plt
