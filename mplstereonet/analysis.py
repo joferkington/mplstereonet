@@ -165,7 +165,7 @@ def calculate_eigenvector(*args, **kwargs):
         x, y, z = vecs[:, f]
         s, d = stereonet_math.geographic2pole(*stereonet_math.cart2sph(x, y, z))
         eigen.append([s[0], d[0], vals[f]])
-    return eigen
+    return eigen[0], eigen[1], eigen[2]
 
 def _sd_of_eigenvector(data, vec, measurement='poles', bidirectional=True):
     """Unifies ``fit_pole`` and ``fit_girdle``."""
