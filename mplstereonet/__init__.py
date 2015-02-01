@@ -10,7 +10,7 @@ from .contouring import density_grid
 from .utilities import parse_quadrant_measurement, parse_strike_dip, parse_rake
 from .utilities import parse_azimuth, parse_plunge_bearing
 from .convenience_functions import subplots
-from .analysis import fit_girdle, fit_pole, cov_eig
+from .analysis import fit_girdle, fit_pole, cov_eig, calculate_eigenvector
 
 __version__ = '0.5-dev'
 
@@ -21,4 +21,4 @@ __all__ = ['StereonetAxes', 'pole', 'plane', 'line', 'rake',
            'project_onto_plane', 'azimuth2rake', 'parse_azimuth',
            'parse_quadrant_measurement', 'parse_strike_dip', 'parse_rake',
            'parse_plunge_bearing', 'subplots', 'pole2plunge_bearing',
-           'fit_girdle', 'fit_pole', 'cov_eig']
+           'fit_girdle', 'fit_pole', 'cov_eig', 'calculate_eigenvector']

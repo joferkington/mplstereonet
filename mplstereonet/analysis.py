@@ -112,6 +112,61 @@ def fit_pole(*args, **kwargs):
     vec = -1 # Largest eigenvector will be the pole
     return _sd_of_eigenvector(args, vec=vec, **kwargs)
 
+def calculate_eigenvector(*args, **kwargs):
+    """
+    Finds the 3 eigenvectors of a series of geometries.
+
+    Input arguments will be interpreted as poles, lines, rakes, or "raw"
+    longitudes and latitudes based on the *measurement* keyword argument.
+    (Defaults to "poles".)
+
+    Parameters
+    ----------
+    *args : A variable number of sequences of measurements. By default, this
+        will be expected to be *strike* & *dip*, both array-like sequences
+        representing poles to planes.  (Rake measurements require three
+        parameters, thus the variable number of arguments.) The *measurement*
+        kwarg controls how these arguments are interpreted.
+    measurement : {'poles', 'lines', 'rakes', 'radians'}, optional
+        Controls how the input arguments are interpreted. Defaults to "poles".
+        May be one of the following:
+            ``"poles"`` : Arguments are assumed to be sequences of strikes and
+                dips of planes. Poles to these planes are used for density
+                contouring.
+            ``"lines"`` : Arguments are assumed to be sequences of plunges and
+                bearings of linear features.
+            ``"rakes"`` : Arguments are assumed to be sequences of strikes,
+                dips, and rakes along the plane.
+            ``"radians"`` : Arguments are assumed to be "raw" longitudes and
+                latitudes in the underlying projection's coordinate system.
+    bidirectional : boolean, optional
+        Whether or not the antipode of each measurement will be used in the
+        calculation. For almost all use cases, it should. Defaults to True.
+
+    Returns
+    -------
+    One list, with 3 rows, each corresponding to the strike and dip of the
+    eigenvector and the eigenvalue:
+
+    [[s1,d1,e1],[s2,d2,e2],[s3,d3,e3]]
+
+    Examples
+    --------
+    Find the eigenvectors of a series of planes:
+
+        >>> strike = [270, 65, 280, 300]
+        >>> dip = [20, 15, 10, 5]
+        >>> eigenvector = mplstereonet.calculate_eigenvector(strike, dip)
+    """
+    eigen = []
+    lon, lat = _convert_measurements(args, measurement)
+    vals, vecs = cov_eig(lon, lat, bidirectional)
+    for f in range(3):
+        x, y, z = vecs[:, f]
+        s, d = stereonet_math.geographic2pole(*stereonet_math.cart2sph(x, y, z))
+        eigen.append([s[0], d[0], vals[f]])
+    return eigen[0], eigen[1], eigen[2]
+
 def _sd_of_eigenvector(data, vec, measurement='poles', bidirectional=True):
     """Unifies ``fit_pole`` and ``fit_girdle``."""
     lon, lat = _convert_measurements(data, measurement)
