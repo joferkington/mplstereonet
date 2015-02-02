@@ -114,7 +114,9 @@ def fit_pole(*args, **kwargs):
 
 def calculate_eigenvector(*args, **kwargs):
     """
-    Finds the 3 eigenvectors of a series of geometries.
+    Finds the 3 eigenvectors and eigenvalues of a series of geometries. This
+    can be used to fit a plane/pole to a dataset or for shape fabric analysis
+    (e.g. Flinn/Hsu plots).
 
     Input arguments will be interpreted as poles, lines, rakes, or "raw"
     longitudes and latitudes based on the *measurement* keyword argument.
@@ -145,23 +147,24 @@ def calculate_eigenvector(*args, **kwargs):
 
     Returns
     -------
-    Three tuples with three floats, each corresponding to the strike and dip of
-    the eigenvector and the eigenvalue:
-
-    ((s1, d1, e1), (s2, d2, e2), (s3, d3, e3))
+    plunges, bearings, values : sequences of 3 floats each
+        The plunges, bearings, and eigenvalues of the three eigenvectors of the
+        covariance matrix of the input data.
 
     Examples
     --------
-    Find the eigenvectors of a series of planes:
+    Find the eigenvectors as plunge/bearing and eigenvalues of the 3D
+    covariance matrix of a series of planar measurements:
 
-        >>> strike = [270, 65, 280, 300]
-        >>> dip = [20, 15, 10, 5]
-        >>> eigenvector = mplstereonet.calculate_eigenvector(strike, dip)
+        >>> strikes = [270, 65, 280, 300]
+        >>> dips = [20, 15, 10, 5]
+        >>> plu, azi, vals = mplstereonet.calculate_eigenvector(strikes, dips)
     """
     lon, lat = _convert_measurements(args, kwargs.get('measurement', 'poles'))
     vals, vecs = cov_eig(lon, lat, kwargs.get('bidirectional', True))
-    s, d = stereonet_math.geographic2pole(*stereonet_math.cart2sph(*vecs))
-    return zip(s, d, vals)
+    lon, lat = stereonet_math.cart2sph(*vecs)
+    plunges, bearings = stereonet_math.geographic2plunge_bearing(lon, lat)
+    return plunges, bearings, vals
 
 def _sd_of_eigenvector(data, vec, measurement='poles', bidirectional=True):
     """Unifies ``fit_pole`` and ``fit_girdle``."""
