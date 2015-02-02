@@ -145,10 +145,10 @@ def calculate_eigenvector(*args, **kwargs):
 
     Returns
     -------
-    One list, with 3 rows, each corresponding to the strike and dip of the
-    eigenvector and the eigenvalue:
+    Three tuples with three floats, each corresponding to the strike and dip of
+    the eigenvector and the eigenvalue:
 
-    [[s1,d1,e1],[s2,d2,e2],[s3,d3,e3]]
+    ((s1, d1, e1), (s2, d2, e2), (s3, d3, e3))
 
     Examples
     --------
@@ -158,14 +158,10 @@ def calculate_eigenvector(*args, **kwargs):
         >>> dip = [20, 15, 10, 5]
         >>> eigenvector = mplstereonet.calculate_eigenvector(strike, dip)
     """
-    eigen = []
-    lon, lat = _convert_measurements(args, measurement)
-    vals, vecs = cov_eig(lon, lat, bidirectional)
-    for f in range(3):
-        x, y, z = vecs[:, f]
-        s, d = stereonet_math.geographic2pole(*stereonet_math.cart2sph(x, y, z))
-        eigen.append([s[0], d[0], vals[f]])
-    return eigen[0], eigen[1], eigen[2]
+    lon, lat = _convert_measurements(args, kwargs.get('measurement', 'poles'))
+    vals, vecs = cov_eig(lon, lat, kwargs.get('bidirectional', True))
+    s, d = stereonet_math.geographic2pole(*stereonet_math.cart2sph(*vecs))
+    return zip(s, d, vals)
 
 def _sd_of_eigenvector(data, vec, measurement='poles', bidirectional=True):
     """Unifies ``fit_pole`` and ``fit_girdle``."""
