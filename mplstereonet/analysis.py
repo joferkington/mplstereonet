@@ -120,11 +120,11 @@ def _sd_of_eigenvector(data, vec, measurement='poles', bidirectional=True):
     s, d = stereonet_math.geographic2pole(*stereonet_math.cart2sph(x, y, z))
     return s[0], d[0]
 
-def calculate_eigenvector(*args, **kwargs):
+def eigenvectors(*args, **kwargs):
     """
-    Finds the 3 eigenvectors and eigenvalues of a series of geometries. This
-    can be used to fit a plane/pole to a dataset or for shape fabric analysis
-    (e.g. Flinn/Hsu plots).
+    Finds the 3 eigenvectors and eigenvalues of the 3D covariance matrix of a
+    series of geometries.  This can be used to fit a plane/pole to a dataset or
+    for shape fabric analysis (e.g. Flinn/Hsu plots).
 
     Input arguments will be interpreted as poles, lines, rakes, or "raw"
     longitudes and latitudes based on the *measurement* keyword argument.
@@ -166,7 +166,7 @@ def calculate_eigenvector(*args, **kwargs):
 
         >>> strikes = [270, 65, 280, 300]
         >>> dips = [20, 15, 10, 5]
-        >>> plu, azi, vals = mplstereonet.calculate_eigenvector(strikes, dips)
+        >>> plu, azi, vals = mplstereonet.eigenvectors(strikes, dips)
     """
     lon, lat = _convert_measurements(args, kwargs.get('measurement', 'poles'))
     vals, vecs = cov_eig(lon, lat, kwargs.get('bidirectional', True))

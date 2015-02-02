@@ -10,7 +10,7 @@ from .contouring import density_grid
 from .utilities import parse_quadrant_measurement, parse_strike_dip, parse_rake
 from .utilities import parse_azimuth, parse_plunge_bearing
 from .convenience_functions import subplots
-from .analysis import fit_girdle, fit_pole, cov_eig, calculate_eigenvector
+from .analysis import fit_girdle, fit_pole, cov_eig, eigenvectors
 
 __version__ = '0.5-dev'
 
