@@ -112,6 +112,14 @@ def fit_pole(*args, **kwargs):
     vec = -1 # Largest eigenvector will be the pole
     return _sd_of_eigenvector(args, vec=vec, **kwargs)
 
+def _sd_of_eigenvector(data, vec, measurement='poles', bidirectional=True):
+    """Unifies ``fit_pole`` and ``fit_girdle``."""
+    lon, lat = _convert_measurements(data, measurement)
+    vals, vecs = cov_eig(lon, lat, bidirectional)
+    x, y, z = vecs[:, vec]
+    s, d = stereonet_math.geographic2pole(*stereonet_math.cart2sph(x, y, z))
+    return s[0], d[0]
+
 def calculate_eigenvector(*args, **kwargs):
     """
     Finds the 3 eigenvectors and eigenvalues of a series of geometries. This
@@ -165,14 +173,6 @@ def calculate_eigenvector(*args, **kwargs):
     lon, lat = stereonet_math.cart2sph(*vecs)
     plunges, bearings = stereonet_math.geographic2plunge_bearing(lon, lat)
     return plunges, bearings, vals
-
-def _sd_of_eigenvector(data, vec, measurement='poles', bidirectional=True):
-    """Unifies ``fit_pole`` and ``fit_girdle``."""
-    lon, lat = _convert_measurements(data, measurement)
-    vals, vecs = cov_eig(lon, lat, bidirectional)
-    x, y, z = vecs[:, vec]
-    s, d = stereonet_math.geographic2pole(*stereonet_math.cart2sph(x, y, z))
-    return s[0], d[0]
 
 def cov_eig(lon, lat, bidirectional=True):
     lon = np.atleast_1d(np.squeeze(lon))
