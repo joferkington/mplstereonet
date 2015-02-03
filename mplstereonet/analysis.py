@@ -157,7 +157,9 @@ def eigenvectors(*args, **kwargs):
     -------
     plunges, bearings, values : sequences of 3 floats each
         The plunges, bearings, and eigenvalues of the three eigenvectors of the
-        covariance matrix of the input data.
+        covariance matrix of the input data.  The measurements are returned
+        sorted in descending order relative to the eigenvalues. (i.e. The
+        largest eigenvector/eigenvalue is first.)
 
     Examples
     --------
@@ -172,7 +174,8 @@ def eigenvectors(*args, **kwargs):
     vals, vecs = cov_eig(lon, lat, kwargs.get('bidirectional', True))
     lon, lat = stereonet_math.cart2sph(*vecs)
     plunges, bearings = stereonet_math.geographic2plunge_bearing(lon, lat)
-    return plunges, bearings, vals
+    # Largest eigenvalue first...
+    return plunges[::-1], bearings[::-1], vals[::-1]
 
 def cov_eig(lon, lat, bidirectional=True):
     lon = np.atleast_1d(np.squeeze(lon))
