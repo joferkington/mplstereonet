@@ -101,8 +101,8 @@ def _rotate_y(x, y, z, theta):
     return X, Y, Z
 
 def _rotate_z(x, y, z, theta):
-    X = y*np.cos(theta) + x*np.sin(theta)
-    Y = -y*np.sin(theta) + x*np.cos(theta)
+    X = x*np.cos(theta) + -y*np.sin(theta)
+    Y = x*np.sin(theta) + y*np.cos(theta)
     Z = z
     return X, Y, Z
 
