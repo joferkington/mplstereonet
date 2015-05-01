@@ -27,7 +27,7 @@ ax.density_contour(strike, dip, colors='black')
 ax.pole(strike, dip, marker='.', color='black')
 
 # Fit a plane to the girdle of the distribution and display it.
-fit_strike, fit_dip = mplstereonet.fit_girdle(*mplstereonet.pole(strike, dip))
+fit_strike, fit_dip = mplstereonet.fit_girdle(strike, dip)
 ax.plane(fit_strike, fit_dip, color='red', lw=2)
 ax.pole(fit_strike, fit_dip, marker='o', color='red', markersize=14)
 
