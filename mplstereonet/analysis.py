@@ -199,3 +199,53 @@ def _convert_measurements(data, measurement):
             'radians':do_nothing}[measurement]
     return func(*data)
 
+def find_mean_vector(*args, **kwargs):
+    """
+    Returns the mean vector for a set of linear measurments.
+
+    Parameters
+    ----------
+    *args: A variable number of sequences of measurements. By default, this
+        will be expected to be *plunge* and *bearing*, both as array-like
+        sequences.
+
+    Returns
+    -------
+    plunges, bearing: A set consisting of the plunge and bearing of the mean
+        vector (in degrees).
+    r_value: The length of the mean vector (a value between 0 and 1).
+    """
+    lon, lat = _convert_measurements(args, measurement='lines')
+    vector, r_value = stereonet_math.mean_vector(lon, lat)
+    plunge, bearing = stereonet_math.geographic2plunge_bearing(vector[0], vector[1])
+    return (plunge[0], bearing[0]), r_value
+
+def find_fisher_stats(*args, **kwargs):
+    """
+    Returns the mean vector for a set of linear measurments.
+
+    Parameters
+    ----------
+    *args: A variable number of sequences of measurements. By default, this
+        will be expected to be *plunge* and *bearing*, both as array-like
+        sequences.
+    **kwargs: The only keyword argument is the confidence ('conf') which
+        defaults to 95 % (Note: Similar to 2 sigma which is 95.4 %).
+
+    Returns
+    -------
+    plunges, bearing: A set consisting of the plunge and bearing of the mean
+        vector (in degrees).
+    stats: A set consisting of the r_value (The length of the mean vector as
+        a float number between 0 and 1) the confidence radius (The opening
+        angle of a small circle that corresponds to the confidence in the
+        calculated direction, and dependent on the desired confidence) and the
+        kappa value (The dispersion factor as a float number, that quantifies
+        the amount of dispersion of the given vectors).
+    """
+    lon, lat = _convert_measurements(args, measurement='lines')
+    center, stats = stereonet_math.fisher_stats(lon, lat, kwargs.get('conf', 95))
+    plunge, bearing = stereonet_math.geographic2plunge_bearing(center[0], center[1])
+    mean_vector = (plunge[0], bearing[0])
+    return mean_vector, stats
+

@@ -359,9 +359,66 @@ def mean_vector(lons, lats):
     xyz = sph2cart(lons, lats)
     xyz = np.vstack(xyz).T
     mean_vec = xyz.mean(axis=0)
-    r_value = np.linalg.norm(mean_vec) / xyz.shape[0]
+    r_value = np.linalg.norm(mean_vec)
     mean_vec = cart2sph(*mean_vec)
     return mean_vec, r_value
+
+def fisher_stats(lons, lats, conf=95):
+    """
+    Returns the resultant vector from a series of longitudes and latitudes. If
+    a confidence is set the function additionally returns the opening angle
+    of the confidence small circle (Fisher, 19..) and the dispersion factor
+    (kappa).
+
+    Parameters
+    ----------
+    lons : array-like
+        A sequence of longitudes (in radians)
+    lats : array-like
+        A sequence of latitudes (in radians)
+    conf : confidence value
+        The confidence used for the calculation (float). Defaults to None.
+
+    Returns
+    -------
+    mean vector: tuple
+        The point that lies in the center of a set of vectors.
+        (Longitude, Latitude) in radians.
+    
+    If 1 vector is passed to the function it returns two None-values. For
+    more than one vector the following 3 values are returned as a tuple: 
+
+    r_value: float
+        The magnitude of the resultant vector (between 0 and 1) This represents
+        the degree of clustering in the data.
+    angle: float
+        The opening angle of the small circle that corresponds to confidence
+        of the calculated direction.
+    kappa: float
+        A measure for the amount of dispersion of a group of layers. For
+        one vector the factor is undefined. Approaches infinity for nearly
+        parallel vectors and zero for highly dispersed vectors.
+
+    """
+    xyz = sph2cart(lons, lats)
+    xyz = np.vstack(xyz).T
+    mean_vec = xyz.mean(axis=0)
+    r_value = np.linalg.norm(mean_vec)
+    num = xyz.shape[0]
+    mean_vec = cart2sph(*mean_vec)
+
+    if num > 1:
+        p = (100 - conf) / 100
+        vector_sum = xyz.sum(axis=0)
+        result_vect = np.sqrt(np.sum(np.square(vector_sum)))
+        fract1 = (num - result_vect) / result_vect
+        fract3 = 1 / (num - 1)
+        angle = np.arccos(1 - fract1 * ((1 / p) ** fract3 - 1))
+        angle = np.degrees(angle)
+        kappa = (num - 1) / (num - result_vect)
+        return mean_vec, (r_value, angle, kappa)
+    else:
+        return None, None
 
 def geographic2pole(lon, lat):
     """
