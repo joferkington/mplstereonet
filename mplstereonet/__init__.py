@@ -22,5 +22,5 @@ __all__ = ['StereonetAxes', 'pole', 'plane', 'line', 'rake',
            'project_onto_plane', 'azimuth2rake', 'parse_azimuth',
            'parse_quadrant_measurement', 'parse_strike_dip', 'parse_rake',
            'parse_plunge_bearing', 'subplots', 'pole2plunge_bearing',
-           'fit_girdle', 'fit_pole', 'cov_eig', 'calculate_eigenvector',
+           'fit_girdle', 'fit_pole', 'cov_eig', 'eigenvectors',
            'find_mean_vector', 'find_fisher_stats']
