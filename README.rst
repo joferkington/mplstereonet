@@ -8,6 +8,15 @@ for matplotlib.
     :align: center
     :target: https://github.com/joferkington/mplstereonet/blob/master/examples/equal_area_equal_angle_comparison.py
 
+What's New
+----------
+
+Major changes in `mplstereonet-v0.5` are:
+
+* `ax.cone` method to plot small circles
+* Various functions to fit poles and planes to a distribution of observations (e.g. ``mplstereonet.fit_girdle``, ``mplstereonet.fit_pole``, and ``mplstereonet.eigenvectors``)
+* Mean vector calculation and Fisher statistics for the mean vector (``mplstereonet.find_mean_vector`` and ``mplstereonet.find_fisher_stats``) (Many thanks to Tobias Schönberg!)
+
 Basic Usage
 -----------
 In most cases, you'll want to ``import mplstereonet`` and then make an axes
