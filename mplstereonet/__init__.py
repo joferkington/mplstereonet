@@ -13,7 +13,7 @@ from .convenience_functions import subplots
 from .analysis import fit_girdle, fit_pole, cov_eig, eigenvectors, \
                       find_mean_vector, find_fisher_stats
 
-__version__ = '0.5-dev'
+__version__ = '0.5'
 
 __all__ = ['StereonetAxes', 'pole', 'plane', 'line', 'rake',
            'plunge_bearing2pole', 'geographic2pole', 'vector2plunge_bearing',
