@@ -29,7 +29,7 @@ lbl = "Mean Vector: {}/{}\nConfidence: {} %\nFisher Angle: {}°\nR-Value {}\nK-V
                 round(stats[1], 2), round(stats[0], 3), round(stats[2], 2))
 
 ax.line(vector[0], vector[1], color="#ff0000", label=lbl)
-ax.cone(vector[0], vector[1], stats[1], facecolor="None", color="#ff0000")
+ax.cone(vector[0], vector[1], stats[1], facecolor="None", edgecolor="#ff0000")
 
 ax.legend(bbox_to_anchor=(1.1, 1.1))
 plt.show()
