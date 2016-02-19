@@ -49,10 +49,9 @@ class StereonetAxes(LambertAxes):
     def _get_affine_transform(self):
         """The affine portion of the base transform. This is called by
         LambertAxes._set_lim_and_transforms."""
-        transform = self._get_core_transform(self.RESOLUTION)
         # How big is the projected globe?
-        xscale, _ = transform.transform_point((self.horizon, 0))
-        _, yscale = transform.transform_point((0, np.pi / 2.0))
+        # In the case of a stereonet, it's actually constant.
+        xscale = yscale = np.sqrt(2)
         # Create an affine transform to stretch the projection from 0-1
         return Affine2D() \
             .rotate(np.radians(self.rotation)) \
