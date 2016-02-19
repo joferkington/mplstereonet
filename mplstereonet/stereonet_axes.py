@@ -17,6 +17,7 @@ from . import stereonet_transforms
 class StereonetAxes(LambertAxes):
     """An axes representing a lower-hemisphere "schmitt" (a.k.a. equal area)
     projection."""
+
     name = 'stereonet'
     RESOLUTION = 30
     _base_transform = stereonet_transforms.LambertTransform
@@ -91,6 +92,8 @@ class StereonetAxes(LambertAxes):
         """Identical to Axes.set_position (This docstring is overwritten)."""
         self._polar.set_position(pos, which)
         LambertAxes.set_position(self, pos, which)
+
+    # Use default docstring, as usage is identical.
     set_position.__doc__ = Axes.set_position.__doc__
 
     def set_rotation(self, rotation):
@@ -100,9 +103,13 @@ class StereonetAxes(LambertAxes):
         self.transData.invalidate()
         self.transAxes.invalidate()
         self._set_lim_and_transforms()
+
     def get_rotation(self):
         """The rotation of the stereonet in degrees clockwise from North."""
         return np.degrees(self._rotation)
+
+    # Using explicit property (instead of decorator) to allow explicit
+    # matplotlib-style getters and setters.
     rotation = property(get_rotation, set_rotation)
 
     def cla(self):
@@ -135,6 +142,8 @@ class StereonetAxes(LambertAxes):
         self._polar.set_theta_direction(-1)
         self._polar.grid(False)
         self._polar.set_rticks([])
+
+    # Use default docstring, as usage is identical.
     cla.__doc__ = Axes.cla.__doc__
 
     @property
