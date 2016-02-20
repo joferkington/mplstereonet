@@ -166,6 +166,14 @@ class StereonetAxes(LambertAxes):
     # Use default docstring, as usage is identical.
     cla.__doc__ = Axes.cla.__doc__
 
+    def format_coord(self, x, y):
+        """Format displayed coordinates during mouseover of axes."""
+        p, b = stereonet_math.geographic2plunge_bearing(x, y)
+        s, d = stereonet_math.geographic2pole(x, y)
+        pb = u'P/B={:0.0f}\u00b0/{:03.0f}\u00b0'.format(p[0], b[0])
+        sd = u'S/D={:03.0f}\u00b0/{:0.0f}\u00b0'.format(s[0], d[0])
+        return u'{}, {}'.format(pb, sd)
+
     @property
     def _polar(self):
         """The "hidden" polar axis used for azimuth labels."""
@@ -178,6 +186,7 @@ class StereonetAxes(LambertAxes):
             fig = self.get_figure()
             self._hidden_polar_axes = fig.add_axes(self.get_position(True),
                                         frameon=False, projection='polar')
+            self._hidden_polar_axes.format_coord = self.format_coord
             return self._hidden_polar_axes
 
     def set_azimuth_ticks(self, angles, labels=None, frac=None, **kwargs):
