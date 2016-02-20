@@ -19,8 +19,10 @@ class StereonetAxes(LambertAxes):
     projection."""
 
     name = 'stereonet'
-    RESOLUTION = 30
+    RESOLUTION = 60
     _base_transform = stereonet_transforms.LambertTransform
+    _default_center_lat = 0
+    _default_center_lon = 0
 
     def __init__(self, *args, **kwargs):
         """Initialization is identical to a normal Axes object except for the
@@ -30,13 +32,21 @@ class StereonetAxes(LambertAxes):
         -----------
         rotation : number
             The rotation of the stereonet in degrees clockwise from North.
+        center_latitude : number
+            The center latitude of the stereonet in degrees.
+        center_longitude : number
+            The center longitude of the stereonet in degrees.
 
         All additional args and kwargs are identical to Axes.__init__
         """
-        # There's also center_latitude and center_longitude, but I'm
-        # deliberately keeping these undocumented until they're fully supported.
         self.horizon = np.radians(90)
         self._rotation = -np.radians(kwargs.pop('rotation', 0))
+
+        y0 = kwargs.get('center_latitude', self._default_center_lat)
+        x0 = kwargs.get('center_longitude', self._default_center_lon)
+        kwargs['center_latitude'] = y0
+        kwargs['center_longitude'] = x0
+
         LambertAxes.__init__(self, *args, **kwargs)
 
     def _get_core_transform(self, resolution):
@@ -65,7 +75,7 @@ class StereonetAxes(LambertAxes):
 
         # Transform for latitude ticks. These are typically unused, but just
         # in case we need them...
-        yaxis_stretch = Affine2D().scale(2 * self.horizon, 1.0)
+        yaxis_stretch = Affine2D().scale(4 * self.horizon, 1.0)
         yaxis_stretch = yaxis_stretch.translate(-self.horizon, 0.0)
 
         # These are identical to LambertAxes._set_lim_and_transforms, but we
@@ -133,7 +143,7 @@ class StereonetAxes(LambertAxes):
 
         # Set the default limits (so that the "native" ticklabels will be
         # correct if they're turned back on)...
-        Axes.set_xlim(self, -self.horizon, self.horizon)
+        Axes.set_xlim(self, -2 * self.horizon, 2 * self.horizon)
         Axes.set_ylim(self, -np.pi / 2.0, np.pi / 2.0)
 
         # Set up the azimuth ticks.
