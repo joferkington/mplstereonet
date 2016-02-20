@@ -4,7 +4,7 @@ import matplotlib as mpl
 from matplotlib.transforms import Affine2D
 from matplotlib.projections import register_projection, LambertAxes
 from matplotlib.axes import Axes
-from matplotlib.ticker import NullLocator
+from matplotlib.ticker import NullLocator, FixedLocator
 
 import matplotlib.path as mpath
 import matplotlib.patches as mpatches
@@ -96,6 +96,17 @@ class StereonetAxes(LambertAxes):
         self._yaxis_text2_transform = \
             yaxis_text_base + \
             Affine2D().translate(8.0, 0.0)
+
+    def set_longitude_grid(self, degrees):
+        """
+        Set the number of degrees between each longitude grid.
+        """
+        number = (360.0 / degrees) + 1
+        locs = np.linspace(-np.pi, np.pi, number, True)[1:]
+        locs[-1] += 0.001 # Workaround for "back" gridlines showing.
+        self.xaxis.set_major_locator(FixedLocator(locs))
+        self._logitude_degrees = degrees
+        self.xaxis.set_major_formatter(self.ThetaFormatter(degrees))
 
     def set_position(self, pos, which='both'):
         """Identical to Axes.set_position (This docstring is overwritten)."""
