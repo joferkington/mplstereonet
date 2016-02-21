@@ -672,3 +672,40 @@ def vector2pole(x, y, z):
         The dip of the plane, in degrees downward from horizontal.
     """
     return  geographic2pole(*xyz2stereonet(x, y, z))
+
+def angular_distance(lon1, lat1, lon2, lat2):
+    """
+    Calculate the angular distance between two linear features or elementwise
+    angular distance between two sets of linear features. (Note: a linear
+    feature in this context is a point on a stereonet represented
+    by a single latitude and longitude.)
+
+    Parameters
+    ----------
+    lon1, lat1 : number or sequence of numbers
+        The longitudes and latitudes of the first measurements in radians.
+    lon2, lat2 : number or sequence of numbers
+        The longitudes and latitudes of the second measurements in radians.
+
+    Returns
+    -------
+    dist : array
+        The elementwise angular distance between each pair of measurements in
+        (lon1, lat1) and (lon2, lat2).
+    """
+    lon1, lat1, lon2, lat2 = np.atleast_1d(lon1, lat1, lon2, lat2)
+    xyz1 = sph2cart(lon1, lat1)
+    xyz2 = sph2cart(lon2, lat2)
+    # This is just a dot product, but we need to work with multiple measurements
+    # at once, so einsum is quicker than apply_along_axis.
+    dot = np.einsum('ij,ij->j', xyz1, xyz2)
+    angle = np.arccos(dot)
+
+    # There are numerical sensitivity issues around 180 and 0 degrees...
+    # Sometimes a result will have an absolute value slighly over 1.
+    if np.any(np.isnan(angle)):
+        rtol = 1e-4
+        angle[np.isclose(dot, -1, rtol)] = np.pi
+        angle[np.isclose(dot, 1, rtol)] = 0
+
+    return angle

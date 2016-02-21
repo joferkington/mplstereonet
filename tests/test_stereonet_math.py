@@ -186,6 +186,24 @@ class TestAntipode:
                 mag = np.linalg.norm(np.cross(xyz1, xyz2))
                 assert np.allclose(0, mag)
 
+class TestAngularDistance:
+    def test_antipode_distance(self):
+        for lon in range(0, 370, 10):
+            for lat in range(-90, 100, 10):
+                lon1, lat1 = np.radians([lon, lat])
+                lon2, lat2 = smath.antipode(lon1, lat1)
+                dist = smath.angular_distance(lon1, lat1, lon2, lat2)
+                msg = 'Failed at {}, {}'.format(lon, lat)
+                assert np.allclose(dist, np.pi), msg
+    
+    def test_shapes(self):
+        lon1, lat1 = np.zeros(10), np.zeros(10)
+        dist = smath.angular_distance(lon1, lat1, 0, np.pi / 2)
+        assert np.allclose(dist, np.pi / 2)
+
+        dist = smath.angular_distance(0, np.pi / 2, lon1, lat1)
+        assert np.allclose(dist, np.pi / 2)
+
 def compare_lonlat(lon1, lat1, lon2, lat2):
     """Avoid ambiguities in strike/dip or lon/lat conventions."""
     x1, y1, z1 = smath.sph2cart(lon1, lat1)
