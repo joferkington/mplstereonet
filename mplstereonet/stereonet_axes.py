@@ -175,6 +175,49 @@ class StereonetAxes(LambertAxes):
         sd = u'S/D={:03.0f}\u00b0/{:0.0f}\u00b0'.format(s[0], d[0])
         return u'{}, {}'.format(pb, sd)
 
+    def add_overlay(self, lon_center=0, lat_center=0, kind='arbitrary'):
+        """
+        Add a grid from a differently-centered stereonet. This is useful for
+        making "polar stereonets" that still use the same coordinate system as
+        a standard stereonet.  (i.e. a plane/line/whatever will have the same
+        representation on both, but the grid is displayed differently.)
+
+        To display a polar grid on a stereonet, use ``kind="polar"``.
+
+        It is also often useful to display a grid relative to an arbitrary
+        measurement (e.g. a lineation axis).  In that case, use the
+        ``lon_center`` and ``lat_center`` arguments.  Note that these are in 
+        radians in "stereonet coordinates".  Therefore, you'll often want to
+        use one of the functions in ``stereonet_math`` to convert a
+        line/plane/rake into the longitude and latitude you'd input here. For
+        example:  ``add_overlay(*stereonet_math.line(plunge, bearing))``.
+
+        If no parameters are specified, this is equivalent to turning on the
+        standard grid.
+
+        Parameters
+        ----------
+        lon_center : number, optional
+            The longitude of the center of the grid in radians. Defaults to 0.
+        lat_center : number, optional
+            The latitude of the center of the grid in radians. Defaults to 0.
+        kind : string, optional {"arbitrary", "polar"}
+            If "polar", `lon-center` and `lat_center` will be ignored and set
+            to 0, 90. Defaults to ``"arbitrary"``.
+        """
+        if kind == 'polar':
+            lat_center = np.pi / 2
+            lon_center = 0
+
+        fig = self.get_figure()
+        self._overlay_axes = fig.add_axes(self.get_position(True),
+                                          frameon=False, projection=self.name,
+                                          center_longitude=lon_center,
+                                          center_latitude=lat_center)
+        self._overlay_axes._polar.remove()
+        self._overlay_axes.format_coord = self._overlay_format_coord
+        self._overlay_axes.grid(True)
+
     @property
     def _polar(self):
         """The "hidden" polar axis used for azimuth labels."""
