@@ -230,8 +230,19 @@ class StereonetAxes(LambertAxes):
             fig = self.get_figure()
             self._hidden_polar_axes = fig.add_axes(self.get_position(True),
                                         frameon=False, projection='polar')
-            self._hidden_polar_axes.format_coord = self.format_coord
+            self._hidden_polar_axes.format_coord = self._polar_format_coord
             return self._hidden_polar_axes
+
+    def _format_helper(self, ax, x, y):
+        xdisp, ydisp = ax.transData.transform_point([x, y])
+        x, y = self.transData.inverted().transform_point([xdisp, ydisp])
+        return self.format_coord(x, y)
+
+    def _overlay_format_coord(self, x, y):
+        return self._format_helper(self._overlay_axes, x, y)
+
+    def _polar_format_coord(self, x, y):
+        return self._format_helper(self._hidden_polar_axes, x, y)
 
     def set_azimuth_ticks(self, angles, labels=None, frac=None, **kwargs):
         """
