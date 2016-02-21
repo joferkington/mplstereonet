@@ -23,6 +23,7 @@ class StereonetAxes(LambertAxes):
     _base_transform = stereonet_transforms.LambertTransform
     _default_center_lat = 0
     _default_center_lon = 0
+    _scale = np.sqrt(2)
 
     def __init__(self, *args, **kwargs):
         """Initialization is identical to a normal Axes object except for the
@@ -61,7 +62,7 @@ class StereonetAxes(LambertAxes):
         LambertAxes._set_lim_and_transforms."""
         # How big is the projected globe?
         # In the case of a stereonet, it's actually constant.
-        xscale = yscale = np.sqrt(2)
+        xscale = yscale = self._scale
         # Create an affine transform to stretch the projection from 0-1
         return Affine2D() \
             .rotate(np.radians(self.rotation)) \
@@ -675,6 +676,7 @@ class EqualAngleAxes(StereonetAxes):
     """An axes representing a lower-hemisphere "Wulff" (a.k.a. equal angle)
     projection."""
     _base_transform = stereonet_transforms.StereographicTransform
+    _scale = 2.0
     name = 'equal_angle_stereonet'
 
 class EqualAreaAxes(StereonetAxes):
