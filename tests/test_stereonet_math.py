@@ -190,19 +190,30 @@ class TestAngularDistance:
     def test_antipode_distance(self):
         for lon in range(0, 370, 10):
             for lat in range(-90, 100, 10):
-                lon1, lat1 = np.radians([lon, lat])
-                lon2, lat2 = smath.antipode(lon1, lat1)
-                dist = smath.angular_distance(lon1, lat1, lon2, lat2)
+                point1 = np.radians([lon, lat])
+                point2 = smath.antipode(*point1)
+                dist = smath.angular_distance(point1, point2)
                 msg = 'Failed at {}, {}'.format(lon, lat)
                 assert np.allclose(dist, np.pi), msg
     
     def test_shapes(self):
-        lon1, lat1 = np.zeros(10), np.zeros(10)
-        dist = smath.angular_distance(lon1, lat1, 0, np.pi / 2)
+        points = np.zeros(10), np.zeros(10)
+        dist = smath.angular_distance(points, [0, np.pi / 2])
         assert np.allclose(dist, np.pi / 2)
 
-        dist = smath.angular_distance(0, np.pi / 2, lon1, lat1)
+        dist = smath.angular_distance([0, np.pi / 2], points)
         assert np.allclose(dist, np.pi / 2)
+
+        dist = smath.angular_distance(points, points)
+        assert np.allclose(dist, 0)
+
+    def test_directional(self):
+        first, second = smath.line(30, 270), smath.line(40, 90)
+        dist = smath.angular_distance(first, second, bidirectional=True)
+        assert np.allclose(dist, 70)
+
+        dist = smath.angular_distance(first, second, bidirectional=False)
+        assert np.allclose(dist, 110)
 
 def compare_lonlat(lon1, lat1, lon2, lat2):
     """Avoid ambiguities in strike/dip or lon/lat conventions."""

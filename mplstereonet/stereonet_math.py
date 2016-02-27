@@ -673,7 +673,7 @@ def vector2pole(x, y, z):
     """
     return  geographic2pole(*xyz2stereonet(x, y, z))
 
-def angular_distance(lon1, lat1, lon2, lat2):
+def angular_distance(first, second, bidirectional=True):
     """
     Calculate the angular distance between two linear features or elementwise
     angular distance between two sets of linear features. (Note: a linear
@@ -682,17 +682,49 @@ def angular_distance(lon1, lat1, lon2, lat2):
 
     Parameters
     ----------
-    lon1, lat1 : number or sequence of numbers
+    first : (lon, lat) 2xN array-like or sequence of two numbers
         The longitudes and latitudes of the first measurements in radians.
-    lon2, lat2 : number or sequence of numbers
+    second : (lon, lat) 2xN array-like or sequence of two numbers
         The longitudes and latitudes of the second measurements in radians.
+    bidirectional : boolean
+        If True, only "inner" angles will be returned. In other words, all
+        angles returned by this function will be in the range [0, pi/2]
+        (0 to 90 in degrees).  Otherwise, ``first`` and ``second``
+        will be treated as vectors going from the origin outwards
+        instead of bidirectional infinite lines.  Therefore, with
+        ``bidirectional=False``, angles returned by this function
+        will be in the range [0, pi] (zero to 180 degrees).
 
     Returns
     -------
     dist : array
         The elementwise angular distance between each pair of measurements in
         (lon1, lat1) and (lon2, lat2).
+
+    Examples
+    --------
+
+    Calculate the angle between two lines specified as a plunge/bearing
+
+        >>> angle = angular_distance(line(30, 270), line(40, 90))
+        >>> np.degrees(angle)
+        array([ 70.])
+
+    Let's do the same, but change the "bidirectional" argument:
+
+        >>> first, second = line(30, 270), line(40, 90)
+        >>> angle = angular_distance(first, second, bidirectional=False)
+        >>> np.degrees(angle)
+        array([ 110.])
+
+    Calculate the angle between two planes. 
+
+        >>> angle = angular_distance(pole(0, 10), pole(180, 10))
+        >>> np.degrees(angle)
+        array([ 20.])
     """
+    lon1, lat1 = first
+    lon2, lat2 = second
     lon1, lat1, lon2, lat2 = np.atleast_1d(lon1, lat1, lon2, lat2)
     xyz1 = sph2cart(lon1, lat1)
     xyz2 = sph2cart(lon2, lat2)
@@ -707,5 +739,9 @@ def angular_distance(lon1, lat1, lon2, lat2):
         rtol = 1e-4
         angle[np.isclose(dot, -1, rtol)] = np.pi
         angle[np.isclose(dot, 1, rtol)] = 0
+
+    if bidirectional:
+        mask = angle > np.pi / 2
+        angle[mask] = np.pi - angle[mask]
 
     return angle
