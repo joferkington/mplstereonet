@@ -127,11 +127,11 @@ def antipode(lon, lat):
     x, y, z = sph2cart(lon, lat)
     return cart2sph(-x, -y, -z)
 
-def plane(strike, dip, segments=100):
+def plane(strike, dip, segments=100, center=(0, 0)):
     """
     Calculates the longitude and latitude of `segments` points along the
     stereonet projection of each plane with a given `strike` and `dip` in
-    degrees.
+    degrees.  Returns points for one hemisphere only.
 
     Parameters
     ----------
@@ -144,6 +144,10 @@ def plane(strike, dip, segments=100):
     segments : number or sequence of numbers
         The number of points in the returned `lon` and `lat` arrays.  Defaults
         to 100 segments.
+    center : sequence of two numbers (lon, lat)
+        The longitude and latitude of the center of the hemisphere that the
+        returned points will be in. Defaults to 0,0 (approriate for a typical
+        stereonet).
 
     Returns
     -------
@@ -151,6 +155,7 @@ def plane(strike, dip, segments=100):
         `num_segments` x `num_strikes` arrays of longitude and latitude in
         radians.
     """
+    lon0, lat0 = center
     strikes, dips = np.atleast_1d(strike, dip)
     lons = np.zeros((segments, strikes.size), dtype=np.float)
     lats = lons.copy()
@@ -160,8 +165,19 @@ def plane(strike, dip, segments=100):
         lon = dip * np.ones(segments)
         lat = np.linspace(-90, 90, segments)
         lon, lat = _rotate(lon, lat, strike)
+
+        if lat0 != 0 or lon0 != 0:
+            dist = angular_distance([lon, lat], [lon0, lat0], False)
+            mask = dist > (np.pi / 2)
+            lon[mask], lat[mask] = antipode(lon[mask], lat[mask])
+            change = np.diff(mask.astype(int))
+            ind = np.flatnonzero(change) + 1
+            lat = np.hstack(np.split(lat, ind)[::-1])
+            lon = np.hstack(np.split(lon, ind)[::-1])
+
         lons[:,i] = lon
         lats[:,i] = lat
+
     return lons, lats
 
 def pole(strike, dip):
