@@ -48,6 +48,8 @@ class StereonetAxes(LambertAxes):
         kwargs['center_latitude'] = y0
         kwargs['center_longitude'] = x0
 
+        self._overlay_axes = None
+
         LambertAxes.__init__(self, *args, **kwargs)
 
     def _get_core_transform(self, resolution):
@@ -174,8 +176,41 @@ class StereonetAxes(LambertAxes):
         pb = u'P/B={:0.0f}\u00b0/{:03.0f}\u00b0'.format(p[0], b[0])
         sd = u'S/D={:03.0f}\u00b0/{:0.0f}\u00b0'.format(s[0], d[0])
         return u'{}, {}'.format(pb, sd)
+    
+    def grid(self, b=None, which='major', axis='both', kind='arbitrary',
+             center=None, **kwargs):
+        """
+        Usage is identical to a normal axes grid except for the ``kind`` and
+        ``center`` kwargs.  ``kind="polar"`` will add a polar overlay.
 
-    def add_overlay(self, lon_center=0, lat_center=0, kind='arbitrary'):
+        """
+        grid_on = self._gridOn
+        Axes.grid(self, False)
+
+        if kind == 'polar':
+            center = 0, np.pi / 2
+
+        if self._overlay_axes is not None:
+            self._overlay_axes.remove()
+            self._overlay_axes = None
+
+        if not b and b is not None:
+            return
+
+        if b is None:
+            if grid_on:
+                return
+
+        if center is None or center == (0, 0):
+            return Axes.grid(self, b, which, axis, **kwargs)
+
+        self._add_overlay(center)
+        self._overlay_axes.grid(True, which, axis, **kwargs)
+        self._gridOn = True
+
+    grid.__doc__ += Axes.grid.__doc__
+
+    def _add_overlay(self, center):
         """
         Add a grid from a differently-centered stereonet. This is useful for
         making "polar stereonets" that still use the same coordinate system as
@@ -197,26 +232,29 @@ class StereonetAxes(LambertAxes):
 
         Parameters
         ----------
-        lon_center : number, optional
-            The longitude of the center of the grid in radians. Defaults to 0.
-        lat_center : number, optional
-            The latitude of the center of the grid in radians. Defaults to 0.
-        kind : string, optional {"arbitrary", "polar"}
-            If "polar", `lon-center` and `lat_center` will be ignored and set
-            to 0, 90. Defaults to ``"arbitrary"``.
+        center: 2-item tuple of numbers
+            A tuple of (longitude, latitude) in radians that the overlay is
+            centered on.
         """
-        if kind == 'polar':
-            lat_center = np.pi / 2
-            lon_center = 0
-
+        lon0, lat0 = center
         fig = self.get_figure()
         self._overlay_axes = fig.add_axes(self.get_position(True),
                                           frameon=False, projection=self.name,
-                                          center_longitude=lon_center,
-                                          center_latitude=lat_center)
+                                          center_longitude=lon0,
+                                          center_latitude=lat0,
+                                          label='overlay')
         self._overlay_axes._polar.remove()
         self._overlay_axes.format_coord = self._overlay_format_coord
         self._overlay_axes.grid(True)
+
+    def set_longitude_grid_ends(self, value):
+        LambertAxes.set_longitude_grid_ends(self, value)
+        if self._overlay_axes is not None:
+            self._overlay_axes.set_longitude_grid_ends(value)
+
+    # Use the existing docstring...
+    set_longitude_grid_ends.__doc__ =\
+            LambertAxes.set_longitude_grid_ends.__doc__
 
     @property
     def _polar(self):
@@ -361,7 +399,8 @@ class StereonetAxes(LambertAxes):
         `strike` and `dip`.
         """
         segments = kwargs.pop('segments', 100)
-        lon, lat = stereonet_math.plane(strike, dip, segments)
+        center = self._center_latitude, self._center_longitude
+        lon, lat = stereonet_math.plane(strike, dip, segments, center)
         return self.plot(lon, lat, *args, **kwargs)
 
     def pole(self, strike, dip, *args, **kwargs):
