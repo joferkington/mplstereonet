@@ -761,3 +761,27 @@ def angular_distance(first, second, bidirectional=True):
         angle[mask] = np.pi - angle[mask]
 
     return angle
+
+def _repole(lon, lat, center):
+    """
+    Reproject data such that ``center`` is the north pole. Returns lon, lat
+    in the new, rotated reference frame.
+
+    This is currently a sketch for a later function. Do not assume it works
+    correctly.
+    """
+    vec3 = sph2cart(*center)
+    vec3 = np.squeeze(vec3)
+    if not np.allclose(vec3, [0, 0, 1]):
+        vec1 = np.cross(vec3, [0, 0, 1])
+    else:
+        vec1 = np.cross(vec3, [1, 0, 0])
+    vec2 = np.cross(vec3, vec1)
+    vecs = [item / np.linalg.norm(item) for item in [vec1, vec2, vec3]]
+    basis = np.column_stack(vecs)
+
+    xyz = sph2cart(lon, lat)
+    xyz = np.column_stack(xyz)
+    prime = xyz.dot(np.linalg.inv(basis))
+    lon, lat = cart2sph(*prime.T)
+    return lon[:,None], lat[:,None]
