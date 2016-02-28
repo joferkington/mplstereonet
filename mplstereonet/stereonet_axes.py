@@ -114,6 +114,8 @@ class StereonetAxes(LambertAxes):
     def set_position(self, pos, which='both'):
         """Identical to Axes.set_position (This docstring is overwritten)."""
         self._polar.set_position(pos, which)
+        if self._overlay_axes is not None:
+            self._overlay_axes.set_position(pos, which)
         LambertAxes.set_position(self, pos, which)
 
     # Use default docstring, as usage is identical.
