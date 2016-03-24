@@ -132,11 +132,11 @@ def eigenvectors(*args, **kwargs):
 
     Parameters
     ----------
-    *args : A variable number of sequences of measurements. By default, this
-        will be expected to be *strike* & *dip*, both array-like sequences
-        representing poles to planes.  (Rake measurements require three
-        parameters, thus the variable number of arguments.) The *measurement*
-        kwarg controls how these arguments are interpreted.
+    *args : A variable number of sequences of measurements
+        By default, this will be expected to be *strike* & *dip*, both
+        array-like sequences representing poles to planes.  (Rake measurements
+        require three parameters, thus the variable number of arguments.) The
+        *measurement* kwarg controls how these arguments are interpreted.
     measurement : {'poles', 'lines', 'rakes', 'radians'}, optional
         Controls how the input arguments are interpreted. Defaults to "poles".
         May be one of the following:
@@ -201,51 +201,89 @@ def _convert_measurements(data, measurement):
 
 def find_mean_vector(*args, **kwargs):
     """
-    Returns the mean vector for a set of linear measurments.
+    Returns the mean vector for a set of measurments. By default, this expects
+    the input to be plunges and bearings, but the type of input can be
+    controlled through the ``measurement`` kwarg.
 
     Parameters
     ----------
-    *args: A variable number of sequences of measurements. By default, this
-        will be expected to be *plunge* and *bearing*, both as array-like
-        sequences.
+    *args : A variable number of sequences of measurements.
+        By default, this will be expected to be *plunge* & *bearing*, both
+        array-like sequences representing linear features.  (Rake measurements
+        require three parameters, thus the variable number of arguments.) The
+        *measurement* kwarg controls how these arguments are interpreted.
+    measurement : {'poles', 'lines', 'rakes', 'radians'}, optional
+        Controls how the input arguments are interpreted. Defaults to "lines".
+        May be one of the following:
+            ``"poles"`` : Arguments are assumed to be sequences of strikes and
+                dips of planes. Poles to these planes are used for density
+                contouring.
+            ``"lines"`` : Arguments are assumed to be sequences of plunges and
+                bearings of linear features.
+            ``"rakes"`` : Arguments are assumed to be sequences of strikes,
+                dips, and rakes along the plane.
+            ``"radians"`` : Arguments are assumed to be "raw" longitudes and
+                latitudes in the underlying projection's coordinate system.
 
     Returns
     -------
-    plunges, bearing: A set consisting of the plunge and bearing of the mean
-        vector (in degrees).
-    r_value: The length of the mean vector (a value between 0 and 1).
+    mean_vector : tuple of two floats
+        The plunge and bearing of the mean vector (in degrees).
+    r_value : float
+        The length of the mean vector (a value between 0 and 1).
     """
-    lon, lat = _convert_measurements(args, measurement='lines')
+    lon, lat = _convert_measurements(args, kwargs.get('measurement', 'lines'))
     vector, r_value = stereonet_math.mean_vector(lon, lat)
-    plunge, bearing = stereonet_math.geographic2plunge_bearing(vector[0], vector[1])
+    plunge, bearing = stereonet_math.geographic2plunge_bearing(*vector)
     return (plunge[0], bearing[0]), r_value
 
 def find_fisher_stats(*args, **kwargs):
     """
-    Returns the mean vector for a set of linear measurments.
+    Returns the mean vector and summary statistics for a set of measurements.
+    By default, this expects the input to be plunges and bearings, but the type
+    of input can be controlled through the ``measurement`` kwarg.
 
     Parameters
     ----------
-    *args: A variable number of sequences of measurements. By default, this
-        will be expected to be *plunge* and *bearing*, both as array-like
-        sequences.
-    **kwargs: The only keyword argument is the confidence ('conf') which
-        defaults to 95 % (Note: Similar to 2 sigma which is 95.4 %).
+    *args : A variable number of sequences of measurements.
+        By default, this will be expected to be *plunge* & *bearing*, both
+        array-like sequences representing linear features.  (Rake measurements
+        require three parameters, thus the variable number of arguments.) The
+        *measurement* kwarg controls how these arguments are interpreted.
+    conf : number
+        The confidence level (0-100). Defaults to 95%, similar to 2 sigma.
+    measurement : {'poles', 'lines', 'rakes', 'radians'}, optional
+        Controls how the input arguments are interpreted. Defaults to "lines".
+        May be one of the following:
+            ``"poles"`` : Arguments are assumed to be sequences of strikes and
+                dips of planes. Poles to these planes are used for density
+                contouring.
+            ``"lines"`` : Arguments are assumed to be sequences of plunges and
+                bearings of linear features.
+            ``"rakes"`` : Arguments are assumed to be sequences of strikes,
+                dips, and rakes along the plane.
+            ``"radians"`` : Arguments are assumed to be "raw" longitudes and
+                latitudes in the underlying projection's coordinate system.
 
     Returns
     -------
-    plunges, bearing: A set consisting of the plunge and bearing of the mean
-        vector (in degrees).
-    stats: A set consisting of the r_value (The length of the mean vector as
-        a float number between 0 and 1) the confidence radius (The opening
-        angle of a small circle that corresponds to the confidence in the
-        calculated direction, and dependent on the desired confidence) and the
-        kappa value (The dispersion factor as a float number, that quantifies
-        the amount of dispersion of the given vectors).
+    mean_vector: tuple of two floats
+        A set consisting of the plunge and bearing of the mean vector (in
+        degrees).
+    stats : tuple of three floats
+        ``(r_value, confidence, kappa)``
+        The ``r_value`` is the magnitude of the mean vector as a number between
+        0 and 1.
+        The ``confidence`` radius is the opening angle of a small circle that
+        corresponds to the confidence in the calculated direction, and is
+        dependent on the input ``conf``.
+        The ``kappa`` value is the dispersion factor that quantifies the amount
+        of dispersion of the given vectors, analgous to a variance/stddev.
     """
-    lon, lat = _convert_measurements(args, measurement='lines')
-    center, stats = stereonet_math.fisher_stats(lon, lat, kwargs.get('conf', 95))
-    plunge, bearing = stereonet_math.geographic2plunge_bearing(center[0], center[1])
+    # How the heck did this wind up as a separate function?
+    lon, lat = _convert_measurements(args, kwargs.get('measurement', 'lines'))
+    conf = kwargs.get('conf', 95)
+    center, stats = stereonet_math.fisher_stats(lon, lat, conf)
+    plunge, bearing = stereonet_math.geographic2plunge_bearing(*center)
     mean_vector = (plunge[0], bearing[0])
     return mean_vector, stats
-
