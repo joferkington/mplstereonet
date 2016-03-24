@@ -287,3 +287,61 @@ def find_fisher_stats(*args, **kwargs):
     plunge, bearing = stereonet_math.geographic2plunge_bearing(*center)
     mean_vector = (plunge[0], bearing[0])
     return mean_vector, stats
+
+def kmeans(*args, **kwargs):
+    """
+    Find centers of multi-modal clusters of data using a kmeans approach
+    modified for spherical measurements.
+
+    Parameters
+    ----------
+    *args : A variable number of sequences of measurements.
+    num : int
+        The number of clusters to find. Defaults to 2.
+    bidirectional : bool
+        Whether or not the measurements are bi-directional linear/planar
+        features or directed vectors. Defaults to True.
+    tolerance: int
+        Iteration will continue until the centers have not changed by more
+        than this amount. Defaults to 1e-5.
+    measurement : {'poles', 'lines', 'rakes', 'radians'}, optional
+        Controls how the input arguments are interpreted. Defaults to "lines".
+        May be one of the following:
+            ``"poles"`` : Arguments are assumed to be sequences of strikes and
+                dips of planes. Poles to these planes are used for density
+                contouring.
+            ``"lines"`` : Arguments are assumed to be sequences of plunges and
+                bearings of linear features.
+            ``"rakes"`` : Arguments are assumed to be sequences of strikes,
+                dips, and rakes along the plane.
+            ``"radians"`` : Arguments are assumed to be "raw" longitudes and
+                latitudes in the underlying projection's coordinate system.
+    """
+    lon, lat = _convert_measurements(args, kwargs.get('measurement', 'poles'))
+    num = kwargs.get('num', 2)
+    bidirectional = kwargs.get('bidirectional', True)
+    tolerance = kwargs.get('tolerance', 1e-5)
+
+    points = lon, lat
+    dist = lambda x: stereonet_math.angular_distance(x, points, bidirectional)
+
+    center_lon = np.random.choice(lon, num)
+    center_lat = np.random.choice(lat, num)
+    centers = zip(center_lon, center_lat)
+
+    while True:
+        dists = np.array([dist(item) for item in centers]).T
+        closest = dists.argmin(axis=1)
+
+        new_centers = []
+        for i in range(num):
+            mask = mask = closest == i
+            _, vecs = cov_eig(lon[mask], lat[mask], bidirectional)
+            new_centers.append(stereonet_math.cart2sph(*vecs[:,-1]))
+
+        if np.allclose(centers, new_centers, atol=tolerance):
+            break
+        else:
+            centers = new_centers
+
+    return centers
