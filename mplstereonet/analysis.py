@@ -301,7 +301,7 @@ def kmeans(*args, **kwargs):
     bidirectional : bool
         Whether or not the measurements are bi-directional linear/planar
         features or directed vectors. Defaults to True.
-    tolerance: int
+    tolerance : float
         Iteration will continue until the centers have not changed by more
         than this amount. Defaults to 1e-5.
     measurement : {'poles', 'lines', 'rakes', 'radians'}, optional
