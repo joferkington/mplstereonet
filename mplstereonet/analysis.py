@@ -295,7 +295,8 @@ def kmeans(*args, **kwargs):
 
     Parameters
     ----------
-    *args : A variable number of sequences of measurements.
+    *args : A variable number of sequences of measurements. By default, two
+        arguments (strikes, and dips : 2 sequences of number) are expected.
     num : int
         The number of clusters to find. Defaults to 2.
     bidirectional : bool
@@ -305,7 +306,7 @@ def kmeans(*args, **kwargs):
         Iteration will continue until the centers have not changed by more
         than this amount. Defaults to 1e-5.
     measurement : {'poles', 'lines', 'rakes', 'radians'}, optional
-        Controls how the input arguments are interpreted. Defaults to "lines".
+        Controls how the input arguments are interpreted. Defaults to "poles".
         May be one of the following:
             ``"poles"`` : Arguments are assumed to be sequences of strikes and
                 dips of planes. Poles to these planes are used for density
