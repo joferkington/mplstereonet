@@ -83,23 +83,8 @@ def main(datasource, azi = False, plot_planes=False, filled_contour=True, title=
     ax.set_title( title.upper(), fontsize=16, y=1.07 )
 
     useful_numbers = u'P/B of Fold Axis: \n{0}/{1}\nS/D of Axial Plane: \n{2}/{3}'.format(str(round(plunge,2)), str(round(bearing,2)), str(round(axial_s,2)), str(round(axial_dip,2)))
-    #'''Here comes a *massive* kludge. I want to put a box outside the stereonet area, but this does not seem to be working. What I am doing instead is creating a new subplot, and making everything but the text box I plan to put in it transparent.'''
-    ax2 = fig.add_subplot(333, zorder=0,alpha=0)
-    ax2.patch.set_alpha(0)
-    for i in ax2.spines:
-        ax2.spines[i].set_alpha(0)
-    ax2.set_xticklabels(ax2.get_xticklabels(), alpha=0)
-    ax2.set_yticklabels(ax2.get_yticklabels(),alpha=0)
-    ax2.tick_params(axis='x', tick1On=False, tick2On=False, which='both')
-    ax2.tick_params(axis='y', tick1On=False, tick2On=False, which='both')
-    #here endeth the kludge, so let us create the textbox:
     bbox_props = dict(boxstyle="round,pad=0.3", fc="w", ec="k", lw=2, alpha=0.35)
-    #ax2.text( 0.2, 0.5, useful_numbers, ha='left', bbox=bbox_props, color='grey')
-    #for i in range(-10, 10, 0.5):
-    #    for k in range(-10, 10, 0.5):
-    #        text = i,k
-    #        ax.text( i, k, text, ha='center', bbox=bbox_props, color='grey', clip_on=False)
-    ax.text( -7, -9, useful_numbers, ha='left', va='top', bbox=bbox_props, color='grey', clip_on=False)
+    ax.text( 1, 0.1, useful_numbers, ha='left', va='top', bbox=bbox_props, color='grey', clip_on=False, transform=ax.transAxes)
 
     basefilename = splitext(basename(datasource))[0]
     image_filename = 'graphs/{0}.png'.format(basefilename)
