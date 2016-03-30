@@ -1,0 +1,4 @@
+Location,Title,Azi
+data/noordhoek.csv,Noordhoek Fold 1,True
+data/readings.csv,Test Fold 1,False
+data/test_2.csv,Test Fold 2,True
