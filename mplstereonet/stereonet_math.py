@@ -400,9 +400,9 @@ def fisher_stats(lons, lats, conf=95):
     mean vector: tuple
         The point that lies in the center of a set of vectors.
         (Longitude, Latitude) in radians.
-    
+
     If 1 vector is passed to the function it returns two None-values. For
-    more than one vector the following 3 values are returned as a tuple: 
+    more than one vector the following 3 values are returned as a tuple:
 
     r_value: float
         The magnitude of the resultant vector (between 0 and 1) This represents
@@ -424,14 +424,14 @@ def fisher_stats(lons, lats, conf=95):
     mean_vec = cart2sph(*mean_vec)
 
     if num > 1:
-        p = (100 - conf) / 100
+        p = (100.0 - conf) / 100.0
         vector_sum = xyz.sum(axis=0)
         result_vect = np.sqrt(np.sum(np.square(vector_sum)))
         fract1 = (num - result_vect) / result_vect
-        fract3 = 1 / (num - 1)
+        fract3 = 1.0 / (num - 1.0)
         angle = np.arccos(1 - fract1 * ((1 / p) ** fract3 - 1))
         angle = np.degrees(angle)
-        kappa = (num - 1) / (num - result_vect)
+        kappa = (num - 1.0) / (num - result_vect)
         return mean_vec, (r_value, angle, kappa)
     else:
         return None, None
@@ -733,7 +733,7 @@ def angular_distance(first, second, bidirectional=True):
         >>> np.degrees(angle)
         array([ 110.])
 
-    Calculate the angle between two planes. 
+    Calculate the angle between two planes.
 
         >>> angle = angular_distance(pole(0, 10), pole(180, 10))
         >>> np.degrees(angle)
