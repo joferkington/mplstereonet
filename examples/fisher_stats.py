@@ -1,17 +1,20 @@
 """
 This example shows how the Fisher statistics can be computed and displayed.
-Using data from:
 
-Fisher, N.I., Lewis, T., Embleton, B.J.J. (1993) "Statistical Analysis of
-Spherical Data"
+*Based on example 5.21 and example 5.23 in* [Fisher1993]_.
 
----------------------------
-Example 5.21 / Example 5.23
----------------------------
-Data:           Table B2    (page 279)
+=============  ===========  ==========
+Data in:        Table B2    (page 279)
 Mean Vector:    144.2/57.2  (page 130)
 K-Value:        109         (page 130)
 Fisher-Angle:   2.7 deg.    (page 132)
+=============  ===========  ==========
+
+Reference
+---------
+
+.. [Fisher1993] Fisher, N.I., Lewis, T., Embleton, B.J.J. (1993) "Statistical
+   Analysis of Spherical Data"
 """
 
 import matplotlib.pyplot as plt

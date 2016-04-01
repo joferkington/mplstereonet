@@ -7,19 +7,22 @@ def fit_girdle(*args, **kwargs):
     Fits a plane to a scatter of points on a stereonet (a.k.a. a "girdle").
 
     Input arguments will be interpreted as poles, lines, rakes, or "raw"
-    longitudes and latitudes based on the *measurement* keyword argument.
-    (Defaults to "poles".)
+    longitudes and latitudes based on the ``measurement`` keyword argument.
+    (Defaults to ``"poles"``.)
 
     Parameters
     ----------
-    *args : A variable number of sequences of measurements. By default, this
-        will be expected to be *strike* & *dip*, both array-like sequences
-        representing poles to planes.  (Rake measurements require three
-        parameters, thus the variable number of arguments.) The *measurement*
-        kwarg controls how these arguments are interpreted.
+
+    *args : 2 or 3 sequences of measurements
+        By default, this will be expected to be ``strikes`` & ``dips``, both
+        array-like sequences representing poles to planes.  (Rake measurements
+        require three parameters, thus the variable number of arguments.) The
+        *measurement* kwarg controls how these arguments are interpreted.
+
     measurement : {'poles', 'lines', 'rakes', 'radians'}, optional
-        Controls how the input arguments are interpreted. Defaults to "poles".
-        May be one of the following:
+        Controls how the input arguments are interpreted. Defaults to
+        ``"poles"``.  May be one of the following:
+
             ``"poles"`` : Arguments are assumed to be sequences of strikes and
                 dips of planes. Poles to these planes are used for density
                 contouring.
@@ -29,6 +32,7 @@ def fit_girdle(*args, **kwargs):
                 dips, and rakes along the plane.
             ``"radians"`` : Arguments are assumed to be "raw" longitudes and
                 latitudes in the underlying projection's coordinate system.
+
     bidirectional : boolean, optional
         Whether or not the antipode of each measurement will be used in the
         calculation. For almost all use cases, it should. Defaults to True.
@@ -63,19 +67,22 @@ def fit_pole(*args, **kwargs):
     Fits the pole to a plane to a "bullseye" of points on a stereonet.
 
     Input arguments will be interpreted as poles, lines, rakes, or "raw"
-    longitudes and latitudes based on the *measurement* keyword argument.
-    (Defaults to "poles".)
+    longitudes and latitudes based on the ``measurement`` keyword argument.
+    (Defaults to ``"poles"``.)
 
     Parameters
     ----------
-    *args : A variable number of sequences of measurements. By default, this
-        will be expected to be *strike* & *dip*, both array-like sequences
-        representing poles to planes.  (Rake measurements require three
-        parameters, thus the variable number of arguments.) The *measurement*
-        kwarg controls how these arguments are interpreted.
+
+    *args : 2 or 3 sequences of measurements
+        By default, this will be expected to be ``strike`` & ``dip``, both
+        array-like sequences representing poles to planes.  (Rake measurements
+        require three parameters, thus the variable number of arguments.) The
+        *measurement* kwarg controls how these arguments are interpreted.
+
     measurement : {'poles', 'lines', 'rakes', 'radians'}, optional
-        Controls how the input arguments are interpreted. Defaults to "poles".
-        May be one of the following:
+        Controls how the input arguments are interpreted. Defaults to
+        ``"poles"``.  May be one of the following:
+
             ``"poles"`` : Arguments are assumed to be sequences of strikes and
                 dips of planes. Poles to these planes are used for density
                 contouring.
@@ -85,23 +92,27 @@ def fit_pole(*args, **kwargs):
                 dips, and rakes along the plane.
             ``"radians"`` : Arguments are assumed to be "raw" longitudes and
                 latitudes in the underlying projection's coordinate system.
+
     bidirectional : boolean, optional
         Whether or not the antipode of each measurement will be used in the
         calculation. For almost all use cases, it should. Defaults to True.
 
     Returns
     -------
+
     strike, dip: floats
         The strike and dip of the plane.
 
     Notes
     -----
+
     The pole to the best-fit plane is extracted by calculating the largest
     eigenvector of the covariance matrix of the input measurements in cartesian
     3D space.
 
     Examples
     --------
+
     Find the average strike/dip of a series of bedding measurements
 
         >>> strike = [270, 65, 280, 300]
@@ -128,18 +139,21 @@ def eigenvectors(*args, **kwargs):
 
     Input arguments will be interpreted as poles, lines, rakes, or "raw"
     longitudes and latitudes based on the *measurement* keyword argument.
-    (Defaults to "poles".)
+    (Defaults to ``"poles"``.)
 
     Parameters
     ----------
-    *args : A variable number of sequences of measurements
-        By default, this will be expected to be *strike* & *dip*, both
+
+    *args : 2 or 3 sequences of measurements
+        By default, this will be expected to be ``strike`` & ``dip``, both
         array-like sequences representing poles to planes.  (Rake measurements
         require three parameters, thus the variable number of arguments.) The
         *measurement* kwarg controls how these arguments are interpreted.
+
     measurement : {'poles', 'lines', 'rakes', 'radians'}, optional
-        Controls how the input arguments are interpreted. Defaults to "poles".
-        May be one of the following:
+        Controls how the input arguments are interpreted. Defaults to
+        ``"poles"``.  May be one of the following:
+
             ``"poles"`` : Arguments are assumed to be sequences of strikes and
                 dips of planes. Poles to these planes are used for density
                 contouring.
@@ -149,12 +163,14 @@ def eigenvectors(*args, **kwargs):
                 dips, and rakes along the plane.
             ``"radians"`` : Arguments are assumed to be "raw" longitudes and
                 latitudes in the underlying projection's coordinate system.
+
     bidirectional : boolean, optional
         Whether or not the antipode of each measurement will be used in the
         calculation. For almost all use cases, it should. Defaults to True.
 
     Returns
     -------
+
     plunges, bearings, values : sequences of 3 floats each
         The plunges, bearings, and eigenvalues of the three eigenvectors of the
         covariance matrix of the input data.  The measurements are returned
@@ -163,6 +179,7 @@ def eigenvectors(*args, **kwargs):
 
     Examples
     --------
+
     Find the eigenvectors as plunge/bearing and eigenvalues of the 3D
     covariance matrix of a series of planar measurements:
 
@@ -207,28 +224,37 @@ def find_mean_vector(*args, **kwargs):
 
     Parameters
     ----------
-    *args : A variable number of sequences of measurements.
-        By default, this will be expected to be *plunge* & *bearing*, both
+
+    *args : 2 or 3 sequences of measurements
+        By default, this will be expected to be ``plunge`` & ``bearing``, both
         array-like sequences representing linear features.  (Rake measurements
         require three parameters, thus the variable number of arguments.) The
         *measurement* kwarg controls how these arguments are interpreted.
-    measurement : {'poles', 'lines', 'rakes', 'radians'}, optional
-        Controls how the input arguments are interpreted. Defaults to "lines".
-        May be one of the following:
-            ``"poles"`` : Arguments are assumed to be sequences of strikes and
-                dips of planes. Poles to these planes are used for density
-                contouring.
-            ``"lines"`` : Arguments are assumed to be sequences of plunges and
-                bearings of linear features.
-            ``"rakes"`` : Arguments are assumed to be sequences of strikes,
-                dips, and rakes along the plane.
-            ``"radians"`` : Arguments are assumed to be "raw" longitudes and
-                latitudes in the underlying projection's coordinate system.
+
+
+    measurement : string, optional
+        Controls how the input arguments are interpreted. Defaults to
+        ``"lines"``.  May be one of the following:
+
+            ``"poles"`` : strikes, dips
+                Arguments are assumed to be sequences of strikes and dips of
+                planes. Poles to these planes are used for analysis.
+            ``"lines"`` : plunges, bearings
+                Arguments are assumed to be sequences of plunges and bearings
+                of linear features.
+            ``"rakes"`` : strikes, dips, rakes
+                Arguments are assumed to be sequences of strikes, dips, and
+                rakes along the plane.
+            ``"radians"`` : lon, lat
+                Arguments are assumed to be "raw" longitudes and latitudes in
+                the stereonet's underlying coordinate system.
 
     Returns
     -------
+
     mean_vector : tuple of two floats
         The plunge and bearing of the mean vector (in degrees).
+
     r_value : float
         The length of the mean vector (a value between 0 and 1).
     """
@@ -245,31 +271,39 @@ def find_fisher_stats(*args, **kwargs):
 
     Parameters
     ----------
-    *args : A variable number of sequences of measurements.
-        By default, this will be expected to be *plunge* & *bearing*, both
+    *args : 2 or 3 sequences of measurements
+        By default, this will be expected to be ``plunge`` & ``bearing``, both
         array-like sequences representing linear features.  (Rake measurements
         require three parameters, thus the variable number of arguments.) The
         *measurement* kwarg controls how these arguments are interpreted.
+
     conf : number
         The confidence level (0-100). Defaults to 95%, similar to 2 sigma.
-    measurement : {'poles', 'lines', 'rakes', 'radians'}, optional
-        Controls how the input arguments are interpreted. Defaults to "lines".
-        May be one of the following:
-            ``"poles"`` : Arguments are assumed to be sequences of strikes and
-                dips of planes. Poles to these planes are used for density
-                contouring.
-            ``"lines"`` : Arguments are assumed to be sequences of plunges and
-                bearings of linear features.
-            ``"rakes"`` : Arguments are assumed to be sequences of strikes,
-                dips, and rakes along the plane.
-            ``"radians"`` : Arguments are assumed to be "raw" longitudes and
-                latitudes in the underlying projection's coordinate system.
+
+    measurement : string, optional
+        Controls how the input arguments are interpreted. Defaults to
+        ``"lines"``.  May be one of the following:
+
+            ``"poles"`` : strikes, dips
+                Arguments are assumed to be sequences of strikes and dips of
+                planes. Poles to these planes are used for analysis.
+            ``"lines"`` : plunges, bearings
+                Arguments are assumed to be sequences of plunges and bearings
+                of linear features.
+            ``"rakes"`` : strikes, dips, rakes
+                Arguments are assumed to be sequences of strikes, dips, and
+                rakes along the plane.
+            ``"radians"`` : lon, lat
+                Arguments are assumed to be "raw" longitudes and latitudes in
+                the stereonet's underlying coordinate system.
 
     Returns
     -------
+
     mean_vector: tuple of two floats
         A set consisting of the plunge and bearing of the mean vector (in
         degrees).
+
     stats : tuple of three floats
         ``(r_value, confidence, kappa)``
         The ``r_value`` is the magnitude of the mean vector as a number between
@@ -295,28 +329,46 @@ def kmeans(*args, **kwargs):
 
     Parameters
     ----------
-    *args : A variable number of sequences of measurements. By default, two
-        arguments (strikes, and dips : 2 sequences of number) are expected.
+
+    *args : 2 or 3 sequences of measurements
+        By default, this will be expected to be ``strike`` & ``dip``, both
+        array-like sequences representing poles to planes.  (Rake measurements
+        require three parameters, thus the variable number of arguments.) The
+        ``measurement`` kwarg controls how these arguments are interpreted.
+
     num : int
         The number of clusters to find. Defaults to 2.
+
     bidirectional : bool
         Whether or not the measurements are bi-directional linear/planar
         features or directed vectors. Defaults to True.
+
     tolerance : float
         Iteration will continue until the centers have not changed by more
         than this amount. Defaults to 1e-5.
-    measurement : {'poles', 'lines', 'rakes', 'radians'}, optional
-        Controls how the input arguments are interpreted. Defaults to "poles".
-        May be one of the following:
-            ``"poles"`` : Arguments are assumed to be sequences of strikes and
-                dips of planes. Poles to these planes are used for density
-                contouring.
-            ``"lines"`` : Arguments are assumed to be sequences of plunges and
-                bearings of linear features.
-            ``"rakes"`` : Arguments are assumed to be sequences of strikes,
-                dips, and rakes along the plane.
-            ``"radians"`` : Arguments are assumed to be "raw" longitudes and
-                latitudes in the underlying projection's coordinate system.
+
+    measurement : string, optional
+        Controls how the input arguments are interpreted. Defaults to
+        ``"poles"``.  May be one of the following:
+
+            ``"poles"`` : strikes, dips
+                Arguments are assumed to be sequences of strikes and dips of
+                planes. Poles to these planes are used for analysis.
+            ``"lines"`` : plunges, bearings
+                Arguments are assumed to be sequences of plunges and bearings
+                of linear features.
+            ``"rakes"`` : strikes, dips, rakes
+                Arguments are assumed to be sequences of strikes, dips, and
+                rakes along the plane.
+            ``"radians"`` : lon, lat
+                Arguments are assumed to be "raw" longitudes and latitudes in
+                the stereonet's underlying coordinate system.
+
+    Returns
+    -------
+
+    centers : An Nx2 array-like
+        Longitude and latitude in radians of the centers of each cluster.
     """
     lon, lat = _convert_measurements(args, kwargs.get('measurement', 'poles'))
     num = kwargs.get('num', 2)

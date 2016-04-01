@@ -178,7 +178,7 @@ class StereonetAxes(LambertAxes):
         pb = u'P/B={:0.0f}\u00b0/{:03.0f}\u00b0'.format(p[0], b[0])
         sd = u'S/D={:03.0f}\u00b0/{:0.0f}\u00b0'.format(s[0], d[0])
         return u'{}, {}'.format(pb, sd)
-    
+
     def grid(self, b=None, which='major', axis='both', kind='arbitrary',
              center=None, **kwargs):
         """
@@ -223,7 +223,7 @@ class StereonetAxes(LambertAxes):
 
         It is also often useful to display a grid relative to an arbitrary
         measurement (e.g. a lineation axis).  In that case, use the
-        ``lon_center`` and ``lat_center`` arguments.  Note that these are in 
+        ``lon_center`` and ``lat_center`` arguments.  Note that these are in
         radians in "stereonet coordinates".  Therefore, you'll often want to
         use one of the functions in ``stereonet_math`` to convert a
         line/plane/rake into the longitude and latitude you'd input here. For
@@ -525,40 +525,51 @@ class StereonetAxes(LambertAxes):
         Parameters
         ----------
         *args : A variable number of sequences of measurements.
-            By default, this will be expected to be `strike` & `dip`, both
+            By default, this will be expected to be ``strike`` & ``dip``, both
             array-like sequences representing poles to planes.  (Rake
             measurements require three parameters, thus the variable number of
-            arguments.) The `measurement` kwarg controls how these arguments
+            arguments.) The ``measurement`` kwarg controls how these arguments
             are interpreted.
-        measurement : {'poles', 'lines', 'rakes', 'radians'}, optional
+
+        measurement : string, optional
             Controls how the input arguments are interpreted. Defaults to
-            "poles".  May be one of the following:
-                "poles" : Arguments are assumed to be sequences of strikes
-                    and dips of planes. Poles to these planes are used for
-                    density contouring.
-                "lines" : Arguments are assumed to be sequences of plunges
-                    and bearings of linear features.
-                "rakes" : Arguments are assumed to be sequences of strikes,
-                    dips, and rakes along the plane.
-                "radians" : Arguments are assumed to be "raw" longitudes
-                    and latitudes in the underlying projection's coordinate
-                    system.
-        method : {'exponential_kamb', 'linear_kamb', 'kamb', 'schmidt'} optional
+            ``"poles"``.  May be one of the following:
+
+                ``"poles"`` : strikes, dips
+                    Arguments are assumed to be sequences of strikes and dips
+                    of planes. Poles to these planes are used for contouring.
+                ``"lines"`` : plunges, bearings
+                    Arguments are assumed to be sequences of plunges and
+                    bearings of linear features.
+                ``"rakes"`` : strikes, dips, rakes
+                    Arguments are assumed to be sequences of strikes, dips, and
+                    rakes along the plane.
+                ``"radians"`` : lon, lat
+                    Arguments are assumed to be "raw" longitudes and latitudes
+                    in the stereonet's underlying coordinate system.
+
+        method : string, optional
             The method of density estimation to use. Defaults to
-            "exponential_kamb". May be one of the following:
-            "exponential_kamb" : A modified Kamb method using exponential
-                smoothing _[1]. Units are in numbers of standard deviations by
-                which the density estimate differs from uniform.
-            "linear_kamb" : A modified Kamb method using linear smoothing _[1].
-                Units are in numbers of standard deviations by which the
-                density estimate differs from uniform.
-            "kamb" : Kamb's method _[2] with no smoothing. Units are in numbers
-                of standard deviations by which the density estimate differs
-                from uniform.
-            "schmidt" : The traditional "Schmidt" (a.k.a. 1%) method. Counts
-                points within a counting circle comprising 1% of the total area
-                of the hemisphere. Does not take into account sample size.
-                Units are in points per 1% area.
+            ``"exponential_kamb"``. May be one of the following:
+
+            ``"exponential_kamb"`` : Kamb with exponential smoothing
+                A modified Kamb method using exponential smoothing [1]_. Units
+                are in numbers of standard deviations by which the density
+                estimate differs from uniform.
+            ``"linear_kamb"`` : Kamb with linear smoothing
+                A modified Kamb method using linear smoothing [1]_.  Units are
+                in numbers of standard deviations by which the density estimate
+                differs from uniform.
+            ``"kamb"`` : Kamb with no smoothing
+                Kamb's method [2]_ with no smoothing. Units are in numbers of
+                standard deviations by which the density estimate differs from
+                uniform.
+            ``"schmidt"`` : 1% counts
+                The traditional "Schmidt" (a.k.a. 1%) method. Counts points
+                within a counting circle comprising 1% of the total area of the
+                hemisphere. Does not take into account sample size.  Units are
+                in points per 1% area.
+
         sigma : int or float, optional
             The number of standard deviations defining the expected number of
             standard deviations by which a random sample from a uniform
@@ -568,31 +579,34 @@ class StereonetAxes(LambertAxes):
             sigmas will lead to more smoothing of the resulting density
             distribution. This parameter only applies to Kamb-based methods.
             Defaults to 3.
+
         gridsize : int or 2-item tuple of ints, optional
             The size of the grid that the density is estimated on. If a single
             int is given, it is interpreted as an NxN grid. If a tuple of ints
             is given it is interpreted as (nrows, ncols).  Defaults to 100.
+
         weights : array-like, optional
-            The relative weight to be applied to each input measurement. The array
-            will be normalized to sum to 1, so absolute value of the weights do not
-            affect the result. Defaults to None.
+            The relative weight to be applied to each input measurement. The
+            array will be normalized to sum to 1, so absolute value of the
+            weights do not affect the result. Defaults to None.
+
         **kwargs
             Additional keyword arguments are passed on to matplotlib's
             `contour` function.
 
-        Returns:
-        --------
+        Returns
+        -------
         A matplotlib ContourSet.
 
-        See Also:
-        ---------
+        See Also
+        --------
         mplstereonet.density_grid
         mplstereonet.StereonetAxes.density_contourf
         matplotlib.pyplot.contour
         matplotlib.pyplot.clabel
 
-        Examples:
-        ---------
+        Examples
+        --------
         Plot density contours of poles to the specified planes using a
         modified Kamb method with exponential smoothing [1]_.
 
@@ -650,39 +664,51 @@ class StereonetAxes(LambertAxes):
         Parameters
         ----------
         *args : A variable number of sequences of measurements.
-            By default, this will be expected to be `strike` & `dip`, both
+            By default, this will be expected to be ``strike`` & ``dip``, both
             array-like sequences representing poles to planes.  (Rake
             measurements require three parameters, thus the variable number of
-            arguments.) The `measurement` kwarg controls how these arguments
+            arguments.) The ``measurement`` kwarg controls how these arguments
             are interpreted.
-        measurement : {'poles', 'lines', 'rakes', 'radians'}, optional
+
+        measurement : string, optional
             Controls how the input arguments are interpreted. Defaults to
-            "poles".  May be one of the following:
-                "poles" : Arguments are assumed to be sequences of strikes and
-                    dips of planes. Poles to these planes are used for density
-                    contouring.
-                "lines" : Arguments are assumed to be sequences of plunges and
+            ``"poles"``.  May be one of the following:
+
+                ``"poles"`` : strikes, dips
+                    Arguments are assumed to be sequences of strikes and dips
+                    of planes. Poles to these planes are used for contouring.
+                ``"lines"`` : plunges, bearings
+                    Arguments are assumed to be sequences of plunges and
                     bearings of linear features.
-                "rakes" : Arguments are assumed to be sequences of strikes,
-                    dips, and rakes along the plane.
-                "radians" : Arguments are assumed to be "raw" longitudes and
-                    latitudes in the underlying projection's coordinate system.
-        method : {'exponential_kamb', 'linear_kamb', 'kamb', 'schmidt'} optional
+                ``"rakes"`` : strikes, dips, rakes
+                    Arguments are assumed to be sequences of strikes, dips, and
+                    rakes along the plane.
+                ``"radians"`` : lon, lat
+                    Arguments are assumed to be "raw" longitudes and latitudes
+                    in the stereonet's underlying coordinate system.
+
+        method : string, optional
             The method of density estimation to use. Defaults to
-            "exponential_kamb". May be one of the following:
-            "exponential_kamb" : A modified Kamb method using exponential
-                smoothing _[1]. Units are in numbers of standard deviations by
-                which the density estimate differs from uniform.
-            "linear_kamb" : A modified Kamb method using linear smoothing _[1].
-                Units are in numbers of standard deviations by which the
-                density estimate differs from uniform.
-            "kamb" : Kamb's method _[2] with no smoothing. Units are in numbers
-                of standard deviations by which the density estimate differs
-                from uniform.
-            "schmidt" : The traditional "Schmidt" (a.k.a. 1%) method. Counts
-                points within a counting circle comprising 1% of the total area
-                of the hemisphere. Does not take into account sample size.
-                Units are in points per 1% area.
+            ``"exponential_kamb"``. May be one of the following:
+
+            ``"exponential_kamb"`` : Kamb with exponential smoothing
+                A modified Kamb method using exponential smoothing [1]_. Units
+                are in numbers of standard deviations by which the density
+                estimate differs from uniform.
+            ``"linear_kamb"`` : Kamb with linear smoothing
+                A modified Kamb method using linear smoothing [1]_.  Units are
+                in numbers of standard deviations by which the density estimate
+                differs from uniform.
+            ``"kamb"`` : Kamb with no smoothing
+                Kamb's method [2]_ with no smoothing. Units are in numbers of
+                standard deviations by which the density estimate differs from
+                uniform.
+            ``"schmidt"`` : 1% counts
+                The traditional "Schmidt" (a.k.a. 1%) method. Counts points
+                within a counting circle comprising 1% of the total area of the
+                hemisphere. Does not take into account sample size.  Units are
+                in points per 1% area.
+
         sigma : int or float, optional
             The number of standard deviations defining the expected number of
             standard deviations by which a random sample from a uniform
@@ -692,31 +718,34 @@ class StereonetAxes(LambertAxes):
             sigmas will lead to more smoothing of the resulting density
             distribution. This parameter only applies to Kamb-based methods.
             Defaults to 3.
+
         gridsize : int or 2-item tuple of ints, optional
             The size of the grid that the density is estimated on. If a single
             int is given, it is interpreted as an NxN grid. If a tuple of ints
             is given it is interpreted as (nrows, ncols).  Defaults to 100.
+
         weights : array-like, optional
-            The relative weight to be applied to each input measurement. The array
-            will be normalized to sum to 1, so absolute value of the weights do not
-            affect the result. Defaults to None.
+            The relative weight to be applied to each input measurement. The
+            array will be normalized to sum to 1, so absolute value of the
+            weights do not affect the result. Defaults to None.
+
         **kwargs
             Additional keyword arguments are passed on to matplotlib's
             `contourf` function.
 
-        Returns:
-        --------
+        Returns
+        -------
         A matplotlib `QuadContourSet`.
 
-        See Also:
-        ---------
-        `mplstereonet.density_grid`
-        `mplstereonet.StereonetAxes.density_contour`
-        `matplotlib.pyplot.contourf`
-        `matplotlib.pyplot.clabel`
+        See Also
+        --------
+        mplstereonet.density_grid
+        mplstereonet.StereonetAxes.density_contour
+        matplotlib.pyplot.contourf
+        matplotlib.pyplot.clabel
 
-        Examples:
-        ---------
+        Examples
+        --------
         Plot filled density contours of poles to the specified planes using
         a modified Kamb method with exponential smoothing [1]_.
 

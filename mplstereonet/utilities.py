@@ -229,16 +229,16 @@ def parse_azimuth(azimuth):
     azimuth : string or number
         An azimuth measurement in degrees or a quadrant measurement of azimuth.
 
-    Returns:
-    --------
+    Returns
+    -------
     azi : float
         The azimuth in degrees clockwise from north (range: 0-360)
 
-    See Also:
-    ---------
-    `parse_quadrant_measurement`
-    `parse_strike_dip`
-    `parse_plunge_bearing`
+    See Also
+    --------
+    parse_quadrant_measurement
+    parse_strike_dip
+    parse_plunge_bearing
     """
     try:
         azimuth = float(azimuth)
@@ -263,14 +263,14 @@ def parse_quadrant_measurement(quad_azimuth):
     quad_azimuth : string
         An azimuth measurement in quadrant form.
 
-    Returns:
-    --------
+    Returns
+    -------
     azi : float
         An azimuth in degrees clockwise from north.
 
-    See Also:
-    ---------
-    `parse_azimuth`
+    See Also
+    --------
+    parse_azimuth
     """
     def rotation_direction(first, second):
         return np.cross(_azimuth2vec(first), _azimuth2vec(second))
