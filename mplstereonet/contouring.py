@@ -195,13 +195,13 @@ def _kamb_count(cos_dist, sigma=3):
     """Original Kamb kernel function (raw count within radius)."""
     n = float(cos_dist.size)
     dist = _kamb_radius(n, sigma)
-    count = (cos_dist >= dist)
+    count = (cos_dist >= dist).astype(float)
     return count, _kamb_units(n, dist)
 
 def _schmidt_count(cos_dist, sigma=None):
     """Schmidt (a.k.a. 1%) counting kernel function."""
     radius = 0.01
-    count = ((1 - cos_dist) <= radius)
+    count = ((1 - cos_dist) <= radius).astype(float)
     # To offset the count.sum() - 0.5 required for the kamb methods...
     count = 0.5 / count.size + count
     return count, (cos_dist.size * radius)
