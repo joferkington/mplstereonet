@@ -3,3 +3,6 @@ build
 dist
 *.pyc
 *.swp
+docs/examples/*.rst
+docs/_static/examples/*.png
+docs/_build
