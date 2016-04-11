@@ -185,12 +185,30 @@ class StereonetAxes(LambertAxes):
         Usage is identical to a normal axes grid except for the ``kind`` and
         ``center`` kwargs.  ``kind="polar"`` will add a polar overlay.
 
+        The ``center`` and ``kind`` arguments allow you to add a grid from a
+        differently-centered stereonet. This is useful for making "polar
+        stereonets" that still use the same coordinate system as a standard
+        stereonet.  (i.e. a plane/line/whatever will have the same
+        representation on both, but the grid is displayed differently.)
+
+        To display a polar grid on a stereonet, use ``kind="polar"``.
+
+        It is also often useful to display a grid relative to an arbitrary
+        measurement (e.g. a lineation axis).  In that case, use the
+        ``lon_center`` and ``lat_center`` arguments.  Note that these are in
+        radians in "stereonet coordinates".  Therefore, you'll often want to
+        use one of the functions in ``stereonet_math`` to convert a
+        line/plane/rake into the longitude and latitude you'd input here. For
+        example:  ``add_overlay(center=stereonet_math.line(plunge, bearing))``.
+
+        If no parameters are specified, this is equivalent to turning on the
+        standard grid.
         """
         grid_on = self._gridOn
         Axes.grid(self, False)
 
         if kind == 'polar':
-            center = 0, np.pi / 2
+            center = 0, 0
 
         if self._overlay_axes is not None:
             self._overlay_axes.remove()
@@ -203,7 +221,7 @@ class StereonetAxes(LambertAxes):
             if grid_on:
                 return
 
-        if center is None or center == (0, 0):
+        if center is None or np.allclose(center, (np.pi/2, 0)):
             return Axes.grid(self, b, which, axis, **kwargs)
 
         self._add_overlay(center)
@@ -227,7 +245,7 @@ class StereonetAxes(LambertAxes):
         radians in "stereonet coordinates".  Therefore, you'll often want to
         use one of the functions in ``stereonet_math`` to convert a
         line/plane/rake into the longitude and latitude you'd input here. For
-        example:  ``add_overlay(*stereonet_math.line(plunge, bearing))``.
+        example:  ``add_overlay(center=stereonet_math.line(plunge, bearing))``.
 
         If no parameters are specified, this is equivalent to turning on the
         standard grid.
@@ -238,13 +256,15 @@ class StereonetAxes(LambertAxes):
             A tuple of (longitude, latitude) in radians that the overlay is
             centered on.
         """
+        plunge, bearing = stereonet_math.geographic2plunge_bearing(*center)
         lon0, lat0 = center
         fig = self.get_figure()
         self._overlay_axes = fig.add_axes(self.get_position(True),
                                           frameon=False, projection=self.name,
-                                          center_longitude=lon0,
-                                          center_latitude=lat0,
-                                          label='overlay')
+                                          center_longitude=0,
+                                          center_latitude=np.radians(plunge),
+                                          label='overlay',
+                                          rotation=bearing)
         self._overlay_axes._polar.remove()
         self._overlay_axes.format_coord = self._overlay_format_coord
         self._overlay_axes.grid(True)
