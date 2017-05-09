@@ -44,7 +44,7 @@ def planar_daylight_envelope(strike,dip,facecolor='none',edgecolor='b',segments=
 
 
 
-def planar_friction_envelope(friction=30,facecolor='r',segments=100):
+def planar_friction_envelope(friction=30,facecolor='none',edgecolor='r',segments=100):
     """
     Draws the planar friction envelope (cone) with given friction angle of sliding plane
     
@@ -68,7 +68,7 @@ def planar_friction_envelope(friction=30,facecolor='r',segments=100):
     c_angle=frictions
     
 #    plotting
-    ax.cone(c_plunge,c_bearing, c_angle,alpha=0.5,facecolor=facecolor)
+    ax.cone(c_plunge,c_bearing, c_angle,facecolor=facecolor,edgecolor=edgecolor)
     
     
     return c_plunge,c_bearing,c_angle
@@ -155,29 +155,31 @@ def setup_kinematic_analysis_ax(strike,dip,friction):
    
     
     plt.sca(ax[0])
-    ax[0].set_title('planar')
+    ax[0].set_title('planar\n')
+    ax[0].plane(strike,dip,'k--',lw=5)
     ax[0].grid(True)
 #    ax[0].set_azimuth_ticklabels(np.round(np.degrees(ax[0].get_azimuth_ticks())),fontsize='x-small')
     planar_friction_envelope(friction)
-    ax[0].plane(strike,dip,'k--',lw=5)
     planar_daylight_envelope(strike,dip)
     
     
     plt.sca(ax[1])
-    ax[1].grid(True)
-    ax[1].set_title('wedge')
-    planar_friction_envelope(friction)
     ax[1].plane(strike,dip,'k--',lw=5)
+    
+    ax[1].grid(True)
+    ax[1].set_title('wedge\n')
+    planar_friction_envelope(90-friction)
     ax[1].plane(strike,dip,c='b',lw=1)
 
     
     plt.sca(ax[2])
-    ax[2].grid(True)
-    ax[2].set_title('toppling')
-    toppling_friction_envelope(strike,dip,friction)
-    toppling_slip_limits(strike,dip)
     ax[2].plane(strike,dip,'k--',lw=5)
     
+    ax[2].grid(True)
+    ax[2].set_title('toppling\n')
+    toppling_friction_envelope(strike,dip,friction)
+    toppling_slip_limits(strike,dip)
+    fig.tight_layout()
     
 
 strike=[320]#,0,210]
@@ -194,6 +196,6 @@ setup_kinematic_analysis_ax(strike,dip,friction)
 
 
 
-fig.tight_layout()
+
 plt.show()
 
