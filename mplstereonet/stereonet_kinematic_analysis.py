@@ -9,11 +9,14 @@ Rocscience. 2000. DIPS (5.00) - Windows, Rocscience, Inc., Totonto, Ontario.
 
 """
 
-
-
 import numpy as np
 import mplstereonet as st
 import matplotlib.pyplot as plt
+
+
+"""
+FUNCTIONS
+"""
 
 def planar_daylight_envelope(strike,dip,facecolor='none',edgecolor='b',segments=100):
     """
@@ -31,8 +34,8 @@ def planar_daylight_envelope(strike,dip,facecolor='none',edgecolor='b',segments=
         
     Returns
     -------
-    c_plunge, c_bearing, c_angle: arrays
-        Arrays of plunges, bearings, and angles of the planar daylight envelopes.
+    pde_plunge, pde_bearing, pde_angle: arrays
+        Arrays of plunges, bearings, and angles of the planar daylight envelopes (cones).
     """
 
     strikes, dips = np.atleast_1d(strike, dip)
@@ -60,7 +63,7 @@ def planar_friction_envelope(friction=30,facecolor='none',edgecolor='r',segments
     Returns
     -------
     pfe_plunge, pfe_bearing, pfe_angle: arrays
-        Arrays of plunges, bearings, and angles of the planar friction envelopes.
+        Arrays of plunges, bearings, and angles of the planar friction envelopes (cones).
     """
     frictions = np.atleast_1d(friction)
 #    computing plunge, bearing, and angle of planar friction envelope (cone)
@@ -90,7 +93,7 @@ def wedge_daylight_envelope(strike,dip,linecolor='b',segments=100):
     Returns
     -------
     wde_strikes, wde_dips: arrays
-        Arrays of strike and dip of the wedge daylight envelopes.
+        Arrays of strike and dip of the wedge daylight envelopes (great circles).
     """
 #    wedge daylight envelope is the same as the slope face orientation
     wde_strikes, wde_dips = np.atleast_1d(strike, dip)
@@ -111,8 +114,8 @@ def wedge_friction_envelope(friction=30,facecolor='none',edgecolor='r',segments=
         
     Returns
     -------
-    c_plunge, c_bearing, c_angle: arrays
-        Arrays of plunges, bearings, and angles of the planar daylight envelopes.
+    wfe_plunge, wfe_bearing, wfe_angle: arrays
+        Arrays of plunges, bearings, and angles of the planar daylight envelopes (cones).
     """
     frictions = np.atleast_1d(friction)
 #    computing plunge, bearing, and angle of planar friction envelope (cone)
@@ -149,7 +152,7 @@ def toppling_slip_limits(strike,dip,linecolor='b',segments=100):
     Returns
     -------
     tsl1_plunge,tsl1_bearing,tsl1_angle, tsl2_plunge,tsl2_bearing,tsl2_angle: arrays
-        Arrays of plunge, bearing, and angle of the toppling slip limits.
+        Arrays of plunge, bearing, and angle of the toppling slip limits (cones).
     """
     strikes,dips = np.atleast_1d(strike,dip)
 #    computing toppling slip limits (cones)    
@@ -236,8 +239,11 @@ def setup_kinematic_analysis_axes(strike,dip,friction):
 
 
 
+"""
+DEMONSTRATIONS AND EXERCISE
+"""
 
-def steps_planar():
+def demo_planar():
 #    slope face
     strike=60
     dip=55
@@ -282,7 +288,7 @@ def steps_planar():
     fig.suptitle('Planar failure\n\n')
     
     
-def steps_toppling():
+def demo_toppling():
 #    slope face
     strike=60
     dip=55
@@ -325,7 +331,7 @@ def steps_toppling():
     fig.suptitle('Toppling failure')
     
     
-def steps_wedge():
+def demo_wedge():
 #    slope face
     strike=60
     dip=55
@@ -373,19 +379,19 @@ def steps_wedge():
     fig.suptitle('Wedge failure')
 
 def kinematic_analysis_demo():
-    steps_planar()
-    steps_wedge()
-    steps_toppling()
+    demo_planar()
+    demo_wedge()
+    demo_toppling()
     plt.show()
     
 def exercise(plotfig=False):
-#    slope face
+#   slope face
     strike=320
     dip=70
-#    generalized friction angle of slip planes
+    if strike+90>=360:ddr=strike+90-360
+    else:ddr=strike+90
+#   discontinuities
     friction=30
-    
-#    discontinuity sets
     jstr=[330,295,180,135,340]      #np.random.random_integers(0,360,3)
     jdip=[20,50,80,65,55]           #np.random.random_integers(0,90,3)
     jddr=[]
@@ -395,9 +401,16 @@ def exercise(plotfig=False):
         else:
             ddr=jstr[j]+90
         jddr.append(ddr)
-    
 
-    print '\n\n\nStrike - dip (RHR) / DipDir - dip'    
+#    printing exercise title, problem, and input data
+    print "\n\nKINEMATIC ANALYSIS FOR SLOPE FAILURES"
+    print "\nProblem: Given a slope face and a set of planar rock discontinuities, determine the discontinuities which will facilitate planar, toppling, and wedge failures."
+    print "\n1) Slope face data\n--------"
+    print 'Strike - dip (RHR) / DipDir - dip'    
+    print strike, dip, ' / ', ddr, dip
+    print "\n2) Discontinuity data\n--------"
+    print "Friction angle, in degrees (for all): ",dip
+    print '\nStrike - dip (RHR) / DipDir - dip'    
     for j in range(len(jstr)):
         print j+1,jstr[j],jdip[j], ' / ', jddr[j],jdip[j]
         
@@ -432,7 +445,7 @@ def exercise(plotfig=False):
     else:
         return
 
-#kinematic_analysis_demo()
-    
-exercise(plotfig=False)
 
+kinematic_analysis_demo()
+    
+exercise(plotfig=True)
