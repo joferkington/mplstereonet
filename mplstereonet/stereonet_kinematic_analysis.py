@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 FUNCTIONS
 """
 
-def planar_daylight_envelope(strike,dip,facecolor='none',edgecolor='b',segments=100):
+def KA_planar_daylight(strike,dip,to_plot=True,facecolor='none',edgecolor='b',segments=100):
     """
     Draws the planar daylight envelope (cone) with respect to a 
     slope face with a given strike and dip.
@@ -46,12 +46,12 @@ def planar_daylight_envelope(strike,dip,facecolor='none',edgecolor='b',segments=
     pde_bearing=p_bearing
     pde_angle=45-p_plunge/2.-10**-9
 #    plotting daylight envelope
-    ax=plt.gca()
-    ax.cone(pde_plunge,pde_bearing, pde_angle,facecolor=facecolor,edgecolor=edgecolor)#,label='pDE')
-#    ax.legend(fontsize='x-small')
+    if to_plot:
+        ax=plt.gca()
+        ax.cone(pde_plunge,pde_bearing, pde_angle,facecolor=facecolor,edgecolor=edgecolor)#,label='pDE')
     return pde_plunge,pde_bearing,pde_angle
 
-def planar_friction_envelope(friction=30,facecolor='none',edgecolor='r',segments=100):
+def KA_planar_friction(friction=30,to_plot=True,facecolor='none',edgecolor='r',segments=100):
     """
     Draws the planar friction envelope (cone) given friction angle of the sliding plane
     
@@ -71,12 +71,12 @@ def planar_friction_envelope(friction=30,facecolor='none',edgecolor='r',segments
     pfe_bearing=np.zeros(len(frictions))
     pfe_angle=frictions
 #    plotting
-    ax=plt.gca()
-    ax.cone(pfe_plunge,pfe_bearing, pfe_angle,facecolor=facecolor,edgecolor=edgecolor)#,label='pFE')
-#    ax.legend(fontsize='x-small')
+    if to_plot:
+        ax=plt.gca()
+        ax.cone(pfe_plunge,pfe_bearing, pfe_angle,facecolor=facecolor,edgecolor=edgecolor)#,label='pFE')
     return pfe_plunge, pfe_bearing, pfe_angle
 
-def wedge_daylight_envelope(strike,dip,linecolor='b',segments=100):
+def KA_wedge_daylight(strike,dip,to_plot=True,linecolor='b',segments=100):
     """
     Draws the wedge daylight envelope (great circle) with respect to a 
     slope face with a given strike and dip.
@@ -98,12 +98,12 @@ def wedge_daylight_envelope(strike,dip,linecolor='b',segments=100):
 #    wedge daylight envelope is the same as the slope face orientation
     wde_strikes, wde_dips = np.atleast_1d(strike, dip)
 #    plotting daylight envelope
-    ax=plt.gca()
-    ax.plane(wde_strikes,wde_dips,c=linecolor)#,label='wDE')
-#    ax.legend(fontsize='x-small')
+    if to_plot:
+        ax=plt.gca()
+        ax.plane(wde_strikes,wde_dips,c=linecolor)#,label='wDE')
     return wde_strikes,wde_dips
 
-def wedge_friction_envelope(friction=30,facecolor='none',edgecolor='r',segments=100):
+def KA_wedge_friction(friction=30,to_plot=True,facecolor='none',edgecolor='r',segments=100):
     """
     Draws the wedge friction envelope (cone) given friction angle of the sliding plane
     
@@ -123,13 +123,13 @@ def wedge_friction_envelope(friction=30,facecolor='none',edgecolor='r',segments=
     wfe_bearing=np.zeros(len(frictions))
     wfe_angle=90-frictions
 #    plotting
-    ax=plt.gca()
-    ax.cone(wfe_plunge,wfe_bearing, wfe_angle,facecolor=facecolor,edgecolor=edgecolor)#,label='wFE')
-#    ax.legend(fontsize='x-small')
+    if to_plot:
+        ax=plt.gca()
+        ax.cone(wfe_plunge,wfe_bearing, wfe_angle,facecolor=facecolor,edgecolor=edgecolor)#,label='wFE')
     return wfe_plunge, wfe_bearing, wfe_angle
 
 
-def toppling_slip_limits(strike,dip,linecolor='b',segments=100):
+def KA_toppling_slipLimits(strike,dip,to_plot=True,linecolor='b',segments=100):
     """
     Draws the toppling friction envelope (cone) with given friction angle of sliding plane
     and slope face with a given strike and dip.
@@ -155,21 +155,17 @@ def toppling_slip_limits(strike,dip,linecolor='b',segments=100):
         Arrays of plunge, bearing, and angle of the toppling slip limits (cones).
     """
     strikes,dips = np.atleast_1d(strike,dip)
-#    computing toppling slip limits (cones)    
-    tsl1_plunge=0
-    tsl1_bearing=strikes
-    tsl1_angle=60
-    tsl2_plunge=0
-    tsl2_bearing=strikes+180
-    tsl2_angle=60
+#    computing toppling slip limits (cones); assumes bidirectional cone plotting    
+    tsl_plunge=0
+    tsl_bearing=strikes
+    tsl_angle=60
 #    plotting toppling slip limits    
-    ax=plt.gca()
-    ax.cone(tsl1_plunge,tsl1_bearing,tsl1_angle,facecolor='none',edgecolor='b')#,label='tSL')
-    ax.cone(tsl2_plunge,tsl2_bearing,tsl2_angle,facecolor='none',edgecolor='b')
-#    ax.legend(fontsize='x-small')
-    return tsl1_plunge,tsl1_bearing,tsl1_angle, tsl2_plunge,tsl2_bearing,tsl2_angle
+    if to_plot:
+        ax=plt.gca()
+        ax.cone(tsl_plunge,tsl_bearing,tsl_angle,facecolor='none',edgecolor='b')
+    return tsl_plunge,tsl_bearing,tsl_angle
 
-def toppling_friction_envelope(strike,dip,friction=30,linecolor='r',segments=100):
+def KA_toppling_friction(strike,dip,friction=30,to_plot=True,linecolor='r',segments=100):
     """
     Draws the toppling friction envelope (great circle) given sliding plane with friction angle, 
     and slope face with a strike and dip.
@@ -199,14 +195,14 @@ def toppling_friction_envelope(strike,dip,friction=30,linecolor='r',segments=100
     else:
         tfe_dips=np.zeros(len(strikes))
 #    plotting toppling friction envelopes
-    ax=plt.gca()
-    ax.plane(strikes,dips-frictions,c=linecolor)#,label='tFE')
-#    ax.legend(fontsize='x-small')
+    if to_plot:
+        ax=plt.gca()
+        ax.plane(strikes,dips-frictions,c=linecolor)
     return tfe_strikes, tfe_dips
     
     
     
-def setup_kinematic_analysis_axes(strike,dip,friction):
+def KA_setup_axes(strike,dip,friction,to_plot):
 
     # Make a figure with a single stereonet axes
     fig, ax = st.subplots(ncols=3,projection='equal_angle_stereonet')
@@ -217,20 +213,20 @@ def setup_kinematic_analysis_axes(strike,dip,friction):
     plt.sca(ax[0])
     ax[0].set_title('planar\n')
     ax[0].grid(True)
-    planar_friction_envelope(friction)
-    planar_daylight_envelope(strike,dip)    
+    KA_planar_friction(friction,to_plot)
+    KA_planar_daylight(strike,dip,to_plot)    
 #    wedge failure    
     plt.sca(ax[1])
     ax[1].set_title('wedge\n')
     ax[1].grid(True)
-    wedge_friction_envelope(friction)
-    wedge_daylight_envelope(strike,dip)    
+    KA_wedge_friction(friction,to_plot)
+    KA_wedge_daylight(strike,dip,to_plot)    
 #    toppling failure
     plt.sca(ax[2])
     ax[2].set_title('toppling\n')
     ax[2].grid(True)
-    toppling_friction_envelope(strike,dip,friction)
-    toppling_slip_limits(strike,dip)
+    KA_toppling_friction(strike,dip,friction,to_plot)
+    KA_toppling_slipLimits(strike,dip,to_plot)
     
     fig.tight_layout()
     
@@ -261,27 +257,27 @@ def demo_planar():
     ax[1].grid(True)
     ax[1].plane(strike-strike,dip,'k--',alpha=0.5,lw=5)
     ax[1].set_azimuth_ticks([])
-    planar_daylight_envelope(strike-60,dip)
-    planar_friction_envelope(friction)
+    KA_planar_daylight(strike-60,dip)
+    KA_planar_friction(friction)
     plt.title('Rotate, plot\n daylight and friction\nenvelopes\n')
     
     
-    jstr=np.random.random_integers(0,360,4)
-    jdip=np.random.random_integers(0,90,4)
+    jstr=np.random.randint(0,361,4)
+    jdip=np.random.randint(0,91,4)
     
     plt.sca(ax[2])
     ax[2].grid(True)
     ax[2].plane(strike,dip,'k--',alpha=0.5,lw=5)
-    planar_daylight_envelope(strike,dip)
-    planar_friction_envelope(friction)
+    KA_planar_daylight(strike,dip)
+    KA_planar_friction(friction)
     ax[2].plane(jstr,jdip,c='k')
     plt.title('Rotate back,\nplot discontinuity planes\n')
     
     plt.sca(ax[3])
     ax[3].grid(True)
     ax[3].plane(strike,dip,'k--',alpha=0.5,lw=5)
-    planar_daylight_envelope(strike,dip)
-    planar_friction_envelope(friction)
+    KA_planar_daylight(strike,dip)
+    KA_planar_friction(friction)
     ax[3].plane(jstr,jdip,c='k')
     ax[3].pole(jstr,jdip)
     plt.title('Plot poles, evaluate results\n')
@@ -305,26 +301,26 @@ def demo_toppling():
     ax[1].grid(True)
     ax[1].plane(strike-strike,dip,'k--',alpha=0.5,lw=5)
     ax[1].set_azimuth_ticks([])
-    toppling_slip_limits(strike-strike,dip)
-    toppling_friction_envelope(strike-strike,dip,friction)
+    KA_toppling_slipLimits(strike-strike,dip)
+    KA_toppling_friction(strike-strike,dip,friction)
     plt.title('Rotate, plot\n daylight and friction\nenvelopes\n')
     
-    jstr=np.random.random_integers(0,360,4)
-    jdip=np.random.random_integers(0,90,4)
+    jstr=np.random.randint(0,361,4)#np.random.random_integers(0,360,4)
+    jdip=np.random.randint(0,91,4)
     
     plt.sca(ax[2])
     ax[2].grid(True)
     ax[2].plane(strike,dip,'k--',alpha=0.5,lw=5)
-    toppling_slip_limits(strike,dip)
-    toppling_friction_envelope(strike,dip,friction)
+    KA_toppling_slipLimits(strike,dip)
+    KA_toppling_friction(strike,dip,friction)
     ax[2].plane(jstr,jdip,c='k')
     plt.title('Rotate back,\nplot discontinuity planes\n')
     
     plt.sca(ax[3])
     ax[3].grid(True)
     ax[3].plane(strike,dip,'k--',alpha=0.5,lw=5)
-    toppling_slip_limits(strike,dip)
-    toppling_friction_envelope(strike,dip,friction)
+    KA_toppling_slipLimits(strike,dip)
+    KA_toppling_friction(strike,dip,friction)
     ax[3].plane(jstr,jdip,c='k')
     ax[3].pole(jstr,jdip)
     plt.title('Plot poles, evaluate results\n')
@@ -347,27 +343,27 @@ def demo_wedge():
     plt.sca(ax[1])
     ax[1].grid(True)
     ax[1].plane(strike,dip,'k--',alpha=0.5,lw=5)
-    wedge_daylight_envelope(strike,dip)
-    wedge_friction_envelope(friction)
+    KA_wedge_daylight(strike,dip)
+    KA_wedge_friction(friction)
     plt.title('Plot\n daylight and friction\nenvelopes\n')
     
     
-    jstr=np.random.random_integers(0,360,4)
-    jdip=np.random.random_integers(0,90,4)
+    jstr=np.random.randint(0,361,4)
+    jdip=np.random.randint(0,91,4)
     
     plt.sca(ax[2])
     ax[2].grid(True)
     ax[2].plane(strike,dip,'k--',alpha=0.5,lw=5)
-    wedge_daylight_envelope(strike,dip)
-    wedge_friction_envelope(friction)
+    KA_wedge_daylight(strike,dip)
+    KA_wedge_friction(friction)
     ax[2].plane(jstr,jdip,c='k')
     plt.title('Plot discontinuity\nplanes\n')
     
     plt.sca(ax[3])
     ax[3].grid(True)
     ax[3].plane(strike,dip,'k--',alpha=0.5,lw=5)
-    wedge_daylight_envelope(strike,dip)
-    wedge_friction_envelope(friction)
+    KA_wedge_daylight(strike,dip)
+    KA_wedge_friction(friction)
     ax[3].plane(jstr,jdip,c='k')
     
     curax=ax[3]
@@ -409,7 +405,7 @@ def exercise(plotfig=False):
     print 'Strike - dip (RHR) / DipDir - dip'    
     print strike, dip, ' / ', ddr, dip
     print "\n2) Discontinuity data\n--------"
-    print "Friction angle, in degrees (for all): ",dip
+    print "Friction angle, in degrees (for all): ",friction
     print '\nStrike - dip (RHR) / DipDir - dip'    
     for j in range(len(jstr)):
         print j+1,jstr[j],jdip[j], ' / ', jddr[j],jdip[j]
@@ -417,7 +413,7 @@ def exercise(plotfig=False):
     if plotfig:
         
 #       kinematic analysis axes
-        fig,ax=setup_kinematic_analysis_axes(strike,dip,friction)
+        fig,ax=KA_setup_axes(strike,dip,friction,True)
     
 #       evaluate planar and toppling failures
         for j in range(len(jstr)):
