@@ -52,6 +52,50 @@ class StereonetAxes(LambertAxes):
 
         LambertAxes.__init__(self, *args, **kwargs)
 
+    def _set_view_from_bbox(self, bbox, direction='in',
+                            mode=None, twinx=False, twiny=False):
+        if direction == 'in':
+            lastx, lasty, x, y = bbox
+            inverse = self.transData.inverted()
+            lastx, lasty = inverse.transform_point((lastx, lasty))
+            x, y = inverse.transform_point((x, y))
+            Xmin, Xmax = self.get_xlim()
+            Ymin, Ymax = self.get_ylim()
+
+            if twinx:
+                x0, x1 = Xmin, Xmax
+            else:
+                if x < lastx:
+                    x0, x1 = x, lastx
+                else:
+                    x0, x1 = lastx, x
+
+            if twiny:
+                y0, y1 = Ymin, Ymax
+            else:
+                if y < lasty:
+                    y0, y1 = y, lasty
+                else:
+                    y0, y1 = lasty, y
+
+            size = self.figure.get_size_inches()
+            i = self.transAffine.inverted()
+            left, right, bottom, top = calculate_zoom_extents(x0, x1, y0, y1, size, i)
+            self.figure.subplots_adjust(left=left, right=right, bottom=bottom, top=top)
+
+    def set_xlim(self, *args, **kwargs):
+        self.figure.subplots_adjust(left=0.0, right=1.0, bottom=0.0, top=1.0)
+
+    set_ylim = set_xlim
+
+    def can_zoom(self):
+        """
+        Return *True* if this axes supports the zoom box button functionality.
+
+        This axes object does not support interactive zoom box.
+        """
+        return True
+
     def _get_core_transform(self, resolution):
         """The projection for the stereonet as a matplotlib transform. This is
         primarily called by LambertAxes._set_lim_and_transforms."""
@@ -831,4 +875,55 @@ class EqualAreaAxes(StereonetAxes):
 register_projection(StereonetAxes)
 register_projection(EqualAreaAxes)
 register_projection(EqualAngleAxes)
+
+def calculate_zoom_extents(x0, x1, y0, y1, size, transform):
+    """ Scales the zoom reactangle to display zoomed view"""
+    X, Y = range(2)
+    scale = size / min(size)
+    graph_max = max(transform.to_values())
+
+    x0 /= graph_max * scale[X]
+    x1 /= graph_max * scale[X]
+    y0 /= graph_max * scale[Y]
+    y1 /= graph_max * scale[Y]
+
+    if x0 > 0.0:
+        # right quadrant
+        x_offset = x1 - x0
+    elif x1 < 0.0:
+        # left quadrant
+        x_offset = (abs(x0) - abs(x1))
+    else:
+        # across horizontal quadrants
+        x_offset = (abs(x0) + abs(x1))
+
+    if y0 > 0.0:
+        # upper quadrant
+        y_offset = y1 - y0
+    elif y1 < 0.0:
+        # lower quadrant
+        y_offset = (abs(y0) - abs(y1))
+    else:
+        # across vertical quadrants
+        y_offset = (abs(y1) + abs(y0))
+
+    if x_offset > y_offset:
+        zoom = 1 / x_offset
+    else:
+        zoom = 1 / y_offset
+
+    x_offset /= 2
+    x_offset += x0
+    y_offset /= 2
+    y_offset += y0
+    x_offset *= zoom
+    y_offset *= zoom
+
+    left = -(zoom - 1) / 2
+
+    x = left - x_offset
+    width = left - x_offset + zoom
+    y = left - y_offset,
+    height = left - y_offset + zoom
+    return x, width, y, height
 
