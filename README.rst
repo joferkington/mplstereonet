@@ -8,6 +8,13 @@ for matplotlib.
     :align: center
     :target: https://github.com/joferkington/mplstereonet/blob/master/examples/equal_area_equal_angle_comparison.py
 
+
+Install
+-------
+::
+
+    pip install mplstereonet
+
 Basic Usage
 -----------
 In most cases, you'll want to ``import mplstereonet`` and then make an axes
