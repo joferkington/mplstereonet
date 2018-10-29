@@ -11,9 +11,21 @@ for matplotlib.
 
 Install
 -------
-::
+
+``mplstereonet`` can be installed from PyPi using ``pip`` by::
 
     pip install mplstereonet
+
+Alternatively, you can download the source and install locally using (from the
+main directory of the repository)::
+
+    python setup.py install
+
+If you're planning on developing ``mplstereonet`` or would like to experiment
+with making local changes, consider setting up a development installation so
+that your changes are reflected when you import the package::
+
+    python setup.py develop
 
 Basic Usage
 -----------
@@ -47,7 +59,7 @@ Planes, lines, poles, and rakes can be plotted using axes methods (e.g.
 ``ax.line(plunge, bearing)`` or ``ax.rake(strike, dip, rake_angle)``).
 
 All planar measurements are expected to follow the right-hand-rule to indicate
-dip direction. As an example, 315/30S would be 135/30 follwing the right-hand
+dip direction. As an example, 315/30S would be 135/30 following the right-hand
 rule.
 
 Density Contouring
