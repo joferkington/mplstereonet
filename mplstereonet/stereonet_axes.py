@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib as mpl
 from matplotlib.transforms import Affine2D
 from matplotlib.projections import register_projection, LambertAxes
-from matplotlib.axes import Axes
+from matplotlib.axes import Axes, subplot_class_factory
 from matplotlib.ticker import NullLocator, FixedLocator
 
 import matplotlib.path as mpath
@@ -827,6 +827,13 @@ class EqualAreaAxes(StereonetAxes):
     """An axes representing a lower-hemisphere "Schmitt" (a.k.a. equal area)
     projection."""
     name = 'equal_area_stereonet'
+
+# We need to define explict subplot classes so that we don't mess up the
+# method resolution order when using matplotlib subplots.
+EqualAngleAxesSubplot = subplot_class_factory(EqualAngleAxes)
+EqualAngleAxesSubplot.__module__ = EqualAngleAxes.__module__
+EqualAreaAxesSubplot = subplot_class_factory(EqualAngleAxes)
+EqualAreaAxesSubplot.__module__ = EqualAngleAxes.__module__
 
 register_projection(StereonetAxes)
 register_projection(EqualAreaAxes)
