@@ -192,7 +192,7 @@ class TestAngularDistance:
             for lat in range(-90, 100, 10):
                 point1 = np.radians([lon, lat])
                 point2 = smath.antipode(*point1)
-                dist = smath.angular_distance(point1, point2)
+                dist = smath.angular_distance(point1, point2, False)
                 msg = 'Failed at {}, {}'.format(lon, lat)
                 assert np.allclose(dist, np.pi), msg
     
