@@ -47,7 +47,7 @@ def make_pil_image(fig):
     """Make a PIL image object from a matplotlib figure instance."""
     fig.canvas.draw()
     size = fig.canvas.get_width_height()
-    im = Image.fromstring('RGB', size, fig.canvas.tostring_rgb())
+    im = Image.frombytes('RGB', size, fig.canvas.tostring_rgb())
     return im
 
 def run(example_filename):
