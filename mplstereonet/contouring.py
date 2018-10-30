@@ -11,7 +11,7 @@ def _count_points(lons, lats, func, sigma, gridsize=(100,100), weights=None):
     lons = np.atleast_1d(np.squeeze(lons))
     lats = np.atleast_1d(np.squeeze(lats))
 
-    if weights in (None, False):
+    if not weights:
         weights = 1
     # Normalize the weights
     weights = np.asarray(weights, dtype=np.float)
