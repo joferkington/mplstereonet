@@ -380,7 +380,7 @@ def kmeans(*args, **kwargs):
 
     center_lon = np.random.choice(lon, num)
     center_lat = np.random.choice(lat, num)
-    centers = zip(center_lon, center_lat)
+    centers = np.column_stack([center_lon, center_lat])
 
     while True:
         dists = np.array([dist(item) for item in centers]).T
