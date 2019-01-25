@@ -25,7 +25,11 @@ class BaseStereonetTransform(Transform):
         # This will interpolate grid lines but leave more complex paths (e.g.
         # contours) alone. If we don't do this, we'll have problems with
         # contourf and other plotting functions. There should be a better way...
-        if len(path.vertices) == 2:
+        # We also need to skip interpolating paths that explicitly ask to not
+        # be interpolated (e.g. a Line2D path with 2 points)
+        if path._interpolation_steps == 1:
+            ipath = path
+        elif len(path.vertices) == 2:
             ipath = path.interpolated(self._resolution)
         else:
             ipath = path

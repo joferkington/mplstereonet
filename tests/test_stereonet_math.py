@@ -192,7 +192,7 @@ class TestAngularDistance:
             for lat in range(-90, 100, 10):
                 point1 = np.radians([lon, lat])
                 point2 = smath.antipode(*point1)
-                dist = smath.angular_distance(point1, point2)
+                dist = smath.angular_distance(point1, point2, False)
                 msg = 'Failed at {}, {}'.format(lon, lat)
                 assert np.allclose(dist, np.pi), msg
     
@@ -210,10 +210,10 @@ class TestAngularDistance:
     def test_directional(self):
         first, second = smath.line(30, 270), smath.line(40, 90)
         dist = smath.angular_distance(first, second, bidirectional=True)
-        assert np.allclose(dist, 70)
+        assert np.allclose(dist, np.radians(70))
 
         dist = smath.angular_distance(first, second, bidirectional=False)
-        assert np.allclose(dist, 110)
+        assert np.allclose(dist, np.radians(110))
 
 def compare_lonlat(lon1, lat1, lon2, lat2):
     """Avoid ambiguities in strike/dip or lon/lat conventions."""
