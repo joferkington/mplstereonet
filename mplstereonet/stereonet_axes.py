@@ -1,3 +1,5 @@
+import uuid
+
 import numpy as np
 
 import matplotlib as mpl
@@ -24,6 +26,9 @@ class StereonetAxes(LambertAxes):
     _default_center_lat = 0
     _default_center_lon = 0
     _scale = np.sqrt(2)
+
+    _layoutbox = None
+    _poslayoutbox = None
 
     def __init__(self, *args, **kwargs):
         """Initialization is identical to a normal Axes object except for the
@@ -120,6 +125,13 @@ class StereonetAxes(LambertAxes):
 
     # Use default docstring, as usage is identical.
     set_position.__doc__ = Axes.set_position.__doc__
+
+    def set_subplotspec(self, subplotspec):
+        """set the SubplotSpec instance associated with the subplot"""
+        self._polar.set_setsubplotspec(subplotspec)
+        if self._overlay_axes is not None:
+            self._overlay_axes.set_subplotspect(subplotspec)
+        super(self, StereonetAxes).set_subplotspec(subplotspec)
 
     def set_rotation(self, rotation):
         """Set the rotation of the stereonet in degrees clockwise from North."""
@@ -258,9 +270,8 @@ class StereonetAxes(LambertAxes):
         """
         plunge, bearing = stereonet_math.geographic2plunge_bearing(*center)
         lon0, lat0 = center
-        fig = self.get_figure()
-        self._overlay_axes = fig.add_axes(self.get_position(True),
-                                          frameon=False, projection=self.name,
+        self._overlay_axes = self._duplicate_axes(
+                                          projection=self.name,
                                           center_longitude=0,
                                           center_latitude=np.radians(plunge),
                                           label='overlay',
@@ -287,11 +298,14 @@ class StereonetAxes(LambertAxes):
         try:
             return self._hidden_polar_axes
         except AttributeError:
-            fig = self.get_figure()
-            self._hidden_polar_axes = fig.add_axes(self.get_position(True),
-                                        frameon=False, projection='polar')
+            self._hidden_polar_axes = self._duplicate_axes(projection='polar')
             self._hidden_polar_axes.format_coord = self._polar_format_coord
             return self._hidden_polar_axes
+
+    def _duplicate_axes(self, **kwargs):
+        kwargs['frameon'] = False
+        twin = self._make_twin_axes(**kwargs)
+        return twin
 
     def _format_helper(self, ax, x, y):
         xdisp, ydisp = ax.transData.transform_point([x, y])
@@ -303,6 +317,11 @@ class StereonetAxes(LambertAxes):
 
     def _polar_format_coord(self, x, y):
         return self._format_helper(self._hidden_polar_axes, x, y)
+
+    def set_xlim(self, *args, **kwargs):
+        pass
+    def set_ylim(self, *args, **kwargs):
+        pass
 
     def set_azimuth_ticks(self, angles, labels=None, frac=None, **kwargs):
         """

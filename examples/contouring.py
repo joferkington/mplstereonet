@@ -25,5 +25,5 @@ ax.pole(strikes, dips)
 
 # Turn on a grid and add a colorbar
 ax.grid(True)
-fig.colorbar(cax)
+fig.colorbar(cax, use_gridspec=False)
 plt.show()

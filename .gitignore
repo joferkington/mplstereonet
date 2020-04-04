@@ -6,3 +6,5 @@ dist
 docs/examples/*.rst
 docs/_static/examples/*.png
 docs/_build
+.cache
+*.directory
