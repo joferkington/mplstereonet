@@ -597,7 +597,7 @@ def azimuth2rake(strike, dip, azimuth):
         values correspond to the opposite end of the strike.
     """
     plunge, bearing = plane_intersection(strike, dip, azimuth, 90)
-    rake = project_onto_plane(strike, dip, plunge, bearing)
+    rake, = project_onto_plane(strike, dip, plunge, bearing)
     return rake
 
 def xyz2stereonet(x, y, z):
