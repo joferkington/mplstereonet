@@ -104,7 +104,7 @@ class StereonetAxes(LambertAxes):
         """
         Set the number of degrees between each longitude grid.
         """
-        number = (360.0 / degrees) + 1
+        number = int((360.0 / degrees) + 1)
         locs = np.linspace(-np.pi, np.pi, number, True)[1:]
         locs[-1] -= 0.01 # Workaround for "back" gridlines showing.
         self.xaxis.set_major_locator(FixedLocator(locs))
