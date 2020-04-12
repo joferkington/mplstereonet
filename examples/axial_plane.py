@@ -47,7 +47,7 @@ midx, midy = mplstereonet.line(*mid)
 # and the pole of the plunge axis.
 xp, yp = mplstereonet.pole(axis_s, axis_d)
 
-x, y = [xp[0], midx], [yp[0], midy]
+x, y = [xp, midx], [yp, midy]
 axial_s, axial_dip = mplstereonet.fit_girdle(x, y, measurement='radians')
 
 ax.plane(axial_s, axial_dip, color='lightblue', lw=3)
