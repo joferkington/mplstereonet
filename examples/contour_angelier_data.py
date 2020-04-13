@@ -9,7 +9,8 @@ import parse_angelier_data
 
 def plot(ax, strike, dip, rake, **kwargs):
     ax.rake(strike, dip, rake, 'ko', markersize=2)
-    ax.density_contour(strike, dip, rake, measurement='rakes', **kwargs)
+    ax.density_contour(strike, dip, rake, measurement='rakes', linewidths=1,
+                       cmap='jet', **kwargs)
 
 
 # Load data from Angelier, 1979
