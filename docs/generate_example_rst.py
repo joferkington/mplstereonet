@@ -1,22 +1,28 @@
+"""
+Automatically generate rst files for examples.
+
+Avoiding matplotlib sphinx plot directive, as we want a bit more control over
+how things are displayed and how output text is displayed.
+"""
 import sys
 import os
 
-docdir = os.path.dirname('__file__')
-sys.path.append(os.path.join(docdir, '..', 'tests'))
+DOCDIR = os.path.dirname(__file__)
+sys.path.append(os.path.join(DOCDIR, '..', 'tests'))
 
 import examples
 
 def main():
     example_index()
     for filename in examples.example_files():
+        filename = os.path.relpath(filename)
         text, figures = examples.run(filename)
-        images = save_figures(figures, filename)
-        generate_rst(filename, text, images)
+        generate_rst(filename, text, figures)
 
 def save_figures(figures, example_filename):
     _, base = os.path.split(example_filename)
     base, _ = os.path.splitext(base)
-    out = os.path.join('_static', 'examples', base)
+    out = os.path.join(DOCDIR, '_static', 'examples', base)
 
     files = []
     for i, fig in enumerate(figures):
@@ -27,7 +33,13 @@ def save_figures(figures, example_filename):
     return files
 
 def example_index():
-    with open('examples/index.rst', 'w') as outfile:
+    dirname = os.path.join(DOCDIR, 'examples')
+    static = os.path.join(DOCDIR, '_static', 'examples')
+    os.makedirs(dirname, exist_ok=True)
+    os.makedirs(static, exist_ok=True)
+
+    path = os.path.join(DOCDIR, 'examples', 'index.rst')
+    with open(path, 'w') as outfile:
         outfile.write('Examples\n')
         outfile.write('========\n\n')
         outfile.write('.. toctree::\n')
@@ -37,13 +49,13 @@ def example_index():
             base, _ = os.path.splitext(basename)
             outfile.write('   {}\n'.format(base))
 
-def generate_rst(example_filename, output_text, output_images):
+def generate_rst(example_filename, output_text, figures):
     descrip_text, code = split_description(example_filename)
 
     _, basename = os.path.split(example_filename)
     base, _ = os.path.splitext(basename)
 
-    outname = os.path.join(docdir, 'examples', base + '.rst')
+    outname = os.path.join(DOCDIR, 'examples', base + '.rst')
 
     with open(outname, 'w') as outfile:
         outfile.write('``{}``\n'.format(basename))
@@ -52,22 +64,23 @@ def generate_rst(example_filename, output_text, output_images):
         if descrip_text:
             outfile.write(descrip_text + '\n\n')
 
-        outfile.write('Source Code\n-----------\n\n')
-        outfile.write('.. code-block:: python\n\n')
+        outfile.write('.. code-block:: python\n')
         for line in code.split('\n'):
-            outfile.write('    ' + line + '\n')
+            outfile.write('    {}\n'.format(line))
 
-        outfile.write('Result\n------\n\n')
+        outfile.write('\nResult\n------\n\n')
+        if figures:
+            for name in save_figures(figures, example_filename):
+                outfile.write('.. image:: /{}\n'.format(name))
+                outfile.write('    :align: center\n\n')
+
         if output_text:
             outfile.write('.. code-block:: text\n\n')
             for line in output_text.split('\n'):
                 outfile.write('    ' + line + '\n')
             outfile.write('\n')
 
-        if output_images:
-            for name in output_images:
-                outfile.write('.. image:: /{}\n'.format(name))
-                outfile.write('    :align: center\n\n')
+        outfile.write('\n')
 
 
 def split_description(filename):

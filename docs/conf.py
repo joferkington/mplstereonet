@@ -12,6 +12,7 @@
 # serve to show the default.
 
 import sys, os
+import runpy
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -24,8 +25,8 @@ import sys, os
 #needs_sphinx = '1.0'
 
 # Generate pages for examples
-import generate_example_rst
-generate_example_rst.main()
+path = os.path.join(os.path.dirname('__file__'), 'generate_example_rst.py')
+runpy.run_path(path, run_name='__main__')
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
