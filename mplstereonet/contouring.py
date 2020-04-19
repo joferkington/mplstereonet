@@ -167,6 +167,12 @@ def density_grid(*args, **kwargs):
             'exponential_kamb':_exponential_kamb,
             }[method]
     lon, lat, z = _count_points(lon, lat, func, sigma, gridsize, weights)
+
+    if method not in ('schmidt', 'kamb'):
+        # This is really a bit of a plotting hack. We don't want to ever draw
+        # a 0 contour for smoothed methods, as it isn't well defined.
+        z[z == 0] = np.finfo(z.dtype).tiny
+
     return lon, lat, z
 
 def _kamb_radius(n, sigma):
