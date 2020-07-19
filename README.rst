@@ -141,6 +141,19 @@ Additionally, you can find plane intersections and make other calculations by
 combining utility functions.  See plane_intersection.py_ and
 parse_anglier_data.py_ for examples.
 
+Analysis
+--------
+
+``mplstereonet`` contains orientation data analysis methods, as well as
+plotting functionality.  For example, you can `fit planes to girdles
+<https://mplstereonet.readthedocs.io/en/latest/examples/fit_girdle_example.html>`_
+or `fit a pole to points
+<https://mplstereonet.readthedocs.io/en/latest/mplstereonet.html#mplstereonet.fit_pole>`_,
+identify different `modes of conjugate sets of faults
+<https://mplstereonet.readthedocs.io/en/latest/examples/kmeans_example.html>`_,
+or calculate `flattening values for Flinn plots
+<https://mplstereonet.readthedocs.io/en/latest/mplstereonet.html#mplstereonet.eigenvectors>`_.
+
 Full Documentation
 ------------------
 
