@@ -9,6 +9,15 @@ for matplotlib.
     :target: https://github.com/joferkington/mplstereonet/blob/master/examples/equal_area_equal_angle_comparison.py
 
 
+What's New
+----------
+
+  * Polar overlays and arbitrary rotated grid overlays. See
+    https://mplstereonet.readthedocs.io/en/latest/examples/polar_overlay.html
+    for more details.
+  * Numerous bugfixes and compatibility with recent versions of matplotlib and
+    numpy
+
 Install
 -------
 
