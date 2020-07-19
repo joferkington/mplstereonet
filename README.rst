@@ -141,6 +141,11 @@ Additionally, you can find plane intersections and make other calculations by
 combining utility functions.  See plane_intersection.py_ and
 parse_anglier_data.py_ for examples.
 
+Full Documentation
+------------------
+
+Full documentation is available at https://mplstereonet.readthedocs.io/en/latest/
+
 References
 ----------
 
