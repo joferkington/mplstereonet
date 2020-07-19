@@ -144,7 +144,7 @@ parse_anglier_data.py_ for examples.
 Full Documentation
 ------------------
 
-Full documentation is available at https://mplstereonet.readthedocs.io/en/latest/
+Full documentation is available at https://mplstereonet.readthedocs.io/en/latest/mplstereonet.html
 
 References
 ----------
@@ -157,8 +157,8 @@ References
        Orientation Data Using a Modified Kamb Method. Computers &
        Geosciences, Vol. 21, No. 1, pp. 31--49.
 
-.. _parsing_example.py: https://github.com/joferkington/mplstereonet/blob/master/examples/parsing_example.py
+.. _parsing_example.py: https://mplstereonet.readthedocs.io/en/latest/examples/parsing_example.html
 
-.. _plane_intersection.py: https://github.com/joferkington/mplstereonet/blob/master/examples/plane_intersection.py
+.. _plane_intersection.py: https://mplstereonet.readthedocs.io/en/latest/examples/plane_intersection.html
 
-.. _parse_anglier_data.py: https://github.com/joferkington/mplstereonet/blob/master/examples/parse_angelier_data.py
+.. _parse_anglier_data.py: https://mplstereonet.readthedocs.io/en/latest/examples/parse_angelier_data.html
