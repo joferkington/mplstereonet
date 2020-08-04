@@ -107,6 +107,14 @@ class TestDensityGridding:
                                                   weights=[5, 5])
         np.testing.assert_array_equal(result1, result2)
 
+    def test_weights_array_input(self):
+        strike = np.array([0, 0])
+        dip = np.array([0, 45])
+        weights = np.array([5, 5])
+        x, y, result1 = mplstereonet.density_grid(strike, dip)
+        x, y, result2 = mplstereonet.density_grid(strike, dip, weights=weights)
+        np.testing.assert_array_equal(result1, result2)
+
     def test_grid_extents(self):
         x, y, z = mplstereonet.density_grid(0, 0, gridsize=(10,10))
         assert x.min() == -np.pi/2
