@@ -16,7 +16,7 @@ ibearings = intersections[:,1]
 iplunges = intersections[:,0]
 
 # Set up kinematic analysis 
-strike, dip = 150, 75
+strike, dip = 180, 75
 P3 = kinematic.PlanarSliding(strike, dip)
 T3 = kinematic.FlexuralToppling(strike, dip, latlim=15)
 W3 = kinematic.WedgeSliding(strike, dip)
