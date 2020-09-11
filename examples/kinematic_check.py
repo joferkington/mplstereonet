@@ -1,5 +1,6 @@
 """ Demonstration of checking whether failures are possible on 
-discontinuities / intsersections, and highlighting & counting them """
+discontinuities / intsersections, and highlighting them (with counts) on
+the plots"""
 
 import numpy as np
 import matplotlib.pyplot as plt

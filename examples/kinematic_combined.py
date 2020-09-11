@@ -1,5 +1,6 @@
 """ 
-Combined kinematic plots
+Plot a single combined plot for kinematic analysis on planar sliding, wedge 
+sliding and flexural toppling
 
 Reference:
 Wyllie, D.C. and Mah, C.W. (2004) Rock Slope Engineering. 4th Edition, 
