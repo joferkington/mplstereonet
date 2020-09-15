@@ -163,7 +163,7 @@ def _rotate_shape(shape, strike):
 
     return np.array([lon, lat])
 
-class PlanarSliding():
+class PlanarSliding(object):
     """ 
     Kinematic analysis for planar sliding failures
     
@@ -375,7 +375,7 @@ class PlanarSliding():
 
         return axes
     
-class WedgeSliding():
+class WedgeSliding(object):
     """ 
     Kinematic analysis for wedge sliding failures
     
@@ -529,7 +529,7 @@ class WedgeSliding():
 
         return axes
     
-class FlexuralToppling():
+class FlexuralToppling(object):
     """ 
     Kinematic analysis for flexural toppling failures
     
