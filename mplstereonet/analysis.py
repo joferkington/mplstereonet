@@ -398,3 +398,53 @@ def kmeans(*args, **kwargs):
             centers = new_centers
 
     return centers
+
+def apparent_dip(true_dip, azimuth_diff):
+    """
+    Calculate the apparent dip angle(s), given the true dip angle(s) and the 
+    azimuth (i.e. bearing) difference between the apparent dip direction(s) and
+    true dip direction(s). All in degrees.
+
+    Parameters
+    ----------
+    true_dip : number or sequence of numbers
+        true dip angle(s) in degrees
+    azimuth_diff : number or sequence of numbers
+        azimuth difference between the apparent dip direction(s) and true dip 
+        direction(s), in degrees
+
+    Returns
+    -------
+    apparent_dip : array
+        apparent dip angle(s) in degrees
+    """    
+    true_dip, azimuth_diff = np.atleast_1d(true_dip, azimuth_diff)
+    azimuth_diff = np.radians(np.abs(azimuth_diff))
+    true_dip = np.radians(true_dip)
+    apparent_dip = np.arctan(np.cos(azimuth_diff)*np.tan(true_dip))
+    return np.degrees(apparent_dip)
+
+def azimuth_diff(true_dip, apparent_dip):
+    """
+    Calculate the absolute difference in azimuth (i.e. bearing) between true 
+    dip direction(s) and apparent dip direction(s), given the true dip angle(s)
+    and the apparent dip angle(s). All in degrees.
+
+    Parameters
+    ----------
+    true_dip : number or sequence of numbers
+        true dip angle(s) in degrees
+    apparent_dip : number or sequence of numbers
+        apparent dip angle(s) in degrees
+
+    Returns
+    -------
+    azimuth_diff : array
+        azimuth difference between the apparent dip direction(s) and true dip 
+        direction(s)
+    """    
+    true_dip, apparent_dip = np.atleast_1d(true_dip, apparent_dip)
+    true_dip = np.radians(true_dip)
+    apparent_dip = np.radians(apparent_dip)
+    azimuth_diff = np.arccos(np.tan(apparent_dip)/np.tan(true_dip))
+    return np.degrees(azimuth_diff)
