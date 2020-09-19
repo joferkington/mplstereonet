@@ -270,7 +270,7 @@ class PlanarSliding(object):
         (4) slope face
         
         (2)-(4) are optioanl. The style of the elements above can be specified 
-        with their kwargs.
+        with their kwargs, or on the artists returned by this function later.
         
         Parameters
         ----------
@@ -305,8 +305,18 @@ class PlanarSliding(object):
         
         Returns
         -------
-        axes : StereonetAxes
+        result : dictionary
+            A dictionary mapping each element of the kinematic analysis plot to
+            a list of the artists created. The dictionary has the following 
+            keys:
+            - `main` : the main planar sliding zone
+            - `secondary` : the two secondary planar sliding zones
+            - `slope` : the slope face
+            - `daylight` : the daylight envelope 
+            - `friction` : the friction cone
+            - `lateral` : the two lateral limits
         """
+        
         # Convert the construction lines into shapely linestrings / polygons    
         daylight_envelope = _shape('daylight_envelope', strike=0, dip=self.dip)
         friction_cone = _shape('cone', angle=self.fric_angle)
@@ -338,26 +348,37 @@ class PlanarSliding(object):
         else:
             axes = ax
         
+        # List of artists to be output
+        main = []
+        secondary = []
+        slope = []
+        daylight = []
+        friction = []
+        lateral = []
+        
         # Plot the main planar sliding zone
         main_kws = _set_kws(main_kws, polygon=True,
                             color='r', alpha=0.3,
                             label='Potential Planar Sliding Zone')
-        axes.fill(*_rotate_shape(sliding_zone, self.strike), **main_kws)
+        main.extend(axes.fill(
+            *_rotate_shape(sliding_zone, self.strike), **main_kws))
         
         # Plot the secondary planar sliding zones
         if secondary_zone and sec_zone_present:
             secondary_kws = _set_kws(secondary_kws, polygon=True, 
                                      color='yellow', alpha=0.3,
-                                     label='Secondary Planar Sliding Zone')
+                                     label='Secondary Planar Sliding Zone')            
             secondary_kws2 = secondary_kws.copy()
             secondary_kws2.pop('label')
-            axes.fill(*_rotate_shape(sec_zone1, self.strike), **secondary_kws)
-            axes.fill(*_rotate_shape(sec_zone2, self.strike), **secondary_kws2)
-        
+            secondary.extend(axes.fill(
+                *_rotate_shape(sec_zone1, self.strike), **secondary_kws))
+            secondary.extend(axes.fill(
+                *_rotate_shape(sec_zone2, self.strike),**secondary_kws2))
+
         # Plot the slope face
         if slopeface:
             slope_kws = _set_kws(slope_kws, color='k', label='Slope Face')
-            axes.plane(self.strike, self.dip, **slope_kws)
+            slope.extend(axes.plane(self.strike, self.dip, **slope_kws))
 
         # Plot the construction lines (daylight envelope, friction cone 
         # and lateral limits)
@@ -367,13 +388,17 @@ class PlanarSliding(object):
             lateral_kws = _set_kws(lateral_kws, color='r')
             lateral_kws2 = lateral_kws.copy()
             lateral_kws2.pop('label')
-            axes.fill(*_rotate_shape(daylight_envelope, self.strike), 
-                      **daylight_kws)
-            axes.fill(*friction_cone.exterior.xy, **friction_kws)
-            axes.plot(*_rotate_shape(lat_lim1, self.strike), **lateral_kws)
-            axes.plot(*_rotate_shape(lat_lim2, self.strike), **lateral_kws2)
-
-        return axes
+            daylight.extend(axes.fill(
+                *_rotate_shape(daylight_envelope, self.strike),**daylight_kws))
+            friction.extend(axes.fill(
+                *friction_cone.exterior.xy, **friction_kws))
+            lateral.extend(axes.plot(
+                *_rotate_shape(lat_lim1, self.strike), **lateral_kws))
+            lateral.extend(axes.plot(
+                *_rotate_shape(lat_lim2, self.strike), **lateral_kws2))
+            
+        return dict(main=main, secondary=secondary, slope=slope,
+                    daylight=daylight, friction=friction, lateral=lateral)
     
 class WedgeSliding(object):
     """ 
@@ -456,7 +481,7 @@ class WedgeSliding(object):
         (4) slope face
         
         (2)-(4) are optioanl. The style of the elements above can be specified 
-        with their kwargs.
+        with their kwargs, or on the artists returned by this function later.
         
         Parameters
         ----------
@@ -483,7 +508,15 @@ class WedgeSliding(object):
         
         Returns
         -------
-        axes : StereonetAxes
+        result : dictionary
+            A dictionary mapping each element of the kinematic analysis plot to
+            a list of the artists created. The dictionary has the following 
+            keys:
+            - `main` : the main wedge sliding zone
+            - `secondary` : the secondary wedge sliding zones (it's one polygon)
+            - `slope` : the slope face
+            - `friction` : the friction cone
+            - `fplane` : the friction plane
         """
 
         # Convert the construction lines into shapely linestrings / polygons
@@ -502,32 +535,44 @@ class WedgeSliding(object):
         else:
             axes = ax
         
+        # List of artists to be output
+        main = []
+        secondary = []
+        slope = []
+        friction = []
+        fplane = []
+
         # Plot the main wedge sliding zone
         main_kws = _set_kws(main_kws, polygon=True,
                             color='r', alpha=0.3,
                             label='Potential Wedge Sliding Zone')
-        axes.fill(*_rotate_shape(wedge_zone, self.strike), **main_kws)
+        main.extend(axes.fill(
+            *_rotate_shape(wedge_zone, self.strike), **main_kws))
         
         # Plot the secondary main wedge sliding zones
         if secondary_zone:
             secondary_kws = _set_kws(secondary_kws, polygon=True,
                                      color='yellow', alpha=0.3,
                                      label='Secondary Wedge Sliding Zone')
-            axes.fill(*_rotate_shape(sec_zone, self.strike), **secondary_kws)
+            secondary.extend(axes.fill(
+                *_rotate_shape(sec_zone, self.strike), **secondary_kws))
             
         # Plot the slope face
         if slopeface:
             slope_kws = _set_kws(slope_kws, color='k', label='Slope Face')
-            axes.plane(self.strike, self.dip, **slope_kws)
+            slope.extend(axes.plane(self.strike, self.dip, **slope_kws))
 
         # Plot the construction lines (friction cone and friction plane)
         if construction_lines:
             friction_kws = _set_kws(friction_kws, polygon=True, edgecolor='r')
             fplane_kws = _set_kws(fplane_kws, color='r')
-            axes.fill(*friction_cone.exterior.xy, **friction_kws)
-            axes.plane(self.strike, self.fric_angle, **fplane_kws)
+            friction.extend(axes.fill(
+                *friction_cone.exterior.xy, **friction_kws))
+            fplane.extend(axes.plane(
+                self.strike, self.fric_angle, **fplane_kws))
 
-        return axes
+        return dict(main=main, secondary=secondary, slope=slope,
+                    friction=friction, fplane=fplane)
     
 class FlexuralToppling(object):
     """ 
@@ -636,7 +681,7 @@ class FlexuralToppling(object):
         (4) slope face
         
         (2)-(4) are optioanl. The style of the elements above can be specified 
-        with their kwargs.
+        with their kwargs, or on the artists returned by this function later.
         
         Parameters
         ----------
@@ -654,10 +699,10 @@ class FlexuralToppling(object):
             True, or else will be plotted as straight lines through the 
             stereonet center. Defaults to 'True'
         main_kws : dictionary
-            kwargs for the main flxural toppling zone 
+            kwargs for the main flexural toppling zone 
             (matplotlib.patches.Polygon)
         secondary_kws : dictionary
-            kwargs for the secondary flxural toppling zones 
+            kwargs for the secondary flexural toppling zones 
             (matplotlib.patches.Polygon)
         lateral_kws : dictionary
             kwargs for the lateral limits (matplotlib.lines.Line2D)
@@ -671,7 +716,15 @@ class FlexuralToppling(object):
         
         Returns
         -------
-        axes : StereonetAxes
+        result : dictionary
+            A dictionary mapping each element of the kinematic analysis plot to
+            a list of the artists created. The dictionary has the following 
+            keys:
+            - `main` : the main flexural toppling zone
+            - `secondary` : the two secondary flexural toppling zones
+            - `slope` : the slope face
+            - `slip` : the slip limit
+            - `lateral` : the two lateral limits
         """
 
         # Convert the construction lines into shapely linestrings / polygons    
@@ -693,11 +746,19 @@ class FlexuralToppling(object):
         else:
             axes = ax
         
+        # List of artists to be output
+        main = []
+        secondary = []
+        slope = []
+        slip = []
+        lateral = []
+
         # Plot the main flexural toppling sliding zone
         main_kws = _set_kws(main_kws, polygon=True,
                             color='r', alpha=0.3,
                             label='Potential Flexural Toppling Zone')
-        axes.fill(*_rotate_shape(toppling_zone, self.strike), **main_kws)
+        main.extend(axes.fill(
+            *_rotate_shape(toppling_zone, self.strike), **main_kws))
         
         # Plot the secondary flexural toppling zones
         if secondary_zone:
@@ -706,13 +767,15 @@ class FlexuralToppling(object):
                                      label='Secondary Flexural Toppling Zone')
             secondary_kws2 = secondary_kws.copy()
             secondary_kws2.pop('label')
-            axes.fill(*_rotate_shape(sec_zone1, self.strike), **secondary_kws)
-            axes.fill(*_rotate_shape(sec_zone2, self.strike), **secondary_kws2)
+            secondary.extend(axes.fill(
+                *_rotate_shape(sec_zone1, self.strike), **secondary_kws))
+            secondary.extend(axes.fill(
+                *_rotate_shape(sec_zone2, self.strike), **secondary_kws2))
         
         # Plot the slope face
         if slopeface:
             slope_kws = _set_kws(slope_kws, color='k', label='Slope Face')
-            axes.plane(self.strike, self.dip, **slope_kws)
+            slope.extend(axes.plane(self.strike, self.dip, **slope_kws))
 
         # Plot the construction lines (friction cone and slip limit)
         if construction_lines:
@@ -720,8 +783,12 @@ class FlexuralToppling(object):
             lateral_kws = _set_kws(lateral_kws, color='r')
             lateral_kws2 = lateral_kws.copy()
             lateral_kws2.pop('label')
-            axes.plane(self.strike, self.dip-self.fric_angle, **slip_kws)
-            axes.plot(*_rotate_shape(lat_lim1, self.strike), **lateral_kws)
-            axes.plot(*_rotate_shape(lat_lim2, self.strike), **lateral_kws2)
+            slip.extend(axes.plane(
+                self.strike, self.dip-self.fric_angle, **slip_kws))
+            lateral.extend(axes.plot(
+                *_rotate_shape(lat_lim1, self.strike), **lateral_kws))
+            lateral.extend(axes.plot(
+                *_rotate_shape(lat_lim2, self.strike), **lateral_kws2))
         
-        return axes
+        return dict(main=main, secondary=secondary, slope=slope,
+                    slip=slip, lateral=lateral)
