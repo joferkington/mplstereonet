@@ -235,16 +235,17 @@ class PlanarSliding(object):
         if curved_lateral_limits:
             lons, lats = stereonet_math.pole(strikes, dips)
             lats = np.degrees(lats)
-            within_lat = (lats >= -self.latlim) & (lats <= self.latlim)
+            within_lat = ((lats >= -self.latlim-1e-8) &  # with tolerance
+                          (lats <= self.latlim+1e-8))
         else:
             within_lat = ((dipdirs >= 90-self.latlim) &
                           (dipdirs <= 90+self.latlim))
 
         llons, llats = stereonet_math.line(dips, dipdirs)
         llons = np.degrees(llons)
-        daylight = llons >= 90-self.dip
+        daylight = llons >= 90-self.dip-1e-8  # with tolerance
         
-        fric_slip = dips > self.fric_angle
+        fric_slip = dips >= self.fric_angle
         
         main = within_lat & fric_slip & daylight
         secondary = ~within_lat & fric_slip & daylight
@@ -453,11 +454,11 @@ class WedgeSliding(object):
         
         llons, llats = stereonet_math.line(plunges, bearings)
         llons = np.degrees(llons)
-        daylight = llons >= 90-self.dip
+        daylight = llons >= 90-self.dip-1e-8 # with tolerance
         
-        slip = plunges > self.fric_angle
+        slip = plunges >= self.fric_angle
         
-        planar = llons <= 90-self.fric_angle
+        planar = llons <= 90-self.fric_angle+1e-8 # with tolerance
         
         main = slip & daylight
         secondary = ~slip & daylight & planar
@@ -651,12 +652,13 @@ class FlexuralToppling(object):
         lons = np.degrees(lons)
 
         if curved_lateral_limits:
-            within_lat = (lats >= -self.latlim) & (lats <= self.latlim)
+            within_lat = ((lats >= -self.latlim-1e-8) & # with tolerance
+                          (lats <= self.latlim+1e-8))
         else:
             within_lat = ((dipdirs >= 270-self.latlim) &
                           (dipdirs <= 270+self.latlim))
       
-        fric_slip = lons >= 90 - self.dip + self.fric_angle
+        fric_slip = lons >= 90-self.dip+self.fric_angle-1e-8 # with tolerance
         
         main = within_lat & fric_slip
         secondary = ~within_lat & fric_slip
