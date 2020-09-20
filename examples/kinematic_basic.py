@@ -13,7 +13,7 @@ W1 = kinematic.WedgeSliding(strike, dip)
 fig = plt.figure(figsize=(15, 6))
 
 # Plot planar sliding
-ax1 = fig.add_subplot(131, projection='equal_angle')
+ax1 = fig.add_subplot(131, projection='stereonet')
 P1.plot_kinematic(ax=ax1)
 ax1.set_title('Planar Sliding', loc='left')
 ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05))
