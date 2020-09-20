@@ -26,13 +26,15 @@ P4 = kinematic.PlanarSliding(strike, dip)
 T4 = kinematic.FlexuralToppling(strike, dip)
 
 # Plot the kinematic analysis elements
-ax = P4.plot_kinematic(main_kws={'label':'Planar / Wedge Sliding'},
+P4.plot_kinematic(main_kws={'label':'Planar / Wedge Sliding'},
                        secondary_kws={'label':'Wedge Sliding'})
 
-T4.plot_kinematic(ax=ax, slopeface=False, construction_lines=False,
+T4.plot_kinematic(ax=plt.gca(), slopeface=False, construction_lines=False,
                   main_kws={'color':'blue', 'label':'Flexural Toppling'})
 
 # Plot data (here intersections should be pltted as poles too)
+ax=plt.gca()
+
 ax.pole(jstrikes, jdips, ms=2, label='Discontiuities (Poles)')
 ax.pole(ibearings-90, iplunges, '+r', label='Intersections (Poles)')
 
