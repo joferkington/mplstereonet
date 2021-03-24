@@ -373,9 +373,23 @@ def mean_vector(lons, lats):
         the degree of clustering in the data.
     """
     xyz = sph2cart(lons, lats)
-    xyz = np.vstack(xyz).T
-    mean_vec = xyz.mean(axis=0)
-    r_value = np.linalg.norm(mean_vec)
+    xyz = np.vstack(xyz)
+    xbar = xyz.mean(axis=1)
+    r_value = np.linalg.norm(xbar)
+    xobar = xbar/r_value
+    xobar = xobar.reshape(3,1)
+    num = xyz.shape[1]
+
+    # Equation 9.2.10 from Directional Statistics (Jupp and Mardia, 2000, pp.165)
+    T = np.zeros((3,3))
+    for i in range(num):
+        T += (xyz[:,i].reshape(3,1)).dot((xyz[:,i].reshape(3,1)).T)
+    T = T/num
+
+    # Mean vector of distribution is one of the eigenvectors of the scatter matrix T
+    eigs = np.linalg.eig(T)
+    mean_vec = eigs[1][:,0]
+    r_value = np.sqrt(eigs[0].max())
     mean_vec = cart2sph(*mean_vec)
     return mean_vec, r_value
 
@@ -417,22 +431,37 @@ def fisher_stats(lons, lats, conf=95):
 
     """
     xyz = sph2cart(lons, lats)
-    xyz = np.vstack(xyz).T
-    mean_vec = xyz.mean(axis=0)
-    r_value = np.linalg.norm(mean_vec)
-    num = xyz.shape[0]
-    mean_vec = cart2sph(*mean_vec)
+    xyz = np.vstack(xyz)
+
+    xbar = xyz.mean(axis=1)
+    r_value = np.linalg.norm(xbar)
+    xobar = xbar/r_value
+    xobar = xobar.reshape(3,1)
+    num = xyz.shape[1]
+
+    # Equation 9.2.10 from Directional Statistics (Jupp and Mardia, 2000, pp.165)
+    T = np.zeros((3,3))
+    for i in range(num):
+        T += (xyz[:,i].reshape(3,1)).dot((xyz[:,i].reshape(3,1)).T)
+    T = T/num
+
+    # Mean vector of distribution is one of the eigenvectors of the scatter matrix T
+    eigs = np.linalg.eig(T)
+    mean_vec = eigs[1][:,0]
 
     if num > 1:
         p = (100.0 - conf) / 100.0
-        vector_sum = xyz.sum(axis=0)
+        r_value = np.sqrt(eigs[0].max())
+        vector_sum = mean_vec*num*r_value
         result_vect = np.sqrt(np.sum(np.square(vector_sum)))
         fract1 = (num - result_vect) / result_vect
         fract3 = 1.0 / (num - 1.0)
         angle = np.arccos(1 - fract1 * ((1 / p) ** fract3 - 1))
         angle = np.degrees(angle)
         kappa = (num - 1.0) / (num - result_vect)
+        mean_vec = cart2sph(*mean_vec)
         return mean_vec, (r_value, angle, kappa)
+
     else:
         return None, None
 
