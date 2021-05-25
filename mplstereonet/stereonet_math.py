@@ -388,7 +388,8 @@ def mean_vector(lons, lats):
 
     # Mean vector of distribution is one of the eigenvectors of the scatter matrix T
     eigs = np.linalg.eig(T)
-    mean_vec = eigs[1][:,0]
+    max_index = np.argmax(eigs[0],axis=0)
+    mean_vec = eigs[1][:,max_index]
     r_value = np.sqrt(eigs[0].max())
     mean_vec = cart2sph(*mean_vec)
     return mean_vec, r_value
@@ -447,7 +448,8 @@ def fisher_stats(lons, lats, conf=95):
 
     # Mean vector of distribution is one of the eigenvectors of the scatter matrix T
     eigs = np.linalg.eig(T)
-    mean_vec = eigs[1][:,0]
+    max_index = np.argmax(eigs[0],axis=0)
+    mean_vec = eigs[1][:,max_index]
 
     if num > 1:
         p = (100.0 - conf) / 100.0
