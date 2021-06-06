@@ -3,7 +3,7 @@ mplstereonet
 ``mplstereonet`` provides lower-hemisphere equal-area and equal-angle stereonets
 for matplotlib.
 
-.. image:: http://joferkington.github.com/mplstereonet/images/equal_area_equal_angle_comparison.png
+.. image:: http://joferkington.github.io/mplstereonet/images/equal_area_equal_angle_comparison.png
     :alt: Comparison of equal angle and equal area stereonets.
     :align: center
     :target: https://github.com/joferkington/mplstereonet/blob/master/examples/equal_area_equal_angle_comparison.py
@@ -50,7 +50,7 @@ As an example::
 
     plt.show()
 
-.. image:: http://joferkington.github.com/mplstereonet/images/basic.png
+.. image:: http://joferkington.github.io/mplstereonet/images/basic.png
     :alt: A basic stereonet with a plane, pole to the plane, and rake along the plane
     :align: center
     :target: https://github.com/joferkington/mplstereonet/blob/master/examples/basic.py
@@ -92,7 +92,7 @@ As a basic example::
     
     plt.show()
 
-.. image:: http://joferkington.github.com/mplstereonet/images/contouring.png
+.. image:: http://joferkington.github.io/mplstereonet/images/contouring.png
     :alt: Orientation density contours.
     :align: center
     :target: https://github.com/joferkington/mplstereonet/blob/master/examples/contouring.py
@@ -104,7 +104,7 @@ the "traditional" Kamb [Kamb1956]_ and "Schmidt" (a.k.a. 1%) methods) are
 available as well. The method and expected count (in standard deviations) can
 be controlled by the ``method`` and ``sigma`` keyword arguments, respectively.
 
-.. image:: http://joferkington.github.com/mplstereonet/images/contour_angelier_data.png
+.. image:: http://joferkington.github.io/mplstereonet/images/contour_angelier_data.png
     :alt: Orientation density contours.
     :align: center
     :target: https://github.com/joferkington/mplstereonet/blob/master/examples/contour_angelier_data.py
