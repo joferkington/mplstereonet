@@ -3,7 +3,7 @@ mplstereonet
 ``mplstereonet`` provides lower-hemisphere equal-area and equal-angle stereonets
 for matplotlib.
 
-.. image:: http://joferkington.github.com/mplstereonet/images/equal_area_equal_angle_comparison.png
+.. image:: http://joferkington.github.io/mplstereonet/images/equal_area_equal_angle_comparison.png
     :alt: Comparison of equal angle and equal area stereonets.
     :align: center
     :target: https://github.com/joferkington/mplstereonet/blob/master/examples/equal_area_equal_angle_comparison.py
@@ -59,7 +59,7 @@ As an example::
 
     plt.show()
 
-.. image:: http://joferkington.github.com/mplstereonet/images/basic.png
+.. image:: http://joferkington.github.io/mplstereonet/images/basic.png
     :alt: A basic stereonet with a plane, pole to the plane, and rake along the plane
     :align: center
     :target: https://github.com/joferkington/mplstereonet/blob/master/examples/basic.py
@@ -101,7 +101,7 @@ As a basic example::
     
     plt.show()
 
-.. image:: http://joferkington.github.com/mplstereonet/images/contouring.png
+.. image:: http://joferkington.github.io/mplstereonet/images/contouring.png
     :alt: Orientation density contours.
     :align: center
     :target: https://github.com/joferkington/mplstereonet/blob/master/examples/contouring.py
@@ -113,7 +113,7 @@ the "traditional" Kamb [Kamb1956]_ and "Schmidt" (a.k.a. 1%) methods) are
 available as well. The method and expected count (in standard deviations) can
 be controlled by the ``method`` and ``sigma`` keyword arguments, respectively.
 
-.. image:: http://joferkington.github.com/mplstereonet/images/contour_angelier_data.png
+.. image:: http://joferkington.github.io/mplstereonet/images/contour_angelier_data.png
     :alt: Orientation density contours.
     :align: center
     :target: https://github.com/joferkington/mplstereonet/blob/master/examples/contour_angelier_data.py
@@ -150,6 +150,24 @@ Additionally, you can find plane intersections and make other calculations by
 combining utility functions.  See plane_intersection.py_ and
 parse_anglier_data.py_ for examples.
 
+Analysis
+--------
+
+``mplstereonet`` contains orientation data analysis methods, as well as
+plotting functionality.  For example, you can `fit planes to girdles
+<https://mplstereonet.readthedocs.io/en/latest/examples/fit_girdle_example.html>`_
+or `fit a pole to points
+<https://mplstereonet.readthedocs.io/en/latest/mplstereonet.html#mplstereonet.fit_pole>`_,
+identify different `modes of conjugate sets of faults
+<https://mplstereonet.readthedocs.io/en/latest/examples/kmeans_example.html>`_,
+or calculate `flattening values for Flinn plots
+<https://mplstereonet.readthedocs.io/en/latest/mplstereonet.html#mplstereonet.eigenvectors>`_.
+
+Full Documentation
+------------------
+
+Full documentation is available at https://mplstereonet.readthedocs.io/en/latest/mplstereonet.html
+
 References
 ----------
 
@@ -161,8 +179,8 @@ References
        Orientation Data Using a Modified Kamb Method. Computers &
        Geosciences, Vol. 21, No. 1, pp. 31--49.
 
-.. _parsing_example.py: https://github.com/joferkington/mplstereonet/blob/master/examples/parsing_example.py
+.. _parsing_example.py: https://mplstereonet.readthedocs.io/en/latest/examples/parsing_example.html
 
-.. _plane_intersection.py: https://github.com/joferkington/mplstereonet/blob/master/examples/plane_intersection.py
+.. _plane_intersection.py: https://mplstereonet.readthedocs.io/en/latest/examples/plane_intersection.html
 
-.. _parse_anglier_data.py: https://github.com/joferkington/mplstereonet/blob/master/examples/parse_angelier_data.py
+.. _parse_anglier_data.py: https://mplstereonet.readthedocs.io/en/latest/examples/parse_angelier_data.html
