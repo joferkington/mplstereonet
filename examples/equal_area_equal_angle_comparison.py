@@ -1,30 +1,31 @@
-"""A quick visual comparison of equal area vs. equal angle nets."""
 import matplotlib.pyplot as plt
 import mplstereonet
 
-fig = plt.figure()
+# Datos del talud y los planos de discontinuidad
+talud_rumbo, talud_buzamiento = 210, 80
+planes = [
+    {"rumbo": 214, "buzamiento": 60, "nombre": "P1"},
+    {"rumbo": 240, "buzamiento": 70, "nombre": "P2"},
+    {"rumbo": 350, "buzamiento": 66, "nombre": "P3"},
+    {"rumbo": 24, "buzamiento": 85, "nombre": "P4"},
+    {"rumbo": 50, "buzamiento": 76, "nombre": "P5"}
+]
 
-# Make an "equal area" (a.k.a. "Schmidt") stereonet
-# (Lambert Azimuthal Equal Area Projection)
-ax1 = fig.add_subplot(1,2,1, projection='equal_area_stereonet')
+# Ángulo de fricción interna
+angulo_friccion = 40
 
-# Make an "equal angle" (a.k.a. "Wulff" or "True") stereonet
-# (Stereographic projection)
-ax2 = fig.add_subplot(1,2,2, projection='equal_angle_stereonet')
+# Crear la figura y el diagrama estereográfico
+fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(projection='stereonet'))
 
-# Plot the same thing on both
-for ax in [ax1, ax2]:
-    ax.grid(True)
-    ax.set_azimuth_ticklabels([])
-    ax.plane(315, 20)
-    ax.line([20, 30, 40], [110, 265, 170])
+# Graficar el talud en rojo
+ax.plane(talud_rumbo, talud_buzamiento, 'red', linewidth=1.5, label="Talud")
 
-ax1.set_title('Equal Area (a.k.a. "Schmidt")')
-ax2.set_title('Equal Angle (a.k.a. "Wulff")')
+# Graficar cada plano de discontinuidad
+for plano in planes:
+    color = 'green' if 190 <= plano["rumbo"] <= 230 and 40 <= plano["buzamiento"] <= 80 else 'blue'
+    ax.plane(plano["rumbo"], plano["buzamiento"], color=color, linewidth=1, label=f"{plano['nombre']}")
 
-# Make the subplots fit a bit more compactly (purely cosmetic)
-fig.subplots_adjust(hspace=0, wspace=0.05, left=0.01, bottom=0.1, right=0.99)
-
-fig.suptitle('Comparison of Equal Area and Equal Angle Stereonets\n'
-             'Same Data Plotted on Both', y=0.1)
+# Configuración de la leyenda y el estilo
+ax.legend(loc='upper right')
+plt.title("Diagrama Estereográfico: Talud y Planos de Discontinuidad")
 plt.show()
