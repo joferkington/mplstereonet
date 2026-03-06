@@ -809,3 +809,374 @@ class FlexuralToppling(object):
 
         return dict(main=main, secondary=secondary, slope=slope,
                     slip=slip, lateral=lateral)
+
+class DirectToppling(object):
+    """
+    Kinematic analysis for direct toppling failures
+
+    Parameters
+    ----------
+    strike : number
+        The strike of the slope face in degrees, with dip direction indicated
+        by the azimuth (e.g. 315 vs. 135) specified following the "right hand
+        rule".
+    dip : number (> 0 and <90)
+        The dip of the slope face in degrees.
+    fric_angle : number, default=35
+        The friction angle along the toppling discontinuities, in degrees.
+        Note that the slope dip should be steeper than the friction angle, or
+        else no toppling zones can be generated.
+    latlim : number (> 0 and <90), default=20
+        The lateral limits for typical direct toppling failures, counted from
+        the dip direction of the slope face in degrees. Discontinuities dipping
+        steeper than the slip limit for direct toppling but outside the
+        lateral limits are considered to be less probable (i.e. secdondary
+        failure zones).
+    """
+
+    def __init__(self, strike, dip, fric_angle=35, latlim=20):
+
+
+        self.strike = strike
+        self.dip = dip
+        self.fric_angle = fric_angle
+        self.latlim = latlim
+
+        if latlim <= 0 :
+            raise ValueError('latlim must be greater than 0 degree.')
+
+        if latlim >= 90 :
+            raise ValueError('latlim must be smaller than 90 degrees.'
+                             ' Try 90-1e-9 if you really need to use 90.')
+
+        if self.dip <= self.fric_angle:
+            raise ValueError('No direct toppling zones generated as the input'
+                             ' slope dip is shallower than the friction angle')
+
+    def check_failure(self, bearings, plunges, curved_lateral_limits=True):
+        """
+        Check whether direct toppling failures are kinematically feasible for a
+        sequence of discontinuity intersection lines
+
+        Parameters
+        ----------
+        bearings : number or sequence of numbers
+            The bearing (azimuth) of the instersection line(s) in degrees.
+        plunges : number or sequence of numbers
+            The plunge of the line(s) in degrees. The plunge is measured in
+            degrees downward from the end of the feature specified by the
+            bearing.
+        curved_lateral_limits : boolean
+            Consider lateral limits as curved lines (align with small circles)
+            if set to 'True'. Straight lines through the stereonet center are
+            used if set to 'False'. Defaults to 'True'
+
+        Returns
+        ----------
+        main: squence of booleans
+            True if the discontinuity is in the main direct toppling zone
+        secondary: squence of booleans
+            True if the discontinuity is in the secondary direct toppling zone
+
+        """
+
+        bearings = (bearings-self.strike) % 360        
+
+        llons, llats = stereonet_math.line(plunges, bearings)
+        llons = np.degrees(llons)
+
+        if (90-self.dip)<self.fric_angle:
+            #slope cone is within the friction cone
+            in_slope_cone = plunges>=self.dip
+            in_fric_cone = plunges>=self.dip
+        else:
+            in_slope_cone = plunges>=90-self.dip
+            in_fric_cone = plunges>=90-self.fric_angle
+
+
+        if curved_lateral_limits:
+            lons, lats = stereonet_math.line(plunges, bearings)
+            lats = np.degrees(lats)
+            within_lat = ((lats >= -self.latlim-1e-8) &  # with tolerance
+                          (lats <= self.latlim+1e-8) & (bearings>=180))
+            
+
+            if self.latlim >= self.fric_angle and self.latlim < 90-self.dip:
+                main = within_lat & in_slope_cone
+                secondary = np.zeros_like(main)
+            elif self.latlim < self.fric_angle:
+                main = within_lat & in_slope_cone
+                secondary = ~main & in_fric_cone & (bearings>=180)
+            else: #latlims outside slope cone
+                main = in_slope_cone
+                secondary = np.zeros_like(main)
+
+        else:
+            within_lat = ((bearings >= 270-self.latlim) &
+                          (bearings <= 270+self.latlim))
+            sector1 = bearings >= 270 + self.latlim
+
+            sector2 = ((bearings <= 270-self.latlim) &
+                          (bearings >=180))
+
+
+            main = within_lat & in_slope_cone
+
+            secondary = (sector1 | sector2) & in_fric_cone
+
+
+
+        return main, secondary
+
+    def plot_kinematic(self, secondary_zone=True, construction_lines=True,
+                       slopeface=True, curved_lateral_limits=True,
+                       main_kws=None, secondary_kws=None, lateral_kws=None,
+                       slip_kws=None, slope_kws=None,friction_kws=None,
+                       ax=None):
+
+        """
+        Generate the flexural toppling kinematic analysis plot for pole vectors.
+        (Note: The discontinuity data to be used in conjunction with this plot
+        should be displayed as POLES)
+
+        This function plots the following elements on a StereonetAxes:
+        (1) main direct toppling zone
+        (2) secondary Direct toppling zones 
+        (3) construction lines, i.e. slip limit and lateral limits
+        (4) slope face
+
+        (2)-(4) are optioanl. The style of the elements above can be specified
+        with their kwargs, or on the artists returned by this function later.
+
+        Parameters
+        ----------
+        secondary_zone : boolean
+            Plot the secondary zones if set to True. This is not normally
+            considered. I just leave this option in case some users find it
+            useful. Defaults to 'False'.
+        construction_lines : boolean
+            Plot the construction lines if set to True. Defaults to 'True'.
+        slopeface : boolean
+            Plot the slope face as a great-circle plane on stereonet. Defaults
+            to 'True'.
+        curved_lateral_limits : boolean
+            Plot curved lateral limits (align with small circles) if set to
+            True, or else will be plotted as straight lines through the
+            stereonet center. Defaults to 'True'
+        main_kws : dictionary
+            kwargs for the main flexural toppling zone
+            (matplotlib.patches.Polygon)
+        secondary_kws : dictionary
+            kwargs for the secondary flexural toppling zones
+            (matplotlib.patches.Polygon)
+        lateral_kws : dictionary
+            kwargs for the lateral limits (matplotlib.lines.Line2D)
+        slip_kws : dictionary
+            kwargs for the slip limit (matplotlib.lines.Line2D)
+        slope_kws : dictionary
+            kwargs for the slope face (matplotlib.lines.Line2D)
+        friction_kws : dictionary
+            kwargs for the friction cone (matplotlib.patches.Polygon)
+        ax : StereonetAxes
+            The StereonetAxes to plot on. A new StereonetAxes will be generated
+            if set to 'None'. Defaults to 'None'.
+
+        Returns
+        -------
+        result : dictionary
+            A dictionary mapping each element of the kinematic analysis plot to
+            a list of the artists created. The dictionary has the following
+            keys:
+            - `main` : the main direct toppling zone
+            - `secondary` : the two direct flexural toppling zones
+            - `slope` : the slope face
+            - `slip` : the slip cone limit
+            - `lateral` : the two lateral limits
+        """
+
+        # Convert the construction lines into shapely linestrings / polygons
+        slope_cone = _shape('cone', angle=90-self.dip)
+
+        friction_cone = _shape('cone', angle=self.fric_angle)
+
+        diam = _shape('plane', strike=0, dip=90)
+
+        # self.latlim = 50
+        # curved_lateral_limits = False
+        if curved_lateral_limits:
+
+            lat_lim1, lat_lim2 = _shape('curved_latlims', angle=self.latlim)
+
+            # Get the failure zones (as shapely polygons) from geometry interaction
+            if self.latlim >= self.fric_angle and self.latlim < 90-self.dip:
+                try:
+                    semicirc1,b = ops.split(slope_cone, diam).geoms
+                except AttributeError:
+                    semicirc1,b = ops.split(slope_cone, diam)
+                try:
+                    c,toppling_zone = ops.split(semicirc1, lat_lim1).geoms
+                except AttributeError:
+                    c,toppling_zone = ops.split(semicirc1, lat_lim1)
+
+                try:
+                    toppling_zone,f = ops.split(toppling_zone, lat_lim2).geoms
+                except AttributeError:
+                    toppling_zone,f = ops.split(toppling_zone, lat_lim2)
+
+
+                sec_zone1 = sec_zone2 = None
+            elif self.latlim < self.fric_angle:
+                try:
+                    semicirc1,b = ops.split(slope_cone, diam).geoms
+                except AttributeError:
+                    semicirc1,b = ops.split(slope_cone, diam)
+                try:
+                    c,toppling_zone = ops.split(semicirc1, lat_lim1).geoms
+                except AttributeError:
+                    c,toppling_zone = ops.split(semicirc1, lat_lim1).geoms
+
+                try:
+                    toppling_zone,f = ops.split(toppling_zone, lat_lim2).geoms
+                except AttributeError:
+                    toppling_zone,f = ops.split(toppling_zone, lat_lim2)
+
+
+                if (90-self.dip)<self.fric_angle:
+                    #slope cone is within friction cone so only the slope cone
+                    try:
+                        semicirc2, f = ops.split(slope_cone, diam).geoms
+                    except AttributeError:
+                        semicirc2, f = ops.split(slope_cone, diam)
+                else:
+                    try:
+                        semicirc2, h = ops.split(friction_cone, diam).geoms
+                    except AttributeError:
+                        semicirc2, h = ops.split(friction_cone, diam)
+
+                try:
+                    sec_zone1, j = ops.split(semicirc2, lat_lim1).geoms
+                except AttributeError:
+                    sec_zone1, j = ops.split(semicirc2, lat_lim1)
+
+                try:
+                    k, sec_zone2 = ops.split(semicirc2, lat_lim2).geoms
+                except AttributeError:
+                    k, sec_zone2 = ops.split(semicirc2, lat_lim2)
+
+            else: #outside
+                try:
+                    toppling_zone,b = ops.split(slope_cone, diam).geoms
+                except AttributeError:
+                    toppling_zone,b = ops.split(slope_cone, diam)
+
+                sec_zone1 = sec_zone2 = None
+
+        else:
+            lat_lim1 = _shape('plane', strike=90+self.latlim, dip=90)
+            lat_lim2 = _shape('plane', strike=90-self.latlim, dip=90)
+
+            # Get the failure zones (as shapely polygons) from geometry interaction
+            try:
+                a, semicirc1 = ops.split(slope_cone, lat_lim1).geoms
+            except AttributeError:
+                a, semicirc1 = ops.split(slope_cone, lat_lim1)
+            try:
+                c, toppling_zone = ops.split(semicirc1, lat_lim2).geoms
+            except AttributeError:
+                c, toppling_zone = ops.split(semicirc1, lat_lim2)
+
+
+
+            if (90-self.dip)<self.fric_angle:
+                #slope cone is within friction cone so only the slope cone
+                try:
+                    semicirc2, f = ops.split(slope_cone, diam).geoms
+                except AttributeError:
+                    semicirc2, f = ops.split(slope_cone, diam)
+            else:
+
+
+                try:
+                    semicirc2, f = ops.split(friction_cone, diam).geoms
+                except AttributeError:
+                    semicirc2, f = ops.split(friction_cone, diam)
+            try:
+                g, sec_zone2 = ops.split(semicirc2, lat_lim1).geoms
+            except AttributeError:
+                g, sec_zone2 = ops.split(semicirc2, lat_lim1)
+            try:
+                sec_zone1,j = ops.split(semicirc2, lat_lim2).geoms
+            except AttributeError:
+                sec_zone1,j = ops.split(semicirc2, lat_lim2)
+
+
+
+        # Plotting
+        if ax==None:
+            figure, axes = subplots(figsize=(8, 8))
+        else:
+            axes = ax
+
+
+        # List of artists to be output
+        main = []
+        secondary = []
+        slope = []
+        slip = []
+        lateral = []
+        friction = []
+
+        # Plot the main flexural toppling sliding zone
+        main_kws = _set_kws(main_kws, polygon=True,
+                            color='r', alpha=0.3,
+                            label='Potential Flexural Toppling Zone')
+
+
+        main.extend(axes.fill(
+            *_rotate_shape(toppling_zone, self.strike), **main_kws))
+
+
+
+        # Plot the secondary flexural toppling zones
+        if secondary_zone:
+            secondary_kws = _set_kws(secondary_kws, polygon=True,
+                                     color='yellow', alpha=0.3,
+                                     label='Secondary Flexural Toppling Zone')
+            secondary_kws2 = secondary_kws.copy()
+            secondary_kws2.pop('label')
+            if sec_zone1 is not None:
+                secondary.extend(axes.fill(
+                    *_rotate_shape(sec_zone1, self.strike), **secondary_kws))
+            if sec_zone2 is not None:
+                secondary.extend(axes.fill(
+                    *_rotate_shape(sec_zone2, self.strike), **secondary_kws2))
+
+        # Plot the slope face
+        if slopeface:
+            slope_kws = _set_kws(slope_kws, color='k', label='Slope Face')
+            slope.extend(axes.plane(self.strike, self.dip, **slope_kws))
+            slope.extend(axes.plane(self.strike, 90, **slope_kws))
+
+        # Plot the construction lines (friction cone and slip limit)
+        if construction_lines:
+            # slip_kws = _set_kws(slip_kws, color='r')
+            slip_kws = _set_kws(friction_kws, polygon=True, edgecolor='r')
+            lateral_kws = _set_kws(lateral_kws, color='r')
+            lateral_kws2 = lateral_kws.copy()
+            friction_kws = _set_kws(friction_kws, polygon=True, edgecolor='r')
+            lateral_kws2.pop('label')
+            # slip.extend(axes.plane(
+            #     self.strike, self.dip-self.fric_angle, **slip_kws))
+            lateral.extend(axes.plot(
+                *_rotate_shape(lat_lim1, self.strike), **lateral_kws))
+            lateral.extend(axes.plot(
+                *_rotate_shape(lat_lim2, self.strike), **lateral_kws2))
+
+            friction.extend(axes.fill(
+                *friction_cone.exterior.xy, **friction_kws))
+            slip.extend(axes.fill(
+                *slope_cone.exterior.xy, **slip_kws))
+
+        return dict(main=main, secondary=secondary, slope=slope,
+                    slip=slip, lateral=lateral,friction=friction)
+
