@@ -100,7 +100,11 @@ def density_grid(*args, **kwargs):
             a counting circle comprising 1% of the total area of the
             hemisphere. Does not take into account sample size.  Units are in
             points per 1% area.
-
+        ''"fisher"'' : 1% Counting Circle Size
+            Similar to Schmidt, but instead of counting points, consider a fisher
+            distribution around each pole, and consider the overlapping area with
+            each counting circle.
+            
     sigma : int or float, optional
         The number of standard deviations defining the expected number of
         standard deviations by which a random sample from a uniform
@@ -165,6 +169,7 @@ def density_grid(*args, **kwargs):
             'schmidt':_schmidt_count,
             'kamb':_kamb_count,
             'exponential_kamb':_exponential_kamb,
+            'fisher':_fisher
             }[method]
     lon, lat, z = _count_points(lon, lat, func, sigma, gridsize, weights)
 
@@ -226,3 +231,25 @@ def _schmidt_count(cos_dist, sigma=None):
     # To offset the count.sum() - 0.5 required for the kamb methods...
     count = 0.5 / count.size + count
     return count, (cos_dist.size * radius)
+
+def _fisher(cos_dist, sigma=None):
+    """Fisher distribution, 1% counting circle size."""
+    radius = 0.01
+    cone_angle = np.sqrt(2*radius)
+    # From -> DIPS - AN INTERACTIVE AND GRAPHICAL APPROACH TO THE ANALYSIS OF ORIENTATION BASED DATA
+    # by Mark S. Diederichs, 1990
+    # Msc Thesis
+    # Data points digitised from graph in Appendix A
+    # (pole-grid seperation)/(counting angle) vs. probability weighting to grid point
+    x = [3.00249357093607E-06,0.0419508401727634,0.0800855110168995,0.122036351189663,0.160171022033799,0.204025443130519,0.244069699885755,0.282213378210604,0.324167220876938,0.362310899201787,0.404270746855263,0.442420430167253,0.482482701883914,0.526361142929202,0.566429419633005,0.606503701323949,0.64847856144528,0.688561850616937,0.730560730686835,0.770659032326347,0.808856755535472,0.852789241465036,0.892911563053115,0.93305189960262,0.971312675176734,1.01154308653336,1.04985790699175,1.09001625850268,1.12824400664752,1.16836332574202,1.21037421578621,1.25237009336253,1.28863721320556,1.33253066671871,1.37259293843537,1.41074562424093,1.44890431503363,1.48895457677601,1.52710125759443,1.5671515193368,1.60910836449671,1.64534245691046,1.68729629957679,1.72734055633203,1.99809341658247]
+    y = [0.998425192122057,0.996784329385554,0.995149471636193,0.991933801021748,0.990298943272387,0.988655078042314,0.985442409921439,0.979083128538251,0.974292650045863,0.967933368662674,0.959993274414401,0.950484377275327,0.937822861886797,0.923580533633182,0.907769402488766,0.888808655588466,0.872994521950479,0.849309351416351,0.820896754754823,0.789337544830982,0.754631721644826,0.712042851588244,0.667885178640861,0.614278658425822,0.546501869802871,0.445651113249553,0.349527782823635,0.28647241534094,0.236018513375358,0.193435648305918,0.15872382013262,0.131886031349035,0.109781673679991,0.0876653060366634,0.0750037906481335,0.0639200856311168,0.0496867648582148,0.043324480981455,0.0353903917203239,0.0290281078435641,0.0226628214732336,0.0178813504615584,0.0130908719691704,0.00987820384829607,3.00249357088056E-06]
+    
+    # Calculate ratio between pole-grid seperation and counting angle (1%). Linear interpolation done using numpy
+    ratio = ((1-cos_dist)/radius)
+    count = np.interp(ratio, x, y, right=0)
+    
+    # To offset the count.sum() - 0.5 required for the kamb methods...
+    count = 0.5 / count.size + count
+    
+    return count, (count.size * radius)
+    
