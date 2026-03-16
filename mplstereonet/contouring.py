@@ -14,7 +14,7 @@ def _count_points(lons, lats, func, sigma, gridsize=(100,100), weights=None):
     if weights is None:
         weights = 1
     # Normalize the weights
-    weights = np.asarray(weights, dtype=np.float64)
+    weights = np.asarray(weights, dtype=float)
     weights /= weights.mean()
 
     # Generate a regular grid of "counters" to measure on...
@@ -31,7 +31,7 @@ def _count_points(lons, lats, func, sigma, gridsize=(100,100), weights=None):
     # Basically, we can't model this as a convolution as we're not in cartesian
     # space, so we have to iterate through and call the kernel function at
     # each "counter".
-    totals = np.zeros(xyz_counters.shape[0], dtype=np.float64)
+    totals = np.zeros(xyz_counters.shape[0], dtype=float)
     for i, xyz in enumerate(xyz_counters):
         cos_dist = np.abs(np.dot(xyz, xyz_points.T))
         density, scale = func(cos_dist, sigma)
