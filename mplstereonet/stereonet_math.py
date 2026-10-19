@@ -199,6 +199,7 @@ def pole(strike, dip):
     lon, lat : Arrays of longitude and latitude in radians.
     """
     strike, dip = np.atleast_1d(strike, dip)
+    strike, dip = strike.copy(), dip.copy()
     mask = dip > 90
     dip[mask] = 180 - dip[mask]
     strike[mask] += 180
